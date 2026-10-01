@@ -15,7 +15,7 @@ export function AccidentFlow({documents,onSubmit,onClose}) {
  const locked=!!busy||aiBusy;
  let currentPoint=null,coordinateError='',searchUrl='',mapUrl='';
  try { currentPoint=latitude.trim()||longitude.trim()?parseIncidentPoint(latitude,longitude):parseCoordinateText(eventPlace); } catch(e) { coordinateError=e.message; }
- if(!coordinateError&&(currentPoint||eventPlace.trim())) { searchUrl=policeSearchUrl(currentPoint,eventPlace); mapUrl=incidentMapUrl(currentPoint,eventPlace); }
+ if(!coordinateError&&(currentPoint||eventPlace.trim())) { try { searchUrl=policeSearchUrl(currentPoint,eventPlace); mapUrl=incidentMapUrl(currentPoint,eventPlace); } catch(e) { coordinateError=e.message; } }
  const parsedDate=new Date(eventDate);
  const draftInput={details,eventDate:when==='now'?bangkokDateTime(incidentNow):(Number.isFinite(parsedDate.getTime())?bangkokDateTime(parsedDate):''),eventPlace};
  const [documentIds,setDocumentIds]=React.useState(()=>selectDocuments('accident',documents));
