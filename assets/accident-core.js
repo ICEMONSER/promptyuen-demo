@@ -1,3 +1,4 @@
+import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
 // Local simulated submission only; never communicates with an agency.
 export const EVIDENCE_LIMIT = 5;
 export function bangkokDateTime(now = new Date()) {
@@ -15,6 +16,9 @@ export function makeAccident(input, documents, now = new Date()) {
     date=bangkokDateTime(parsed);
   }
   if (!place) throw Error('ยังไม่มีจุดเกิดเหตุ กรุณาอนุญาตตำแหน่งหรือระบุสถานที่เอง');
+  const documentIds = Array.isArray(input.documentIds) ? input.documentIds.filter(id => documents.some(d => d.id === id && d.verified)) : selectDocuments('accident', documents);
+  const missing = checklist('accident', documents, documentIds).filter(d => d.required && !d.selected);
+  if (missing.length) throw Error('กรุณาแนบและตรวจยืนยันเอกสารจำเป็น: ' + missing.map(d => DOCUMENT_LABELS[d.type]).join(' · '));
   const allowed=['fullName','nationalId','birthDate','address'];
   const identity=documents.find(d=>d.kind==='identity'&&d.verified);
   const fields={};
@@ -23,7 +27,7 @@ export function makeAccident(input, documents, now = new Date()) {
   fields.eventDate={value:date,source:input.when==='now'?'เวลาอุปกรณ์ ณ วันที่ส่ง':'ผู้แจ้งระบุ'};
   fields.eventPlace={value:place,source:input.point?'ตำแหน่งอุปกรณ์ที่ผู้ใช้อนุญาต':'ผู้แจ้งระบุ'};
   const id=crypto.randomUUID(), stamp=now.toISOString();
-  return {id,service:'accident',status:'simulated',fields,messages:[],documentIds:identity?[identity.id]:[],evidence:input.evidence.map(e=>({...e,label:'หลักฐานที่ผู้ใช้แนบ · ยังไม่ได้วิเคราะห์',analysis:null})),station:input.station||null,location:input.point||null,reference:'DEMO-'+id.slice(0,8).toUpperCase(),revision:0,createdAt:stamp,updatedAt:stamp,governmentSubmitted:false,quickAccident:true,identityMissing:!identity,submittedAt:stamp};
+  return {id,service:'accident',status:'simulated',fields,messages:[],documentIds,evidence:input.evidence.map(e=>({...e,label:'หลักฐานที่ผู้ใช้แนบ · ยังไม่ได้วิเคราะห์',analysis:null})),station:input.station||null,location:input.point||null,reference:'DEMO-'+id.slice(0,8).toUpperCase(),revision:0,createdAt:stamp,updatedAt:stamp,governmentSubmitted:false,quickAccident:true,identityMissing:!identity,submittedAt:stamp};
 }
 export function trackingSteps(record) {
   return [

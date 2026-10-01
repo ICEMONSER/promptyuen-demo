@@ -11,17 +11,17 @@ export function DocumentChecklist({
   return h(
     "section",
     { className: "assistant-panel" },
-    h("h3", null, "เอกสารประกอบที่ควรเตรียม"),
+    h("h3", null, topic === "accident" ? "เอกสารสำคัญที่ต้องใช้" : "เอกสารประกอบที่ควรเตรียม"),
     h(
       "p",
       { className: "small-note" },
-      "รายการเบื้องต้นสำหรับเตรียมข้อมูล เลือกใช้หรือไม่ใช้เอกสารได้ และตรวจข้อกำหนดกับหน่วยงานอีกครั้ง",
+      topic === "accident" ? "เอกสารจำเป็น 3 รายการต้องผ่านการตรวจยืนยันในคลังเอกสาร ส่วนกรมธรรม์ประกันภัยเลือกแนบเพิ่มเติมได้" : "รายการเบื้องต้นสำหรับเตรียมข้อมูล เลือกใช้หรือไม่ใช้เอกสารได้ และตรวจข้อกำหนดกับหน่วยงานอีกครั้ง",
     ),
     ...checklist(topic, documents, selected).map((item) =>
       h(
         "p",
         { key: item.type, className: item.selected ? "available" : "missing" },
-        `${item.selected ? "พร้อมใช้" : item.available ? "ยังไม่ได้เลือก" : "ยังขาด"} · ${labels[item.type]}`,
+        `${item.selected ? "พร้อมใช้" : item.available ? "ยังไม่ได้เลือก" : item.required ? "ยังขาด" : "ไม่มีเอกสารแนบ"} · ${labels[item.type]} · ${item.required ? "จำเป็น" : "ไม่บังคับ"}`,
       ),
     ),
     onChange &&
@@ -44,6 +44,6 @@ export function DocumentChecklist({
             labels[doc.kind],
           ),
         ),
-    h("small", null, "ยังเตรียมคำขอต่อได้แม้เอกสารไม่ครบ"),
+    h("small", null, topic === "accident" ? "กรอกข้อมูลเตรียมไว้ได้ แต่ต้องแนบเอกสารจำเป็นให้ครบก่อนส่งคำขอจำลอง" : "ยังเตรียมคำขอต่อได้แม้เอกสารไม่ครบ"),
   );
 }
