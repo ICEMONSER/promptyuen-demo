@@ -1,4 +1,4 @@
-import { AISettings, EvidencePanel } from "./evidence.js";
+import { EvidencePanel } from "./evidence.js";
 import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
@@ -824,9 +824,8 @@ var Mg = `modulepreload`,
   },
   Ig = [
     { id: `chat`, icon: pe, label: `ผู้ช่วยพร้อมยื่น` },
-    { id: `documents`, icon: se, label: `คลังเอกสาร` },
     { id: `cases`, icon: re, label: `คำขอของฉัน` },
-    { id: `privacy`, icon: be, label: `ข้อมูลและความเป็นส่วนตัว` },
+    { id: `documents`, icon: se, label: `คลังเอกสาร` },
   ],
   Lg = [
     { id: `accident`, icon: N, label: `อุบัติเหตุทางรถ` },
@@ -1287,6 +1286,7 @@ function Vg() {
         await Fe();
       },
       onEnter: () => setEntered(true),
+      onClear: async () => { if(window.confirm("ล้างเอกสาร ลายมือชื่อ และคำขอทั้งหมดบนเครื่องนี้? กู้คืนไม่ได้")) { await zg("/api/workspace", {action:"clear"}); await Fe(); } },
     });
   return (0, B.jsxs)(Ym, {
     children: [
@@ -1408,6 +1408,7 @@ function Vg() {
               (0, B.jsxs)(`div`, {
                 className: `header-right`,
                 children: [
+                  D.createElement("button",{className:"account-action",onClick:()=>setEntered(false)},"บัญชี / ลายเซ็น"),
                   (0, B.jsx)(`span`, {
                     className: `engine-label`,
                     children: n?.aiEnabled
@@ -1430,7 +1431,7 @@ function Vg() {
               (0, B.jsxs)(`p`, {
                 children: [
                   (0, B.jsx)(`strong`, { children: `รุ่นทดลองฟรี` }),
-                  ` · เอกสารและคำขอเก็บในเบราว์เซอร์นี้ การค้นหาสถานีส่งเฉพาะตำแหน่ง ภาพอุบัติเหตุส่งให้บริการ AI ที่ตั้งค่าเมื่อคุณอนุญาต`,
+                  ` · เอกสารและคำขอเก็บในเบราว์เซอร์นี้ ไม่ส่งถึงหน่วยงานรัฐ การค้นหาสถานีส่งเฉพาะตำแหน่งเมื่อคุณอนุญาต`,
                 ],
               }),
             ],
@@ -1925,6 +1926,7 @@ function Vg() {
                             {
                               className: `document-card`,
                               children: [
+                                e.image?.startsWith("data:image/") ? D.createElement("img",{className:"doc-thumbnail",src:e.image,alt:gg[e.kind],loading:"lazy"}) : D.createElement("div",{className:"doc-placeholder"},D.createElement("strong",null,gg[e.kind]),e.demo?"ข้อมูลสมมติ":e.mime==="application/pdf"?"เอกสาร PDF":"ยังไม่มีภาพตัวอย่าง"),
                                 (0, B.jsxs)(`div`, {
                                   className: `document-card-top`,
                                   children: [
@@ -2154,157 +2156,6 @@ function Vg() {
                         }),
                       ],
                     }),
-              ],
-            }),
-          e === `privacy` &&
-            (0, B.jsxs)(`div`, {
-              className: `content-page`,
-              children: [
-                (0, B.jsx)(`div`, {
-                  className: `section-heading`,
-                  children: (0, B.jsxs)(`div`, {
-                    children: [
-                      (0, B.jsx)(`p`, {
-                        className: `eyebrow`,
-                        children: `คุณจัดการข้อมูลได้`,
-                      }),
-                      (0, B.jsx)(`h1`, {
-                        children: `ข้อมูลและความเป็นส่วนตัว`,
-                      }),
-                      (0, B.jsx)(`p`, {
-                        children: `เห็นชัดว่าข้อมูลอยู่ที่ไหน และถูกใช้เมื่อไร`,
-                      }),
-                    ],
-                  }),
-                }),
-                (0, B.jsxs)(`div`, {
-                  className: `privacy-grid`,
-                  children: [
-                    (0, B.jsx)(AISettings, {}),
-                    (0, B.jsx)(SignaturePad, {
-                      value: n?.signature,
-                      onSave: async (signature) => {
-                        await zg("/api/workspace", {
-                          action: "signature",
-                          signature,
-                        });
-                        await Fe();
-                      },
-                    }),
-                    (0, B.jsxs)("section", {
-                      className: "assistant-panel",
-                      children: [
-                        (0, B.jsx)("h3", {
-                          children: "จัดการข้อมูลบนเครื่องนี้",
-                        }),
-                        (0, B.jsx)("button", {
-                          disabled: nt,
-                          onClick: () => {
-                            if (
-                              window.confirm(
-                                "ล้างข้อมูลทั้งหมด? เอกสาร ลายมือชื่อ และคำขอจะถูกลบและกู้คืนไม่ได้",
-                              )
-                            )
-                              Ie("clear", async () => {
-                                await zg("/api/workspace", { action: "clear" });
-                                location.reload();
-                              });
-                          },
-                          children: "ล้างข้อมูลทั้งหมด",
-                        }),
-                      ],
-                    }),
-
-                    (0, B.jsxs)(`article`, {
-                      className: `privacy-card`,
-                      children: [
-                        (0, B.jsx)(se, {}),
-                        (0, B.jsx)(`h2`, { children: `พื้นที่เก็บของต้นแบบ` }),
-                        (0, B.jsx)(`p`, {
-                          children: `รุ่นฟรีเก็บไฟล์และคำขอใน IndexedDB ของเบราว์เซอร์นี้ ไม่มีบัญชีออนไลน์ ไม่มีการซิงก์ข้ามเครื่อง และไม่ใช่ฐานข้อมูลรัฐบาล`,
-                        }),
-                      ],
-                    }),
-                    (0, B.jsxs)(`article`, {
-                      className: `privacy-card`,
-                      children: [
-                        (0, B.jsx)(ve, {}),
-                        (0, B.jsx)(`h2`, { children: `เลือกวิธีอ่านเอกสาร` }),
-                        (0, B.jsx)(`p`, {
-                          children: `อ่านข้อความจากภาพในเบราว์เซอร์ บทสนทนาใช้แบบนำทาง การประเมินภาพอุบัติเหตุเรียกบริการ AI เฉพาะเมื่อคุณตั้งค่าและอนุญาต`,
-                        }),
-                      ],
-                    }),
-                    (0, B.jsxs)(`article`, {
-                      className: `privacy-card`,
-                      children: [
-                        (0, B.jsx)(be, {}),
-                        (0, B.jsx)(`h2`, { children: `ยืนยันก่อนดำเนินการ` }),
-                        (0, B.jsx)(`p`, {
-                          children: `ทุกช่องแก้ไขได้และแสดงที่มา การส่งมีเฉพาะระบบจำลอง ไม่มีการยืนยันตัวตนกับรัฐหรือการส่งทางกฎหมาย ลายมือชื่อที่วาดเป็นภาพสำหรับเตรียมเอกสาร`,
-                        }),
-                      ],
-                    }),
-                    (0, B.jsxs)(`article`, {
-                      className: `privacy-card`,
-                      children: [
-                        (0, B.jsx)(Se, {}),
-                        (0, B.jsx)(`h2`, { children: `ลบข้อมูลได้` }),
-                        (0, B.jsx)(`p`, {
-                          children: `ลบเอกสารเพื่อนำไฟล์และข้อมูลอ้างอิงออกจากคลังและคำขอ ข้อความที่กรอกเองยังอยู่ ใช้ล้างข้อมูลทั้งหมดเมื่อต้องการลบทุกอย่าง`,
-                        }),
-                      ],
-                    }),
-                  ],
-                }),
-                (0, B.jsxs)(`div`, {
-                  className: `source-card`,
-                  children: [
-                    (0, B.jsx)(`h2`, {
-                      children: `แนวทางเชื่อมต่อภาครัฐในระยะต่อไป`,
-                    }),
-                    (0, B.jsx)(`p`, {
-                      children: `ต้องมีหน่วยงานร่วมทดลอง ตรวจแบบฟอร์ม ยืนยันตัวตน และได้รับสิทธิ์เชื่อม API ก่อนเปิดรับเรื่องจริง การอัปโหลดไฟล์ในเว็บนี้ไม่ทำให้ข้อมูลเข้าสู่ฐานทะเบียนของรัฐ`,
-                    }),
-                    (0, B.jsxs)(`a`, {
-                      href: `https://kb.dga.or.th/gdx/2gettingstarted/`,
-                      target: `_blank`,
-                      rel: `noreferrer`,
-                      children: [
-                        `แนวทางขอใช้ GDX จาก DGA `,
-                        (0, B.jsx)(R, { size: 14 }),
-                      ],
-                    }),
-                  ],
-                }),
-                (0, B.jsx)(`h2`, {
-                  className: `activity-title`,
-                  children: `ประวัติการใช้ข้อมูล`,
-                }),
-                (0, B.jsx)(`div`, {
-                  className: `activity-list`,
-                  children: n?.events.length
-                    ? n.events.map((e, t) =>
-                        (0, B.jsxs)(
-                          `div`,
-                          {
-                            className: `activity-row`,
-                            children: [
-                              (0, B.jsx)(ie, { size: 16 }),
-                              (0, B.jsx)(`span`, { children: e.action }),
-                              (0, B.jsx)(`time`, {
-                                children: Rg(e.created_at),
-                              }),
-                            ],
-                          },
-                          t,
-                        ),
-                      )
-                    : (0, B.jsx)(`p`, {
-                        className: `small-note`,
-                        children: `ยังไม่มีกิจกรรม`,
-                      }),
-                }),
               ],
             }),
         ],
@@ -2614,7 +2465,7 @@ function Vg() {
                   }),
                   (0, B.jsx)(`div`, {
                     className: `edit-fields`,
-                    children: vg.map((e) =>
+                    children: (O.kind === "identity" ? ["fullName","nationalId","birthDate","address"] : O.kind === "license" ? ["fullName","nationalId","birthDate","licenseNumber","expiryDate"] : vg).map((e) =>
                       (0, B.jsxs)(
                         `label`,
                         {

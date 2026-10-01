@@ -69,7 +69,7 @@ export function SignaturePad({ value, onSave }) {
   }
   return h(
     "section",
-    { className: "assistant-panel" },
+    { className: "assistant-panel signature-studio" },
     h("h3", null, "ลายมือชื่อสำหรับเอกสาร"),
     h(
       "p",
@@ -113,35 +113,33 @@ export function SignaturePad({ value, onSave }) {
       },
       "บันทึกลายมือชื่อ",
     ),
-    value &&
-      h(
-        "button",
-        { type: "button", disabled: busy, onClick: () => save(null) },
-        "ลบลายมือชื่อ",
-      ),
     h("p", { role: "status" }, message),
   );
 }
-export function LocalLogin({ signature, onSave, onEnter }) {
+export function LocalLogin({ signature, onSave, onEnter, onClear }) {
+  const [ready, setReady] = React.useState(false);
   return h(
     "main",
     { className: "assistant-login" },
-    h("h1", null, "พร้อมยื่น · เข้าใช้งานบนเครื่องนี้"),
+    h("div", {className:"login-brand"}, "พร้อมยื่น", h("span", null, "เอกสารน้อยลง · ชีวิตง่ายขึ้น")),
+    h("span", {className:"login-step"}, ready ? "02 / ลายมือชื่อของคุณ" : "01 / เริ่มต้นอย่างปลอดภัย"),
+    h("h1", null, ready ? "ลายเซ็นเดียว\nพร้อมใช้กับเอกสารของคุณ" : "เรื่องเอกสาร\nให้เราช่วยดูแล"),
     h(
       "p",
       null,
-      "เตรียมข้อมูลแจ้งความและเอกสารด้วยข้อมูลที่คุณตรวจแล้ว ไม่ต้องสมัครบัญชี",
+      "พื้นที่ส่วนตัวบนอุปกรณ์นี้ เอกสารไม่ถูกส่งขึ้นเซิร์ฟเวอร์ ใช้ข้อมูลจำลองในการทดลอง",
     ),
-    h(SignaturePad, { value: signature, onSave }),
+    ready && h(SignaturePad, { value: signature, onSave }),
     h(
       "section",
       { className: "assistant-panel" },
-      h("button", { type: "button", onClick: onEnter }, "เข้าใช้งาน"),
+      h("button", { type: "button", className:"login-primary", onClick: ready ? onEnter : ()=>setReady(true) }, ready ? "เข้าสู่พื้นที่ของฉัน →" : "ทดลองเข้าสู่ระบบด้วย ThaiD →"),
       h(
         "p",
         { className: "small-note" },
-        "เข้าใช้งานก่อนได้ และเพิ่มลายมือชื่อภายหลังในข้อมูลและความเป็นส่วนตัว",
+        ready ? "ลายมือชื่อเป็นตัวเลือก เพิ่มหรือวาดใหม่ได้จากปุ่มบัญชีบนหน้าเว็บ" : "โหมดจำลองเท่านั้น ยังไม่เชื่อม ThaiD ไม่ยืนยันตัวตน และไม่ดึงข้อมูลทะเบียนจากรัฐ",
       ),
+      onClear && h("button", {type:"button", className:"text-action", onClick:onClear}, "ล้างข้อมูลในเครื่องนี้"),
     ),
   );
 }
