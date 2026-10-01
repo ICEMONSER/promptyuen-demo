@@ -41,7 +41,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    if(!evidence.length)throw Error('กรุณาแนบภาพหรือวิดีโอหลักฐานอย่างน้อย 1 ไฟล์');
    if(coordinateError)throw Error(coordinateError);
    const reviewed=reviewedLegalDraft(legalDraft,draftInput);
-   if(legalDraft&&!reviewed)throw Error('กรุณาตรวจและยืนยันร่างสำนวนก่อนบันทึก หรือยกเลิกร่าง AI เพื่อใช้คำบอกเล่าเดิม');
+   if(legalDraft&&!reviewed)throw Error('กรุณาตรวจและยืนยันร่างสำนวนก่อนบันทึก หรือยกเลิกร่างสาธิต เพื่อใช้คำบอกเล่าเดิม');
    const location=currentPoint?{...currentPoint,source:point?'geolocation':'coordinates'}:null;
    let station=automaticStation|| (stationName.trim()?{id:'manual',name:stationName.trim(),manual:true,incident:location,searchUrl}:null);
    if(!station){setBusy('กำลังค้นหาสถานีใกล้ที่สุด');station=await stationLookup(location);setAutomaticStation(station);setStationName(station.name);}
@@ -66,7 +66,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
     coordinateError&&h('p',{role:'alert'},coordinateError),
     h(NearestStationSearch,{point:currentPoint,disabled:locked,lookup:stationLookup,onBusyChange:setStationBusy,onSelect:station=>{setAutomaticStation(station);setStationName(station?.name||'');}}),
     automaticStation&&h('p',{role:'status'},`จุดยื่นเอกสารที่เลือกอัตโนมัติ: ${automaticStation.name} · ${automaticStation.distance.toFixed(2)} กม. (ระยะเส้นตรง)`),
-    automaticStation&&h('a',{href:automaticStation.mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูสถานีที่เลือกใน Google Maps'),
+    automaticStation&&h('a',{href:automaticStation.mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูพิกัดจุดสาธิตใน Google Maps'),
     searchUrl&&h('a',{href:searchUrl,target:'_blank',rel:'noopener noreferrer'},'ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุใน Google Maps ↗'),
     mapUrl&&h('a',{href:mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูจุดเกิดเหตุใน Google Maps ↗'),
     h('small',null,'กดลิงก์เพื่อส่งเฉพาะพิกัดหรือชื่อสถานที่ไปยัง Google Maps แล้วกรอกชื่อสถานีที่เลือก ไม่ส่งคำบอกเล่าหรือหลักฐาน และผลค้นหาไม่ยืนยันเขตรับผิดชอบ'),

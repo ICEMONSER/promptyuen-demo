@@ -9,7 +9,7 @@ export function reviewedLegalDraft(draft, input) {
   if (!draft || draft.reviewed !== true || draft.source !== legalDraftSource(input)) return null;
   try {
     const { formalNarrative, knownFacts, missingQuestions } = draft;
-    return { ...validateLegalDraft({ formalNarrative, knownFacts, missingQuestions }, input), source: draft.source, reviewed: true, reviewedAt: draft.reviewedAt || null };
+    return { ...validateLegalDraft({ formalNarrative, knownFacts, missingQuestions }, input), source: draft.source, ...(draft.mode === 'local-demo' ? {mode:'local-demo'} : {}), reviewed: true, reviewedAt: draft.reviewedAt || null };
   } catch {
     return null;
   }

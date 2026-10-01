@@ -649,8 +649,8 @@ async function kg(e, t, n) {
         ...(e.evidence || []),
         {
           ...t.evidence,
-          analysis: validateAnalysis(t.evidence.analysis),
-          label: AI_LABEL,
+          analysis: t.evidence.analysis ? validateAnalysis(t.evidence.analysis) : null,
+          label: t.evidence.analysis ? AI_LABEL : "หลักฐานที่ผู้แจ้งแนบ · ยังไม่ได้วิเคราะห์",
         },
       ];
     } else if (t.action === "removeEvidence") {

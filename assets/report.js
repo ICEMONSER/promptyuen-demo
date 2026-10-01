@@ -55,7 +55,7 @@ export function renderReport(
   const point = record.location || record.station?.incident;
   const coordinates = validPoint(point) ? `<p>พิกัดจุดเกิดเหตุ: ${esc(point.lat)}, ${esc(point.lon)}</p>` : '';
   const facts = legal
-    ? `<p>${esc(legal.formalNarrative)}</p><p><small>ร่างเรียบเรียงด้วย AI จากข้อมูลผู้แจ้ง ผู้แจ้งตรวจข้อความแล้ว พนักงานสอบสวนต้องตรวจสอบข้อเท็จจริงเพิ่มเติม</small></p><h3>คำบอกเล่าต้นฉบับของผู้แจ้ง</h3><p>${field("details")}</p>${legal.missingQuestions.length ? `<h3>ประเด็นที่ยังต้องสอบถามเพิ่มเติม</h3><ol>${legal.missingQuestions.map(question=>`<li>${esc(question)}</li>`).join('')}</ol>` : ''}`
+    ? `<p>${esc(legal.formalNarrative)}</p><p><small>${legal.mode === "local-demo" ? "ร่างสาธิตเรียบเรียงด้วยแม่แบบในเครื่อง ไม่ใช่ GenAI" : "ร่างเรียบเรียงด้วย AI จากข้อมูลผู้แจ้ง"} ผู้แจ้งตรวจข้อความแล้ว พนักงานสอบสวนต้องตรวจสอบข้อเท็จจริงเพิ่มเติม</small></p><h3>คำบอกเล่าต้นฉบับของผู้แจ้ง</h3><p>${field("details")}</p>${legal.missingQuestions.length ? `<h3>ประเด็นที่ยังต้องสอบถามเพิ่มเติม</h3><ol>${legal.missingQuestions.map(question=>`<li>${esc(question)}</li>`).join('')}</ol>` : ''}`
     : `<p>${field("details")}</p>`;
   const sections = police
     ? `
