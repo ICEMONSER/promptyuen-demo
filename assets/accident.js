@@ -27,12 +27,18 @@ export function AccidentFlow({documents,onSubmit,onClose}) {
  async function submit(event){
   event.preventDefault();if(guard.current||locked)return;guard.current=true;setError('');setBusy('กำลังจัดเตรียมคำขอ');
   try {
+   if(!details.trim())throw Error('กรุณากรอกรายละเอียดเหตุการณ์');
+   if(!eventPlace.trim()&&!currentPoint)throw Error('กรุณาระบุสถานที่หรือพิกัดจุดเกิดเหตุ');
+   if(when==='past'&&(!eventDate||!Number.isFinite(parsedDate.getTime())||parsedDate>new Date()))throw Error('กรุณาระบุวันเวลาเกิดเหตุย้อนหลังให้ถูกต้อง');
+   const missingDocs=checklist('accident',documents,documentIds).filter(d=>d.required&&!d.selected);
+   if(missingDocs.length)throw Error('กรุณาแนบและตรวจยืนยันเอกสาร: '+missingDocs.map(d=>DOCUMENT_LABELS[d.type]).join(' · '));
+   if(!evidence.length)throw Error('กรุณาแนบภาพหรือวิดีโอหลักฐานอย่างน้อย 1 ไฟล์');
    if(coordinateError)throw Error(coordinateError);
    const reviewed=reviewedLegalDraft(legalDraft,draftInput);
    if(legalDraft&&!reviewed)throw Error('กรุณาตรวจและยืนยันร่างสำนวนก่อนบันทึก หรือยกเลิกร่าง AI เพื่อใช้คำบอกเล่าเดิม');
    const location=currentPoint?{...currentPoint,source:point?'geolocation':'coordinates'}:null;
    const station=stationName.trim()?{id:'manual',name:stationName.trim(),manual:true,incident:location,searchUrl}:null;
-   await onSubmit({when,details,eventDate,eventPlace,evidence,point:location,station,documentIds,legalDraft:reviewed,incidentAt:incidentNow.toISOString()});
+   await onSubmit({when,details,eventDate,eventPlace:eventPlace.trim()||`พิกัด ${currentPoint.lat}, ${currentPoint.lon}`,evidence,point:location,station,documentIds,legalDraft:reviewed,incidentAt:incidentNow.toISOString()});
   }catch(e){setError(e.message);}finally{guard.current=false;setBusy('');}
  }
  const missing=!documents.some(d=>d.kind==='identity'&&d.verified);
@@ -40,7 +46,7 @@ export function AccidentFlow({documents,onSubmit,onClose}) {
   h('button',{className:'text-action',onClick:onClose,disabled:locked},'← กลับหน้าหลัก'),
   h('span',{className:'login-step'},'แจ้งเหตุให้น้อยขั้นตอนที่สุด'),h('h1',null,'อุบัติเหตุทางรถ'),h('p',null,'เล่าเหตุการณ์ แนบหลักฐาน แล้วรับเอกสารสรุปได้ทันที'),
   h('p',{className:'quick-notice'},'ต้นแบบไม่ใช่ช่องทางฉุกเฉินและยังไม่ส่งถึงตำรวจ หากมีอันตรายเร่งด่วน โทร 191 หรือ 1669'),
-  h('form',{onSubmit:submit},
+  h('form',{onSubmit:submit,noValidate:true},
    h('fieldset',{disabled:locked,className:'when-picker'},h('legend',null,'เหตุเกิดเมื่อไร'),...['now','past'].map(v=>h('label',{key:v,className:when===v?'selected':''},h('input',{type:'radio',name:'incident-when',value:v,checked:when===v,onChange:()=>{setWhen(v);setPoint(null);setLatitude('');setLongitude('');setStationName('');setPlace('');setIncidentNow(new Date());setError('');}}),v==='now'?'เกิดเหตุตอนนี้':'แจ้งย้อนหลัง'))),
    when==='now'?h('div',{className:'location-note'},h('strong',null,'วันเวลาเกิดเหตุ: '+bangkokDateTime(incidentNow)),h('p',null,'ใช้ตำแหน่งนี้เฉพาะเมื่อคุณอยู่ ณ จุดเกิดเหตุ'),h('button',{type:'button',disabled:locked,onClick:locate},point?'อัปเดตตำแหน่งจุดเกิดเหตุ':'ใช้ตำแหน่งปัจจุบัน'),h('small',null,'เบราว์เซอร์จะขออนุญาต ไม่ใช้ IP ระบุจุดเกิดเหตุ')):h('label',null,'วันและเวลาเกิดเหตุ',h('input',{type:'datetime-local',required:true,value:eventDate,disabled:locked,onChange:e=>setDate(e.target.value)})),
    h('label',null,when==='now'?'จุดเกิดเหตุ (เติมจากตำแหน่ง หรือพิมพ์เองเมื่อใช้ตำแหน่งไม่ได้)':'สถานที่เกิดเหตุ',h('input',{required:true,value:eventPlace,maxLength:500,disabled:locked,placeholder:'ชื่อสถานที่ พร้อมเขต / อำเภอและจังหวัด',onChange:e=>{setPlace(e.target.value);setPoint(null);setLatitude('');setLongitude('');setStationName('');}})),
@@ -63,8 +69,9 @@ export function AccidentFlow({documents,onSubmit,onClose}) {
    requiredMissing&&h('p',{className:'quick-notice'},'เพิ่มเอกสารจำเป็นทั้ง 3 รายการในคลังเอกสารและตรวจยืนยันก่อนส่งคำขอ กรมธรรม์ประกันภัยไม่บังคับ'),
    h('p',{className:'small-note'},missing?'ยังไม่มีข้อมูลบัตรที่ยืนยันแล้ว ระบบจะไม่แต่งข้อมูลผู้แจ้ง กรุณาเพิ่มบัตรในคลังและตรวจยืนยันก่อนส่ง':'ใช้ข้อมูลบัตรที่คุณยืนยันแล้วโดยอัตโนมัติ ไม่ต้องกรอกซ้ำ'),
    h('p',{className:'small-note'},'ตรวจข้อความสำนวนด้านบนก่อนบันทึก ใบสรุปจะใช้ร่างที่คุณยืนยัน พร้อมคำบอกเล่าเดิมและข้อมูลที่ยังขาด บันทึกในเครื่อง ยังไม่ส่งให้หน่วยงานจริง'),
-   error&&h('p',{role:'alert',className:'quick-error'},error),
-   h('button',{className:'quick-submit',type:'submit',disabled:locked||!evidence.length||requiredMissing},busy||'ส่งคำขอจำลองและสร้างเอกสาร →')));
+   !evidence.length&&h('p',{className:'small-note'},'ก่อนส่ง: แนบภาพหรือวิดีโอหลักฐานอย่างน้อย 1 ไฟล์'),
+   error&&h('p',{role:'alert',className:'quick-error',tabIndex:-1,ref:node=>node?.focus()},error),
+   h('button',{className:'quick-submit',type:'submit',disabled:locked},busy||'ส่งคำขอจำลองและสร้างเอกสาร →')));
 }
 export function CaseTracking({record,onPrint,onClose}) {
  return h('div',{className:'tracking-backdrop'},h('section',{className:'tracking-card',role:'dialog','aria-modal':true,'aria-label':'ติดตามคำขอ'},
