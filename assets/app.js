@@ -1,3 +1,6 @@
+import { LegalDraftPanel } from './legal-draft.js';
+import { legalInputFromRecord, reviewedLegalDraft } from './legal-review.js';
+import { legalDraftSource } from './reasoning.js';
 import { EvidencePanel } from "./evidence.js";
 import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
@@ -604,6 +607,7 @@ async function kg(e, t, n) {
     if (e.status !== `draft`) throw Error(`คำขอนี้ส่งแบบจำลองแล้ว`);
     if (e.revision !== t.revision) throw Error(`กรุณาโหลดใหม่ มีการแก้ไขคำขอ`);
     let r = _g[e.service];
+    const oldLegalSource = legalDraftSource(legalInputFromRecord(e));
     if (t.action === "edit" && Array.isArray(t.documentIds)) {
       const documents = t.documentIds.map((id) =>
         i.documents.find((doc) => doc.id === id),
@@ -626,7 +630,7 @@ async function kg(e, t, n) {
       }
       e.documentIds = t.documentIds;
     }
-    if (t.action === "edit" && t.station) e.station = t.station;
+    if (t.action === "edit" && Object.hasOwn(t, "station")) e.station = t.station || null;
     if (t.action === `edit`)
       for (let [n, i] of Object.entries(t.fields || {}))
         [...r.required, ...r.optional].includes(n) &&
@@ -684,6 +688,13 @@ async function kg(e, t, n) {
         (e.reference =
           `DEMO-` + crypto.randomUUID().slice(0, 8).toUpperCase()));
     } else throw Error(`รายการไม่ถูกต้อง`);
+    if (t.action === 'edit' && Object.hasOwn(t, 'legalDraft')) {
+      const draft = reviewedLegalDraft(t.legalDraft, legalInputFromRecord(e));
+      if (t.legalDraft && !draft) throw Error('กรุณาตรวจยืนยันสำนวนให้ตรงกับข้อมูลล่าสุดก่อนบันทึก');
+      e.legalDraft = draft;
+    } else if (oldLegalSource !== legalDraftSource(legalInputFromRecord(e))) {
+      e.legalDraft = null;
+    }
     return (
       e.revision++,
       (e.updatedAt = new Date().toISOString()),
@@ -872,6 +883,8 @@ function Vg() {
   const [entered, setEntered] = D.useState(false);
   const [stationChoice, setStationChoice] = D.useState(null);
   const [stationRequest, setStationRequest] = D.useState(0);
+  const [legalChoice, setLegalChoice] = D.useState(null);
+  const [legalBusy, setLegalBusy] = D.useState(false);
   let [e, t] = (0, D.useState)(`chat`),
     [n, r] = (0, D.useState)(null),
     [i, a] = (0, D.useState)(``),
@@ -972,6 +985,7 @@ function Vg() {
     if(e.status==='simulated'){setTracking(e);return;}
     setCaseDocumentIds(e.documentIds || []);
     setStationChoice(e.station || null);
+    setLegalChoice(e.legalDraft || null);
     setStationRequest(0);
     (m(e),
       ke(
@@ -986,6 +1000,7 @@ function Vg() {
     if(e==='accident'){setQuickAccident(true);return;}
     g(selectDocuments(e, n?.documents || []));
     setStationChoice(null);
+    setLegalChoice(null);
     setStationRequest(0);
     (pe(e), he(t), Te(!1));
   }
@@ -1138,6 +1153,7 @@ function Vg() {
       }));
   }
   async function Je() {
+    if (legalBusy) return;
     p &&
       (await Ie(`draft`, async () => {
         (m(
@@ -1150,6 +1166,7 @@ function Vg() {
                 action: `edit`,
                 fields: Oe,
                 station: stationChoice,
+                legalDraft: legalChoice,
                 documentIds: caseDocumentIds,
               },
               `PATCH`,
@@ -1162,6 +1179,7 @@ function Vg() {
       }));
   }
   async function Ye() {
+    if (legalBusy) return;
     if (p && ["police", "accident"].includes(p.service) && !stationChoice) {
       setStationRequest((value) => value + 1);
       Zh.info("กรุณาตรวจจุดเกิดเหตุและเลือกสถานี แล้วกดยืนยันอีกครั้ง");
@@ -1178,6 +1196,7 @@ function Vg() {
             action: `edit`,
             fields: Oe,
             station: stationChoice,
+            legalDraft: legalChoice,
             documentIds: caseDocumentIds,
           },
           `PATCH`,
@@ -2664,6 +2683,14 @@ function Vg() {
                       ),
                     ),
                   }),
+                  ["police", "accident"].includes(p.service) && D.createElement(LegalDraftPanel, {
+                    key: 'legal-' + p.id,
+                    input: Oe,
+                    value: legalChoice,
+                    onChange: (draft) => { setLegalChoice(draft); je(false); },
+                    disabled: p.status !== 'draft' || !!c,
+                    onBusyChange: setLegalBusy,
+                  }),
                   (0, B.jsx)(`p`, {
                     className: `small-note`,
                     children: $e.note,
@@ -2699,7 +2726,7 @@ function Vg() {
                           (0, B.jsx)(Om, {
                             variant: `outline`,
                             className: `full-button`,
-                            disabled: nt,
+                            disabled: nt || legalBusy,
                             onClick: Je,
                             children: `บันทึกร่าง`,
                           }),
@@ -2746,6 +2773,7 @@ function Vg() {
                             (0, B.jsx)(StationPicker, {
                               key: p.id,
                               initial: p.station,
+                              place: Oe.eventPlace || "",
                               request: stationRequest,
                               onSelect: setStationChoice,
                             }),
@@ -2759,7 +2787,7 @@ function Vg() {
                             className: `full-button`,
                             disabled:
                               !Ae ||
-                              nt ||
+                              nt || legalBusy ||
                               $e.required.some((e) => !Oe[e]?.trim()),
                             onClick: Ye,
                             children: [

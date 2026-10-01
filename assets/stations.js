@@ -1,212 +1,147 @@
 import { D as React } from "./shared-ui.js";
+import { validPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl } from "./station-core.js";
 const h = React.createElement;
-import { validPoint, nearestStations, findDistrict } from "./station-core.js";
-export function StationPicker({ initial, onSelect, request = 0 }) {
-  const [lat, setLat] = React.useState(initial?.incident?.lat ?? "");
-  const [lon, setLon] = React.useState(initial?.incident?.lon ?? "");
-  const [province, setProvince] = React.useState("");
-  const [district, setDistrict] = React.useState("");
-  const [places, setPlaces] = React.useState([]);
-  const [stations, setStations] = React.useState([]);
-  const [selected, setSelected] = React.useState(initial?.id || "");
-  const [manual, setManual] = React.useState(
-    initial?.manual ? initial.name : "",
+
+export function StationPicker({ initial, onSelect, request = 0, place: suppliedPlace = "" }) {
+  const [coordinates, setCoordinates] = React.useState(
+    validPoint(initial?.incident)
+      ? `${initial.incident.lat}, ${initial.incident.lon}`
+      : "",
   );
+  const [placeOverride, setPlace] = React.useState(initial?.incident?.place ?? null);
+  const place = placeOverride ?? suppliedPlace;
+  const [manual, setManual] = React.useState(initial?.name || "");
+  const [selected, setSelected] = React.useState(Boolean(initial?.name));
+  const [source, setSource] = React.useState(initial?.incident?.source || "coordinates");
   const [error, setError] = React.useState("");
+  const [notice, setNotice] = React.useState("");
   const [busy, setBusy] = React.useState(false);
-  const [source, setSource] = React.useState(
-    initial?.incident?.source || "coordinates",
-  );
-  const invalidate = () => {
-    setStations([]);
-    setSelected("");
-    onSelect(null);
-  };
-  const locate = () => {
-    invalidate();
+  const locationVersion = React.useRef(0);
+  const previousPlace = React.useRef(suppliedPlace);
+
+  function invalidate() {
+    locationVersion.current += 1;
+    setSelected(false);
     setError("");
+    setNotice("");
+    onSelect(null);
+  }
+
+  React.useEffect(() => {
+    if (request) {
+      setNotice("ระบุจุดเกิดเหตุด้านล่าง แล้วเปิด Google Maps เพื่อค้นหาสถานีตำรวจ");
+    }
+  }, [request]);
+
+  React.useEffect(() => {
+    if (previousPlace.current !== suppliedPlace && placeOverride === null) invalidate();
+    previousPlace.current = suppliedPlace;
+  }, [suppliedPlace, placeOverride]);
+
+  function locate() {
+    invalidate();
     if (!navigator.geolocation) {
-      setError("เบราว์เซอร์ไม่รองรับตำแหน่ง กรุณาระบุจังหวัดและอำเภอ");
+      setError("เบราว์เซอร์ไม่รองรับตำแหน่ง กรุณาระบุพิกัดหรือชื่อสถานที่เกิดเหตุ");
       return;
     }
+    const version = locationVersion.current;
     setBusy(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLat(pos.coords.latitude.toFixed(6));
-        setLon(pos.coords.longitude.toFixed(6));
-        setSource("geolocation");
+      (position) => {
         setBusy(false);
-        setError("กรุณาตรวจว่าพิกัดนี้คือจุดเกิดเหตุ ก่อนค้นหาสถานี");
+        if (locationVersion.current !== version) return;
+        setCoordinates(`${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`);
+        setSource("geolocation");
+        setNotice("โปรดตรวจว่าตำแหน่งปัจจุบันนี้ตรงกับจุดเกิดเหตุ ก่อนเปิดแผนที่");
       },
       () => {
         setBusy(false);
-        setError("ไม่สามารถใช้ตำแหน่งได้ กรุณาระบุจังหวัดและอำเภอหรือพิกัดเอง");
+        if (locationVersion.current !== version) return;
+        setError("ไม่สามารถใช้ตำแหน่งได้ กรุณาระบุพิกัดหรือชื่อสถานที่เกิดเหตุ");
       },
       { timeout: 12000, maximumAge: 0, enableHighAccuracy: true },
     );
-  };
-  React.useEffect(() => {
-    if (request) locate();
-  }, [request]);
-  async function run(task) {
-    setBusy(true);
-    setError("");
-    try {
-      await task();
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setBusy(false);
+  }
+
+  let point = null;
+  let searchUrl = "";
+  let pointUrl = "";
+  let locationError = "";
+  try {
+    if (coordinates.trim()) {
+      point = parseCoordinateText(coordinates);
+      if (!point) throw new Error("กรุณาวางพิกัดเป็นละติจูด, ลองจิจูด หรือกรอกชื่อสถานที่ในช่องด้านล่าง");
     }
+    if (point || place.trim()) {
+      searchUrl = policeSearchUrl(point, place);
+      pointUrl = incidentMapUrl(point, place);
+    }
+  } catch (problem) {
+    locationError = problem.message;
   }
-  function choose(station, point) {
-    setSelected(station.id);
-    onSelect({ ...station, incident: point });
+
+  function confirmStation() {
+    if (locationError) {
+      setError(locationError);
+      return;
+    }
+    if (!manual.trim()) return;
+    const incident = point
+      ? { ...point, source, ...(place.trim() ? { place: place.trim() } : {}) }
+      : place.trim() ? { place: place.trim(), source: "place" } : null;
+    onSelect({ id: "manual", name: manual.trim(), manual: true, incident });
+    setSelected(true);
+    setNotice("");
+    setError("");
   }
-  const input = (label, value, setter) =>
-    h(
-      "label",
-      { className: "assistant-field" },
-      label,
+
+  const input = (label, value, setter, options = {}) =>
+    h("label", { className: "assistant-field" }, label,
       h("input", {
         value,
+        maxLength: 200,
+        ...options,
         onChange: (event) => {
-          setter(event.target.value);
           invalidate();
+          setter(event.target.value);
         },
-        maxLength: 100,
       }),
     );
-  return h(
-    "section",
-    { className: "assistant-panel", "aria-label": "สถานีตำรวจใกล้จุดเกิดเหตุ" },
+
+  return h("section", { className: "assistant-panel", "aria-label": "สถานีตำรวจใกล้จุดเกิดเหตุ" },
     h("h3", null, "สถานีตำรวจใกล้จุดเกิดเหตุ"),
-    h(
-      "p",
-      { className: "small-note" },
-      "ตรวจจุดเกิดเหตุก่อนค้นหา ส่งเฉพาะพิกัดหรือชื่อจังหวัดและอำเภอไปยังโอเพนสตรีตแมป ระยะทางเป็นเส้นตรง ไม่ได้ยืนยันเขตรับผิดชอบ",
+    h("p", { className: "small-note" },
+      "ระบุจุดเกิดเหตุแล้วเปิด Google Maps เพื่อค้นหาสถานีตำรวจ ระบบส่งเฉพาะพิกัดหรือชื่อสถานที่เมื่อคุณกดลิงก์ สถานีใกล้จุดเกิดเหตุอาจไม่ใช่สถานีในเขตรับผิดชอบ",
     ),
-    h(
-      "button",
-      { type: "button", disabled: busy, onClick: locate },
+    input("ละติจูด, ลองจิจูดของจุดเกิดเหตุ", coordinates, (value) => {
+      setCoordinates(value);
+      setSource("coordinates");
+    }, { placeholder: "13.756300, 100.501800", maxLength: 100, autoComplete: "off" }),
+    h("p", { className: "small-note" }, "วางพิกัดที่คัดลอกจาก Google Maps โดยเรียงละติจูดก่อนลองจิจูด"),
+    input("ชื่อสถานที่เกิดเหตุ พร้อมเขต / อำเภอและจังหวัด (ใช้ค้นหาเมื่อไม่มีพิกัด)", place, setPlace),
+    h("button", { type: "button", disabled: busy, onClick: locate },
       "ใช้ตำแหน่งปัจจุบันเป็นจุดเกิดเหตุ",
     ),
-    h(
-      "div",
-      { className: "assistant-grid" },
-      input("ละติจูด", lat, (v) => {
-        setLat(v);
-        setSource("coordinates");
-      }),
-      input("ลองจิจูด", lon, (v) => {
-        setLon(v);
-        setSource("coordinates");
-      }),
-    ),
-    h(
-      "button",
-      {
-        type: "button",
-        disabled: busy || lat === "" || lon === "",
-        onClick: () =>
-          run(async () => {
-            invalidate();
-            const point = { lat: Number(lat), lon: Number(lon), source };
-            const result = await nearestStations(point);
-            setStations(result);
-            choose(result[0], point);
-          }),
-      },
-      "ยืนยันจุดเกิดเหตุและค้นหาสถานี",
-    ),
-    h(
-      "div",
-      { className: "assistant-grid" },
-      input("จังหวัด", province, setProvince),
-      input("เขต / อำเภอ", district, setDistrict),
-    ),
-    h(
-      "button",
-      {
-        type: "button",
-        disabled: busy,
-        onClick: () =>
-          run(async () => {
-            invalidate();
-            setPlaces(await findDistrict(province, district));
-          }),
-      },
-      "ค้นหาพื้นที่จากจังหวัดและอำเภอ",
-    ),
-    places.length > 0 &&
-      h(
-        "label",
-        { className: "assistant-field" },
-        "เลือกพื้นที่โดยประมาณ แล้วตรวจพิกัดก่อนค้นหาสถานี",
-        h(
-          "select",
-          {
-            defaultValue: "",
-            onChange: (event) => {
-              const place = places[Number(event.target.value)];
-              setLat(place.lat);
-              setLon(place.lon);
-              setSource("district");
-              invalidate();
-            },
-          },
-          h("option", { value: "", disabled: true }, "เลือกพื้นที่"),
-          ...places.map((place, index) =>
-            h("option", { key: index, value: index }, place.name),
-          ),
-        ),
+    busy && h("p", { role: "status" }, "กำลังขอตำแหน่งปัจจุบัน…"),
+    (error || locationError) && h("p", { role: "alert" }, error || locationError),
+    notice && h("p", { role: "status" }, notice),
+    searchUrl && h("div", { className: "assistant-grid" },
+      h("a", { href: searchUrl, target: "_blank", rel: "noopener noreferrer" },
+        "ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุใน Google Maps",
       ),
-    busy && h("p", { role: "status" }, "กำลังค้นหา…"),
-    error && h("p", { role: "status" }, error),
-    ...stations.map((station) =>
-      h(
-        "div",
-        { key: station.id, className: "station-option" },
-        h(
-          "label",
-          null,
-          h("input", {
-            type: "radio",
-            name: "police-station",
-            checked: selected === station.id,
-            onChange: () =>
-              choose(station, { lat: Number(lat), lon: Number(lon), source }),
-          }),
-          station.name,
-          ` · ${station.distance.toFixed(2)} กม.`,
-        ),
-        h(
-          "a",
-          { href: station.mapUrl, target: "_blank", rel: "noreferrer" },
-          "ดูแผนที่",
-        ),
+      h("a", { href: pointUrl, target: "_blank", rel: "noopener noreferrer" },
+        "ตรวจจุดเกิดเหตุบน Google Maps",
       ),
     ),
-    input("หรือระบุชื่อสถานีที่ต้องการติดต่อเอง", manual, setManual),
-    h(
-      "button",
-      {
-        type: "button",
-        disabled: busy || !manual.trim(),
-        onClick: () =>
-          choose(
-            { id: "manual", name: manual.trim(), manual: true },
-            lat !== "" &&
-              lon !== "" &&
-              validPoint({ lat: Number(lat), lon: Number(lon) })
-              ? { lat: Number(lat), lon: Number(lon), source }
-              : null,
-          ),
-      },
-      "เลือกสถานีที่ระบุเอง",
+    h("p", { className: "small-note" },
+      "เมื่อดูผลค้นหาใน Google Maps แล้ว ให้กรอกชื่อสถานีที่ต้องการติดต่อและยืนยันด้านล่าง",
     ),
-    selected &&
-      h("p", { role: "status" }, "เลือกสถานีแล้ว สามารถเปลี่ยนก่อนยืนยันได้"),
-    h("small", null, "ข้อมูลแผนที่ © ผู้ร่วมสร้างโอเพนสตรีตแมป"),
+    input("ชื่อสถานีตำรวจที่ต้องการติดต่อ", manual, setManual),
+    h("button", {
+      type: "button",
+      disabled: busy || !manual.trim() || Boolean(locationError),
+      onClick: confirmStation,
+    }, "ยืนยันสถานีที่ระบุ"),
+    selected && h("p", { role: "status" }, `เลือก ${manual.trim()} แล้ว สามารถแก้ไขก่อนยืนยันได้`),
   );
 }

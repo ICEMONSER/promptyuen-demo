@@ -7,7 +7,7 @@ import {
   saveAISettings,
 } from "./vision.js";
 const h = React.createElement;
-export function AISettings() {
+export function AISettings({ onSaved } = {}) {
   const [settings, setSettings] = React.useState(() => ({
     ...getAISettings(),
     model: getAISettings().model || "gpt-4.1-mini",
@@ -30,13 +30,13 @@ export function AISettings() {
   return h(
     "section",
     { className: "assistant-panel" },
-    h("h3", null, "ตั้งค่า AI วิเคราะห์ภาพ"),
+    h("h3", null, "ตั้งค่า AI เรียบเรียงสำนวนและวิเคราะห์ภาพ"),
     h(
       "p",
       { className: "small-note" },
-      "ใช้บริการที่รองรับคำขอวิเคราะห์ภาพรูปแบบโอเพนเอไอและอนุญาตให้เว็บนี้เชื่อมต่อ รหัสเก็บเฉพาะเซสชัน ไม่รวมในเอกสารหรือไฟล์ส่งออก",
+      "ใช้บริการที่รองรับคำขอข้อความหรือภาพรูปแบบโอเพนเอไอและอนุญาตให้เว็บนี้เชื่อมต่อ รหัสเก็บเฉพาะเซสชัน ไม่รวมในเอกสารหรือไฟล์ส่งออก",
     ),
-    field("endpoint", "ที่อยู่บริการวิเคราะห์ภาพ", "url"),
+    field("endpoint", "ที่อยู่บริการ AI", "url"),
     field("key", "รหัสเข้าใช้งาน", "password"),
     field("model", "ชื่อรุ่นโมเดล"),
     h(
@@ -46,6 +46,7 @@ export function AISettings() {
         onClick: () => {
           try {
             saveAISettings(settings);
+            onSaved?.();
             setMessage("บันทึกการตั้งค่าสำหรับเซสชันนี้แล้ว");
           } catch (error) {
             setMessage(error.message);
@@ -60,6 +61,7 @@ export function AISettings() {
         type: "button",
         onClick: () => {
           saveAISettings({});
+          onSaved?.();
           setSettings({ endpoint: "", key: "", model: "gpt-4.1-mini" });
           setMessage("ลบการตั้งค่า AI แล้ว");
         },

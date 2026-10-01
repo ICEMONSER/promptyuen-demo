@@ -1,117 +1,74 @@
-export function haversine(a, b) {
-  const rad = (n) => (n * Math.PI) / 180;
-  const x =
-    Math.sin(rad(b.lat - a.lat) / 2) ** 2 +
-    Math.cos(rad(a.lat)) *
-      Math.cos(rad(b.lat)) *
-      Math.sin(rad(b.lon - a.lon) / 2) ** 2;
-  return (
-    6371 *
-    2 *
-    Math.atan2(Math.sqrt(Math.min(1, x)), Math.sqrt(Math.max(0, 1 - x)))
-  );
-}
-export function validPoint(point) {
-  return (
-    point &&
-    Number.isFinite(point.lat) &&
-    Number.isFinite(point.lon) &&
-    Math.abs(point.lat) <= 90 &&
-    Math.abs(point.lon) <= 180
-  );
-}
-export function rankStations(elements, point) {
-  const seen = new Set();
-  return elements
-    .flatMap((item) => {
-      const loc = {
-        lat: item.lat ?? item.center?.lat,
-        lon: item.lon ?? item.center?.lon,
-      };
-      if (!validPoint(loc)) return [];
-      const name =
-        item.tags?.["name:th"] ||
-        (/[ก-๙]/.test(item.tags?.name || "") ? item.tags.name : "สถานีตำรวจ");
-      const key = `${name}:${loc.lat.toFixed(4)}:${loc.lon.toFixed(4)}`;
-      if (seen.has(key)) return [];
-      seen.add(key);
-      return [
-        {
-          id: `${item.type}/${item.id}`,
-          name,
-          ...loc,
-          distance: haversine(point, loc),
-          mapUrl: `https://www.openstreetmap.org/?mlat=${loc.lat}&mlon=${loc.lon}#map=16/${loc.lat}/${loc.lon}`,
-        },
-      ];
-    })
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 3);
-}
-// Cache only public map results in memory. No case details are sent to the map service.
-const mapCache = new Map();
-const OVERPASS = "https://overpass.private.coffee/api/interpreter";
-async function queryMap(query) {
-  const cached = mapCache.get(query);
-  if (cached && Date.now() - cached.time < 300000) return cached.value;
-  try {
-    const response = await fetch(OVERPASS, {
-      method: "POST",
-      body: new URLSearchParams({ data: query }),
-      credentials: "omit",
-      referrerPolicy: "origin",
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!response.ok) throw new Error();
-    const data = await response.json();
-    if (data.remark || !Array.isArray(data.elements)) throw new Error();
-    if (mapCache.size >= 30) mapCache.delete(mapCache.keys().next().value);
-    mapCache.set(query, { time: Date.now(), value: data });
-    return data;
-  } catch {
-    throw new Error("ค้นหาสถานีไม่สำเร็จ กรุณาลองใหม่หรือระบุสถานีด้วยตนเอง");
+const COORDINATE_ERROR = "กรุณาระบุละติจูดและลองจิจูดของจุดเกิดเหตุให้ถูกต้อง";
+const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
+
+function coordinate(value) {
+  if (typeof value === "number") return value;
+  if (typeof value !== "string" || !DECIMAL.test(value.trim())) {
+    throw new Error(COORDINATE_ERROR);
   }
+  return Number(value.trim());
 }
-export async function nearestStations(point) {
-  if (!validPoint(point)) throw new Error("กรุณาตรวจละติจูดและลองจิจูด");
-  const query = `[out:json][timeout:20];nwr["amenity"="police"](around:50000,${point.lat},${point.lon});out center tags;`;
-  const data = await queryMap(query);
-  const stations = rankStations(data.elements || [], point);
-  if (!stations.length)
-    throw new Error("ไม่พบสถานีในระยะ 50 กิโลเมตร กรุณาระบุสถานีด้วยตนเอง");
-  return stations;
+
+export function validPoint(point) {
+  return Boolean(
+    point &&
+      typeof point === "object" &&
+      Number.isFinite(point.lat) &&
+      Number.isFinite(point.lon) &&
+      Math.abs(point.lat) <= 90 &&
+      Math.abs(point.lon) <= 180,
+  );
 }
-export async function findIncidentPlace(name) {
-  const value=String(name||'').trim();
-  if(value.length<3||value.length>500)throw Error('ระบุชื่อสถานที่ให้ชัดเจน');
-  // Only a place name is queried; never send incident narrative or evidence.
-  const query=`[out:json][timeout:20];nwr["name"=${JSON.stringify(value)}](5.5,97,21,106);out center 5;`;
-  const data=await queryMap(query);
-  const points=data.elements.map(e=>({lat:e.lat??e.center?.lat,lon:e.lon??e.center?.lon})).filter(validPoint);
-  if(points.length!==1)throw Error('ไม่พบสถานที่ที่ชัดเจนเพียงแห่งเดียว');
-  return points[0];
+
+export function parseIncidentPoint(lat, lon) {
+  const point = { lat: coordinate(lat), lon: coordinate(lon) };
+  if (!validPoint(point)) throw new Error(COORDINATE_ERROR);
+  return point;
 }
-export async function findDistrict(province, district) {
-  if (!province.trim() || !district.trim())
-    throw new Error("กรุณาระบุจังหวัดและเขตหรืออำเภอ");
-  const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const provinceName = province.trim().replace(/^(จังหวัด|จ\.)\s*/, "");
-  const districtName = district.trim().replace(/^(อำเภอ|เขต|อ\.)\s*/, "");
-  const query = `[out:json][timeout:25];area["boundary"="administrative"]["admin_level"="4"]["name"~${JSON.stringify(escapeRegex(provinceName) + "$")}]->.province;relation(area.province)["boundary"="administrative"]["admin_level"="6"]["name"~${JSON.stringify(escapeRegex(districtName) + "$")}];out center tags;`;
-  const data = await queryMap(query);
-  const places = data.elements
-    .map((item) => ({
-      lat: item.center?.lat,
-      lon: item.center?.lon,
-      name:
-        item.tags?.["name:th"] ||
-        item.tags?.name ||
-        `${districtName} ${provinceName}`,
-    }))
-    .filter(validPoint);
-  if (!places.length)
-    throw new Error(
-      "ไม่พบพื้นที่ กรุณาตรวจชื่อจังหวัดและเขตหรืออำเภอ หรือระบุพิกัดเอง",
-    );
-  return places;
+
+// Google Maps copies decimal coordinates in latitude, longitude order.
+export function parseCoordinateText(text) {
+  if (typeof text !== "string") throw new Error(COORDINATE_ERROR);
+  let value = text.trim();
+  if (!value) return null;
+  const numericPair = /^[\d+\-.,()\s]+$/.test(value) ||
+    /^\(?\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)\s*,/.test(value) ||
+    /,\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)\s*\)?$/.test(value);
+  if (!numericPair) return null;
+  if (value.startsWith("(") && value.endsWith(")")) {
+    value = value.slice(1, -1).trim();
+  }
+  const parts = value.includes(",") ? value.split(",") : value.split(/\s+/);
+  if (parts.length !== 2) throw new Error(COORDINATE_ERROR);
+  return parseIncidentPoint(parts[0], parts[1]);
+}
+
+function locationQuery(point, place) {
+  // A supplied but invalid point must never silently become a place-only search.
+  if (point !== null && point !== undefined) {
+    if (!validPoint(point)) throw new Error(COORDINATE_ERROR);
+    return `${point.lat},${point.lon}`;
+  }
+  if (typeof place !== "string" || !place.trim()) {
+    throw new Error("กรุณาระบุพิกัดหรือชื่อสถานที่เกิดเหตุให้ชัดเจน");
+  }
+  return place.trim();
+}
+
+function mapsUrl(query) {
+  const url = new URL("https://www.google.com/maps/search/");
+  url.searchParams.set("api", "1");
+  url.searchParams.set("query", query);
+  if (url.href.length > 2048) {
+    throw new Error("ชื่อสถานที่ยาวเกินไป กรุณาระบุชื่อสถานที่ให้กระชับหรือใช้พิกัด");
+  }
+  return url.href;
+}
+
+export function policeSearchUrl(point, place = "") {
+  return mapsUrl(`สถานีตำรวจ ใกล้ ${locationQuery(point, place)}`);
+}
+
+export function incidentMapUrl(point, place = "") {
+  return mapsUrl(locationQuery(point, place));
 }
