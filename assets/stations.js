@@ -1,3 +1,4 @@
+import {NearestStationSearch} from './nearest-station-ui.js';
 import { D as React } from "./shared-ui.js";
 import { validPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl } from "./station-core.js";
 const h = React.createElement;
@@ -34,7 +35,7 @@ export function StationPicker({ initial, onSelect, request = 0, place: suppliedP
   }, [request]);
 
   React.useEffect(() => {
-    if (previousPlace.current !== suppliedPlace && placeOverride === null) invalidate();
+    if (previousPlace.current !== suppliedPlace && placeOverride === null) { setCoordinates(''); invalidate(); }
     previousPlace.current = suppliedPlace;
   }, [suppliedPlace, placeOverride]);
 
@@ -125,6 +126,10 @@ export function StationPicker({ initial, onSelect, request = 0, place: suppliedP
     busy && h("p", { role: "status" }, "กำลังขอตำแหน่งปัจจุบัน…"),
     (error || locationError) && h("p", { role: "alert" }, error || locationError),
     notice && h("p", { role: "status" }, notice),
+    h(NearestStationSearch, {point, disabled: busy, onSelect: station => {
+      invalidate();
+      if (station) { setManual(station.name); setSelected(true); onSelect(station); setNotice(`เลือกสถานีใกล้ที่สุดเป็นจุดยื่นเอกสารแล้ว · ${station.distance.toFixed(2)} กม. (ระยะเส้นตรง)`); }
+    }}),
     searchUrl && h("div", { className: "assistant-grid" },
       h("a", { href: searchUrl, target: "_blank", rel: "noopener noreferrer" },
         "ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุใน Google Maps",

@@ -5,7 +5,7 @@ import {renderReport} from '../assets/report.js';
 import {legalDraftSource} from '../assets/reasoning.js';
 import {legalInputFromRecord,reviewedLegalDraft} from '../assets/legal-review.js';
 const now=new Date('2026-10-01T10:00:00Z');
-const input={when:'now',details:'ข้อมูลทดสอบการชน',eventPlace:'สถานที่ทดสอบ',evidence:[{name:'test.jpg',mime:'image/jpeg',image:'data:image/jpeg;base64,YQ=='}]};
+const input={station:{id:'test-station',name:'สถานีทดสอบ',manual:true},when:'now',details:'ข้อมูลทดสอบการชน',eventPlace:'สถานที่ทดสอบ',evidence:[{name:'test.jpg',mime:'image/jpeg',image:'data:image/jpeg;base64,YQ=='}]};
 const reviewedDocuments=()=>[
   {id:'identity',kind:'identity',verified:true,name:'บัตรตัวอย่าง',fields:{fullName:'นาย ทดสอบ ระบบ',phone:'unneeded'}},
   {id:'license',kind:'license',verified:true,name:'ใบขับขี่ตัวอย่าง',fields:{licenseNumber:'TEST-LICENSE'}},
@@ -115,3 +115,5 @@ test('report escapes AI narrative and missing questions as text',()=>{
   assert.ok(!html.includes('<img src=x'));
   assert.ok(!html.includes('<script>'));
 });
+
+test('submission requires destination and retains retrieved station',()=>{assert.throws(()=>makeAccident({...input,station:null},reviewedDocuments(),now),/สถานีตำรวจ/);const station={id:'google-test',name:'สถานีผลค้นหา',provider:'google',distance:0.2,incident:{lat:13,lon:100}};const r=makeAccident({...input,station},reviewedDocuments(),now);assert.equal(r.station.id,'google-test');assert.ok(renderReport(r,{label:'ทดสอบ',short:'ทดสอบ'},{}).includes('เรียน สถานีผลค้นหา'));});

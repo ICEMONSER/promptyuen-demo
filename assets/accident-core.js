@@ -33,6 +33,7 @@ export function makeAccident(input, documents, now = new Date()) {
   fields.eventPlace={value:place,source:input.point?.source==='geolocation'?'ตำแหน่งอุปกรณ์ที่ผู้ใช้อนุญาต':'ผู้แจ้งระบุ'};
   const legalDraft = reviewedLegalDraft(input.legalDraft, {details:input.details,eventDate:date,eventPlace:place});
   if(input.legalDraft&&!legalDraft) throw Error('ร่างสำนวนยังไม่ได้ตรวจยืนยัน หรือข้อมูลเหตุการณ์เปลี่ยนแล้ว กรุณาเรียบเรียงใหม่');
+  if(!input.station?.name?.trim())throw Error('กรุณาค้นหาและเลือกสถานีตำรวจเป็นจุดยื่นเอกสารก่อน');
   const id=crypto.randomUUID(), stamp=now.toISOString();
   return {id,legalDraft,service:'accident',status:'simulated',fields,messages:[],documentIds,evidence:input.evidence.map(e=>({...e,label:'หลักฐานที่ผู้ใช้แนบ · ยังไม่ได้วิเคราะห์',analysis:null})),station:input.station||null,location:input.point||null,reference:'DEMO-'+id.slice(0,8).toUpperCase(),revision:0,createdAt:stamp,updatedAt:stamp,governmentSubmitted:false,quickAccident:true,identityMissing:!identity,submittedAt:stamp};
 }

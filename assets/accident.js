@@ -1,3 +1,5 @@
+import {NearestStationSearch} from './nearest-station-ui.js';
+import {nearestPoliceStation} from './nearest-station.js';
 import {D as React} from './shared-ui.js';
 import {imageCanvas} from './import-document.js';
 import {toDataURL} from './store.js';
@@ -9,15 +11,19 @@ import {thaiDate} from './report.js';
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
 import {DocumentChecklist} from './document-checklist.js';
 const h=React.createElement;
-export function AccidentFlow({documents,onSubmit,onClose}) {
+export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPoliceStation}) {
  const [when,setWhen]=React.useState('now'),[details,setDetails]=React.useState(''),[eventDate,setDate]=React.useState(''),[eventPlace,setPlace]=React.useState(''),[evidence,setEvidence]=React.useState([]),[point,setPoint]=React.useState(null),[busy,setBusy]=React.useState(''),[error,setError]=React.useState('');
  const [latitude,setLatitude]=React.useState(''),[longitude,setLongitude]=React.useState(''),[stationName,setStationName]=React.useState(''),[legalDraft,setLegalDraft]=React.useState(null),[aiBusy,setAIBusy]=React.useState(false),[incidentNow,setIncidentNow]=React.useState(()=>new Date());
- const locked=!!busy||aiBusy;
+ const [automaticStation,setAutomaticStation]=React.useState(null),[stationBusy,setStationBusy]=React.useState(false);
+ const locked=!!busy||aiBusy||stationBusy;
  let currentPoint=null,coordinateError='',searchUrl='',mapUrl='';
  try { currentPoint=latitude.trim()||longitude.trim()?parseIncidentPoint(latitude,longitude):parseCoordinateText(eventPlace); } catch(e) { coordinateError=e.message; }
  if(!coordinateError&&(currentPoint||eventPlace.trim())) { try { searchUrl=policeSearchUrl(currentPoint,eventPlace); mapUrl=incidentMapUrl(currentPoint,eventPlace); } catch(e) { coordinateError=e.message; } }
+ const locationKey=JSON.stringify(currentPoint);
+ React.useEffect(()=>{setAutomaticStation(null);setStationName('');},[locationKey,eventPlace]);
  const parsedDate=new Date(eventDate);
- const draftInput={details,eventDate:when==='now'?bangkokDateTime(incidentNow):(Number.isFinite(parsedDate.getTime())?bangkokDateTime(parsedDate):''),eventPlace};
+ const effectivePlace=eventPlace.trim()||(currentPoint?`พิกัด ${currentPoint.lat}, ${currentPoint.lon}`:'');
+ const draftInput={details,eventDate:when==='now'?bangkokDateTime(incidentNow):(Number.isFinite(parsedDate.getTime())?bangkokDateTime(parsedDate):''),eventPlace:effectivePlace};
  const [documentIds,setDocumentIds]=React.useState(()=>selectDocuments('accident',documents));
  const requiredMissing=checklist('accident',documents,documentIds).some(d=>d.required&&!d.selected);
  const guard=React.useRef(false);
@@ -37,8 +43,9 @@ export function AccidentFlow({documents,onSubmit,onClose}) {
    const reviewed=reviewedLegalDraft(legalDraft,draftInput);
    if(legalDraft&&!reviewed)throw Error('กรุณาตรวจและยืนยันร่างสำนวนก่อนบันทึก หรือยกเลิกร่าง AI เพื่อใช้คำบอกเล่าเดิม');
    const location=currentPoint?{...currentPoint,source:point?'geolocation':'coordinates'}:null;
-   const station=stationName.trim()?{id:'manual',name:stationName.trim(),manual:true,incident:location,searchUrl}:null;
-   await onSubmit({when,details,eventDate,eventPlace:eventPlace.trim()||`พิกัด ${currentPoint.lat}, ${currentPoint.lon}`,evidence,point:location,station,documentIds,legalDraft:reviewed,incidentAt:incidentNow.toISOString()});
+   let station=automaticStation|| (stationName.trim()?{id:'manual',name:stationName.trim(),manual:true,incident:location,searchUrl}:null);
+   if(!station){setBusy('กำลังค้นหาสถานีใกล้ที่สุด');station=await stationLookup(location);setAutomaticStation(station);setStationName(station.name);}
+   await onSubmit({when,details,eventDate,eventPlace:effectivePlace,evidence,point:location,station,documentIds,legalDraft:reviewed,incidentAt:incidentNow.toISOString()});
   }catch(e){setError(e.message);}finally{guard.current=false;setBusy('');}
  }
  const missing=!documents.some(d=>d.kind==='identity'&&d.verified);
@@ -57,10 +64,13 @@ export function AccidentFlow({documents,onSubmit,onClose}) {
      h('label',{className:'assistant-field'},'ลองจิจูด',h('input',{value:longitude,inputMode:'decimal',disabled:locked,placeholder:'เช่น 100.5018',onChange:e=>{setLongitude(e.target.value);setPoint(null);setStationName('');}}))),
     h('small',null,'ใส่พิกัด หรือวางคู่ละติจูด, ลองจิจูดจาก Google Maps ในช่องสถานที่เกิดเหตุ หากไม่มีพิกัดจะใช้ชื่อสถานที่ที่ระบุ'),
     coordinateError&&h('p',{role:'alert'},coordinateError),
+    h(NearestStationSearch,{point:currentPoint,disabled:locked,lookup:stationLookup,onBusyChange:setStationBusy,onSelect:station=>{setAutomaticStation(station);setStationName(station?.name||'');}}),
+    automaticStation&&h('p',{role:'status'},`จุดยื่นเอกสารที่เลือกอัตโนมัติ: ${automaticStation.name} · ${automaticStation.distance.toFixed(2)} กม. (ระยะเส้นตรง)`),
+    automaticStation&&h('a',{href:automaticStation.mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูสถานีที่เลือกใน Google Maps'),
     searchUrl&&h('a',{href:searchUrl,target:'_blank',rel:'noopener noreferrer'},'ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุใน Google Maps ↗'),
     mapUrl&&h('a',{href:mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูจุดเกิดเหตุใน Google Maps ↗'),
     h('small',null,'กดลิงก์เพื่อส่งเฉพาะพิกัดหรือชื่อสถานที่ไปยัง Google Maps แล้วกรอกชื่อสถานีที่เลือก ไม่ส่งคำบอกเล่าหรือหลักฐาน และผลค้นหาไม่ยืนยันเขตรับผิดชอบ'),
-    h('label',{className:'assistant-field'},'ชื่อสถานีตำรวจที่เลือกจากผลค้นหา',h('input',{value:stationName,maxLength:150,disabled:locked,onChange:e=>setStationName(e.target.value),placeholder:'เช่น สถานีตำรวจ…'}))),
+    h('label',{className:'assistant-field'},'ชื่อสถานีตำรวจที่เลือกจากผลค้นหา',h('input',{value:stationName,maxLength:150,disabled:locked,onChange:e=>{setAutomaticStation(null);setStationName(e.target.value);},placeholder:'เช่น สถานีตำรวจ…'}))),
    h('label',null,'1. รายละเอียดเหตุการณ์',h('textarea',{required:true,value:details,maxLength:4000,rows:4,disabled:locked,placeholder:'เกิดอะไรขึ้น รถที่เกี่ยวข้อง และความเสียหายที่พบ',onChange:e=>setDetails(e.target.value)})),
    h(LegalDraftPanel,{input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy,onBusyChange:setAIBusy}),
    h('label',{className:'evidence-upload'},'2. ภาพหรือวิดีโอหลักฐาน',h('input',{ref:fileInput,type:'file',accept:'image/jpeg,image/png,video/mp4,video/webm',multiple:true,disabled:locked,onChange:files}),h('small',null,'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · เก็บเฉพาะในเครื่อง')),

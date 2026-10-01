@@ -150,4 +150,5 @@ export async function clearWorkspace() {
   await record("readwrite", empty());
   pendingDocs.clear();
   sessionStorage.removeItem("promptyuen-ai");
+  sessionStorage.removeItem("promptyuen-google-maps-key");
 }
