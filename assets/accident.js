@@ -1,5 +1,5 @@
-import {NearestStationSearch} from './nearest-station-ui.js';
-import {nearestPoliceStation} from './nearest-station.js';
+import {NearestStationSearch} from './nearest-station-ui.js?v=20261002-real-stations';
+import {nearestPoliceStation} from './nearest-station.js?v=20261002-real-stations';
 import {D as React} from './shared-ui.js';
 import {imageCanvas} from './import-document.js';
 import {toDataURL} from './store.js';
@@ -19,8 +19,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
  let currentPoint=null,coordinateError='',searchUrl='',mapUrl='';
  try { currentPoint=latitude.trim()||longitude.trim()?parseIncidentPoint(latitude,longitude):parseCoordinateText(eventPlace); } catch(e) { coordinateError=e.message; }
  if(!coordinateError&&(currentPoint||eventPlace.trim())) { try { searchUrl=policeSearchUrl(currentPoint,eventPlace); mapUrl=incidentMapUrl(currentPoint,eventPlace); } catch(e) { coordinateError=e.message; } }
- const locationKey=JSON.stringify(currentPoint);
- React.useEffect(()=>{setAutomaticStation(null);setStationName('');},[locationKey,eventPlace]);
+
  const parsedDate=new Date(eventDate);
  const effectivePlace=eventPlace.trim()||(currentPoint?`พิกัด ${currentPoint.lat}, ${currentPoint.lon}`:'');
  const draftInput={details,eventDate:when==='now'?bangkokDateTime(incidentNow):(Number.isFinite(parsedDate.getTime())?bangkokDateTime(parsedDate):''),eventPlace:effectivePlace};
@@ -66,7 +65,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
     coordinateError&&h('p',{role:'alert'},coordinateError),
     h(NearestStationSearch,{point:currentPoint,disabled:locked,lookup:stationLookup,onBusyChange:setStationBusy,onSelect:station=>{setAutomaticStation(station);setStationName(station?.name||'');}}),
     automaticStation&&h('p',{role:'status'},`จุดยื่นเอกสารที่เลือกอัตโนมัติ: ${automaticStation.name} · ${automaticStation.distance.toFixed(2)} กม. (ระยะเส้นตรง)`),
-    automaticStation&&h('a',{href:automaticStation.mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูพิกัดจุดสาธิตใน Google Maps'),
+    automaticStation&&h('a',{href:automaticStation.mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูสถานีที่เลือกใน Google Maps'),
     searchUrl&&h('a',{href:searchUrl,target:'_blank',rel:'noopener noreferrer'},'ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุใน Google Maps ↗'),
     mapUrl&&h('a',{href:mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูจุดเกิดเหตุใน Google Maps ↗'),
     h('small',null,'กดลิงก์เพื่อส่งเฉพาะพิกัดหรือชื่อสถานที่ไปยัง Google Maps แล้วกรอกชื่อสถานีที่เลือก ไม่ส่งคำบอกเล่าหรือหลักฐาน และผลค้นหาไม่ยืนยันเขตรับผิดชอบ'),

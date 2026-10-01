@@ -6,8 +6,8 @@ import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
-import { StationPicker } from "./stations.js";
-import { AccidentFlow, CaseTracking } from "./accident.js";
+import { StationPicker } from "./stations.js?v=20261002-real-stations";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-real-stations";
 import { makeAccident } from "./accident-core.js";
 import {
   readWorkspace,
