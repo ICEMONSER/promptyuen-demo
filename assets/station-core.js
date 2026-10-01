@@ -81,6 +81,16 @@ export async function nearestStations(point) {
     throw new Error("ไม่พบสถานีในระยะ 50 กิโลเมตร กรุณาระบุสถานีด้วยตนเอง");
   return stations;
 }
+export async function findIncidentPlace(name) {
+  const value=String(name||'').trim();
+  if(value.length<3||value.length>500)throw Error('ระบุชื่อสถานที่ให้ชัดเจน');
+  // Only a place name is queried; never send incident narrative or evidence.
+  const query=`[out:json][timeout:20];nwr["name"=${JSON.stringify(value)}](5.5,97,21,106);out center 5;`;
+  const data=await queryMap(query);
+  const points=data.elements.map(e=>({lat:e.lat??e.center?.lat,lon:e.lon??e.center?.lon})).filter(validPoint);
+  if(points.length!==1)throw Error('ไม่พบสถานที่ที่ชัดเจนเพียงแห่งเดียว');
+  return points[0];
+}
 export async function findDistrict(province, district) {
   if (!province.trim() || !district.trim())
     throw new Error("กรุณาระบุจังหวัดและเขตหรืออำเภอ");

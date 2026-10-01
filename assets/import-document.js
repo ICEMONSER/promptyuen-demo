@@ -68,7 +68,16 @@ export async function imageCanvas(blob, limit = 2400) {
     URL.revokeObjectURL(url);
   }
 }
-export async function readIdPhoto(blob, progress = () => {}) {
+export function enhancePixels(data) {
+  const histogram=new Uint32Array(256);
+  const gray=new Uint8Array(data.length/4);
+  for(let i=0;i<gray.length;i++){gray[i]=Math.round(.299*data[i*4]+.587*data[i*4+1]+.114*data[i*4+2]);histogram[gray[i]]++;}
+  const percentile=(target)=>{let n=0;for(let i=0;i<256;i++){n+=histogram[i];if(n>=target)return i;}return 255;};
+  const low=percentile(gray.length*.015), high=percentile(gray.length*.985), span=Math.max(32,high-low);
+  for(let i=0;i<gray.length;i++){const value=Math.max(0,Math.min(255,Math.round((gray[i]-low)*255/span)));data[i*4]=data[i*4+1]=data[i*4+2]=value;}
+  return data;
+}
+export async function readIdPhoto(blob, progress = () => {}, scoreText = text => text.replace(/\s/g,'').length) {
   const engine = await loadScript(
     "https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js",
     "Tesseract",
@@ -87,7 +96,23 @@ export async function readIdPhoto(blob, progress = () => {}) {
       },
       errorHandler: () => {},
     });
-    return (await worker.recognize(await imageCanvas(blob))).data.text;
+    const original=await imageCanvas(blob,2400);
+    const prepared=document.createElement('canvas');
+    const scale=Math.min(2,2400/Math.max(original.width,original.height));
+    prepared.width=Math.round(original.width*scale);prepared.height=Math.round(original.height*scale);
+    const ctx=prepared.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(original,0,0,prepared.width,prepared.height);
+    const pixels=ctx.getImageData(0,0,prepared.width,prepared.height);
+    enhancePixels(pixels.data);ctx.putImageData(pixels,0,0);
+    await worker.setParameters({user_defined_dpi:'300',preserve_interword_spaces:'1',tessedit_pageseg_mode:'11'});
+    const first=(await worker.recognize(original)).data;
+    progress(50);
+    await worker.setParameters({tessedit_pageseg_mode:'6'});
+    const second=(await worker.recognize(prepared)).data;
+    progress(100);
+    // Keep one coherent reading rather than combining contradictory personal details.
+    const a=scoreText(first.text),b=scoreText(second.text);
+    return b>a||(a===b&&second.confidence>first.confidence)?second.text:first.text;
   } catch {
     throw new Error("อ่านภาพไม่สำเร็จ กรุณาลองใหม่หรือกรอกข้อมูลเพื่อตรวจเอง");
   } finally {

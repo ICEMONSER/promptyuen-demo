@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {makeAccident,trackingSteps,bangkokDateTime} from '../assets/accident-core.js';
+import {renderReport} from '../assets/report.js';
+const now=new Date('2026-10-01T10:00:00Z');
+const input={when:'now',details:'ข้อมูลทดสอบการชน',eventPlace:'สถานที่ทดสอบ',evidence:[{name:'test.jpg',mime:'image/jpeg',image:'data:image/jpeg;base64,YQ=='}]};
+test('one-step case is only local, with honest tracking',()=>{const r=makeAccident(input,[],now);assert.equal(r.status,'simulated');assert.equal(r.governmentSubmitted,false);assert.equal(r.identityMissing,true);assert.equal(trackingSteps(r).filter(x=>x.done).length,1);assert.equal(r.fields.eventDate.value,bangkokDateTime(now));assert.match(r.reference,/^DEMO-/);});
+test('identity snapshot excludes unverified docs and unrelated fields',()=>{const docs=[{id:'identity',kind:'identity',verified:true,name:'ตัวอย่าง',fields:{fullName:'นาย ทดสอบ ระบบ',phone:'unneeded'}}];const r=makeAccident(input,docs,now);assert.equal(r.fields.fullName.value,'นาย ทดสอบ ระบบ');assert.equal(r.fields.fullName.documentId,undefined);assert.equal(r.fields.phone,undefined);docs[0].fields.fullName='changed';assert.equal(r.fields.fullName.value,'นาย ทดสอบ ระบบ');assert.equal(makeAccident(input,[{...docs[0],verified:false}],now).fields.fullName,undefined);});
+test('requires evidence, details, location and valid past time',()=>{for(const delta of [{evidence:[]},{details:''},{eventPlace:''},{when:'past',eventDate:'bad'},{when:'past',eventDate:'2099-01-01T10:00'}])assert.throws(()=>makeAccident({...input,...delta},[],now));});
+test('video evidence accepted, arbitrary data URL refused',()=>{assert.equal(makeAccident({...input,evidence:[{mime:'video/mp4',image:'data:video/mp4;base64,YQ=='}]},[],now).evidence.length,1);assert.throws(()=>makeAccident({...input,evidence:[{image:'data:text/html;base64,YQ=='}]},[],now));});
+test('print escapes injected text and clearly labels simulated record',()=>{const r=makeAccident({...input,details:'<script>alert(1)</script>'},[],now);const html=renderReport(r,{label:'อุบัติเหตุ',short:'อุบัติเหตุ',note:'ยังไม่ส่งให้รัฐ'},{});assert.ok(!html.includes('<script>alert'));assert.ok(html.includes('&lt;script&gt;'));assert.ok(html.includes('ไม่ใช่เอกสารที่ออกหรือรับรอง'));});

@@ -4,6 +4,8 @@ import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
 import { StationPicker } from "./stations.js";
+import { AccidentFlow, CaseTracking } from "./accident.js";
+import { makeAccident } from "./accident-core.js";
 import {
   readWorkspace,
   writeWorkspace,
@@ -382,6 +384,12 @@ async function kg(e, t, n) {
   let r = new URL(e, `https://demo.invalid`),
     i = await wg(),
     a = r.searchParams.get(`id`) || t?.id;
+  if (r.pathname === '/api/accident' && n === 'POST') {
+    const record = makeAccident(t, i.documents);
+    i.cases.unshift(record);
+    await Tg(i);
+    return {case:record};
+  }
   if (r.pathname === `/api/workspace`) {
     if (n === `GET`)
       return {
@@ -857,6 +865,8 @@ var Bg = (e, t, n, r) =>
     ],
   });
 function Vg() {
+  const [quickAccident, setQuickAccident] = D.useState(false);
+  const [tracking, setTracking] = D.useState(null);
   const [caseDocumentIds, setCaseDocumentIds] = D.useState([]);
   const [entered, setEntered] = D.useState(false);
   const [stationChoice, setStationChoice] = D.useState(null);
@@ -958,6 +968,7 @@ function Vg() {
       ));
   }
   function ze(e) {
+    if(e.status==='simulated'){setTracking(e);return;}
     setCaseDocumentIds(e.documentIds || []);
     setStationChoice(e.station || null);
     setStationRequest(0);
@@ -971,6 +982,7 @@ function Vg() {
       De(!0));
   }
   function Be(e, t = ``) {
+    if(e==='accident'){setQuickAccident(true);return;}
     g(selectDocuments(e, n?.documents || []));
     setStationChoice(null);
     setStationRequest(0);
@@ -987,6 +999,7 @@ function Vg() {
     });
   }
   async function He() {
+    if(le==='accident'){pe(null);setQuickAccident(true);return;}
     !le ||
       !Ce ||
       (await Ie(`start`, async () => {
@@ -1071,7 +1084,7 @@ function Vg() {
         const result =
           O.kind === "license"
             ? await readLicenseQR(blob, xg)
-            : { rawText: await readIdPhoto(blob, ne) };
+            : { rawText: await readIdPhoto(blob, ne, text => {const fields=xg(text);return Object.keys(fields).length*10+(validThaiId(fields.nationalId||'')?30:0);}) };
         Le(
           (
             await zg(
@@ -1290,6 +1303,7 @@ function Vg() {
     });
   return (0, B.jsxs)(Ym, {
     children: [
+      tracking && D.createElement(CaseTracking,{record:tracking,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
       (0, B.jsx)(pg, { richColors: !0, position: `top-center` }),
       (0, B.jsxs)(Xm, {
         className: `app-sidebar`,
@@ -1326,7 +1340,7 @@ function Vg() {
                     {
                       children: (0, B.jsxs)(ih, {
                         isActive: e === n,
-                        onClick: () => t(n),
+                        onClick: () => {t(n);setQuickAccident(false);},
                         children: [
                           (0, B.jsx)(r, {}),
                           (0, B.jsx)(`span`, { children: i }),
@@ -1455,7 +1469,8 @@ function Vg() {
                     }),
               ],
             }),
-          e === `chat` &&
+          e === `chat` && quickAccident && D.createElement(AccidentFlow,{documents:Ze,onClose:()=>setQuickAccident(false),onSubmit:async(input)=>{const result=await zg('/api/accident',input);await Fe();setQuickAccident(false);t('cases');setTracking(result.case);}}),
+          e === `chat` && !quickAccident &&
             (0, B.jsxs)(`div`, {
               className: `workspace`,
               children: [
