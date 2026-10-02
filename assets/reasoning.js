@@ -78,7 +78,7 @@ export async function generateLegalDraft(input) {
  const knownFacts=FIELDS.filter(field=>source[field]).map(field=>({field,quote:source[field].slice(0,1200)}));
  const short=source.details.replace(/[。.!]+$/, '').trim();
  // Only transform a complete, unambiguous statement; preserve other accounts verbatim.
- const taillight=/^รถ(?:ผม|ฉัน|ของผม|ของฉัน|ของดิฉัน)(?:เพิ่ง|พึ่ง)?(?:โดน|ถูก)ชน[\s,]*(?:และ)?ไฟท้าย(?:แตก|พัง)$/.test(short);
+ const taillight=/^(?:ตอนนี้\s*)?รถ(?:ผม|ฉัน|ของผม|ของฉัน|ของดิฉัน)(?:เพิ่ง|พึ่ง)?(?:โดน|ถูก)ชน[\s,]*(?:และ)?ไฟท้าย(?:แตก|พัง)$/.test(short);
  const narrative=taillight?'รถยนต์ของตนถูกชน และไฟท้ายได้รับความเสียหาย':short==='โดนรถชน'?'ตนถูกรถชน':`เกี่ยวกับเหตุการณ์ตามคำบอกเล่าดังต่อไปนี้: “${source.details}”`;
  const context=[source.eventDate?`วันเวลาเกิดเหตุที่ระบุ: ${source.eventDate}`:'ยังไม่ได้ระบุวันเวลาเกิดเหตุ',source.eventPlace?`สถานที่เกิดเหตุที่ระบุ: ${source.eventPlace}`:'ยังไม่ได้ระบุสถานที่เกิดเหตุ'].join(' โดย');
  const missingQuestions=[];
@@ -86,5 +86,8 @@ export async function generateLegalDraft(input) {
  if(!source.eventPlace)missingQuestions.push('เหตุเกิดที่ใด');
  if(taillight)missingQuestions.push('ขณะเกิดเหตุกำลังขับรถหรือจอดรถอยู่ ยี่ห้อและทะเบียนรถของผู้แจ้งคืออะไร', 'ทราบรายละเอียดรถคู่กรณีและจุดที่ชนหรือไม่ ไฟท้ายเสียหายด้านใด');
  missingQuestions.push('โปรดตรวจว่าระบุลำดับเหตุการณ์ คู่กรณี ความเสียหายหรือการบาดเจ็บ และพยานหลักฐานครบหรือไม่ โดยเติมเฉพาะสิ่งที่ทราบ');
- return validateLegalDraft({formalNarrative:`ผู้แจ้งให้ข้อมูลว่า ${narrative} ${context} จึงมาแจ้งข้อเท็จจริงเพื่อบันทึกไว้เป็นหลักฐาน และให้พนักงานสอบสวนตรวจสอบและพิจารณาตามอำนาจหน้าที่`,knownFacts,missingQuestions},source);
+ const formalNarrative=taillight
+  ? `ผู้แจ้งให้ข้อมูลว่า เมื่อวันที่และเวลาประมาณ ${source.eventDate || '[ระบุวันที่และเวลาเกิดเหตุ]'} ขณะเกิดเหตุ [ระบุว่ากำลังขับขี่หรือจอดรถ] รถยนต์ของข้าพเจ้า ยี่ห้อ [ระบุยี่ห้อรถ] หมายเลขทะเบียน [ระบุเลขทะเบียนรถ] อยู่บริเวณ ${source.eventPlace || '[ระบุสถานที่เกิดเหตุ]'} ได้ถูกรถคู่กรณี [ระบุรายละเอียดคู่กรณีเท่าที่ทราบ] ชนบริเวณ [ระบุจุดที่ถูกชน] เป็นเหตุให้รถยนต์ของข้าพเจ้าได้รับความเสียหายบริเวณไฟท้าย [ระบุด้านที่เสียหาย] ข้าพเจ้าจึงประสงค์แจ้งความลงบันทึกประจำวันไว้เป็นหลักฐาน`
+  : `ผู้แจ้งให้ข้อมูลว่า ${narrative} ${context} จึงมาแจ้งข้อเท็จจริงเพื่อบันทึกไว้เป็นหลักฐาน และให้พนักงานสอบสวนตรวจสอบและพิจารณาตามอำนาจหน้าที่`;
+ return validateLegalDraft({formalNarrative,knownFacts,missingQuestions},source);
 }

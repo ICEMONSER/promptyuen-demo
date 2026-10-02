@@ -1,5 +1,5 @@
 import { D as React } from './shared-ui.js';
-import { generateLegalDraft, legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-voice';
+import { generateLegalDraft, legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-voice2';
 const h = React.createElement;
 
 export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange, autoGenerate = 0 }) {

@@ -29,9 +29,18 @@ test('errors preserve original; disposed sessions cannot overwrite text',()=>{
 });
 test('Thai collision sample produces formal facts without invented vehicle details',async()=>{
  const draft=await generateLegalDraft({details:'รถผมเพิ่งโดนชน ไฟท้ายแตก',eventDate:'2 ตุลาคม 2569 เวลา 10:00 น.',eventPlace:'ถนนทดสอบ'});
- assert.match(draft.formalNarrative,/รถยนต์ของตนถูกชน และไฟท้ายได้รับความเสียหาย/);
- assert.doesNotMatch(draft.formalNarrative,/ด้านซ้าย|ด้านขวา|ชนท้าย|จอดรถ|กำลังขับ|ไม่ทราบทะเบียน/);
+ assert.match(draft.formalNarrative,/ได้รับความเสียหายบริเวณไฟท้าย/);
+ assert.doesNotMatch(draft.formalNarrative,/ด้านซ้าย|ด้านขวา|ชนท้าย|ไม่ทราบทะเบียน/);
  assert.ok(draft.missingQuestions.some(q=>q.includes('ทะเบียน')));
  const negative='รถผมไม่ได้โดนชน ไฟท้ายไม่ได้แตก';
  assert.ok((await generateLegalDraft({details:negative})).formalNarrative.includes(negative));
+});
+
+test('requested spoken phrase becomes a structured draft with explicit missing fields',async()=>{
+ const draft=await generateLegalDraft({details:'ตอนนี้รถผมโดนชน ไฟท้ายพัง',eventDate:'2 ตุลาคม 2569 เวลา 14:00',eventPlace:'ถนนทดสอบ'});
+ assert.match(draft.formalNarrative,/ข้าพเจ้าจึงประสงค์แจ้งความลงบันทึกประจำวัน/);
+ assert.match(draft.formalNarrative,/2 ตุลาคม 2569 เวลา 14:00/);
+ assert.match(draft.formalNarrative,/ถนนทดสอบ/);
+ assert.match(draft.formalNarrative,/\[ระบุเลขทะเบียนรถ\]/);
+ assert.doesNotMatch(draft.formalNarrative,/ชนแล้วหนี|ด้านท้ายรถ|ด้านซ้าย|ด้านขวา/);
 });

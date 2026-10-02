@@ -6,7 +6,7 @@ import {renderReport} from '../assets/report.js';
 if(!['localhost','127.0.0.1'].includes(location.hostname))throw Error('Local test only');
 if(new URLSearchParams(location.search).has('voice')) {
  globalThis.SpeechRecognition=class {
-  start(){this.onresult({results:[Object.assign([{transcript:'รถผมเพิ่งโดนชน ไฟท้ายแตก'}],{isFinal:true})]});}
+  start(){this.onresult({results:[Object.assign([{transcript:'ตอนนี้รถผมโดนชน ไฟท้ายพัง'}],{isFinal:true})]});}
   stop(){this.onend();}
   abort(){this.onend();}
  };
