@@ -6,6 +6,7 @@ const empty = () => ({
   version: STORE_VERSION,
   docs: {},
   signature: null,
+  contact: null,
   cases: [],
 });
 function connect() {
@@ -141,6 +142,7 @@ export async function writeWorkspace(workspace) {
         version: STORE_VERSION,
         docs,
         signature: workspace.signature || null,
+        contact: workspace.contact || null,
         cases,
       }),
     ),

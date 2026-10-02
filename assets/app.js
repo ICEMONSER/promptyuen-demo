@@ -1,28 +1,28 @@
 import {validateContact} from './contact-core.js';
-import { LegalDraftPanel } from './legal-draft.js?v=20261002-contact';
+import { LegalDraftPanel } from './legal-draft.js?v=20261002-login-contact';
 import { legalInputFromRecord, reviewedLegalDraft } from './legal-review.js';
 import { legalDraftSource } from './reasoning.js';
 import { EvidencePanel } from "./evidence.js";
 import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
-import { DocumentChecklist } from "./document-checklist.js?v=20261002-contact";
-import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
+import { DocumentChecklist } from "./document-checklist.js?v=20261002-login-contact";
+import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261002-login-contact";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-contact";
-import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-contact";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-login-contact";
+import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-login-contact";
 import {
   readWorkspace,
   writeWorkspace,
   clearWorkspace,
   pendingDocs,
-} from "./store.js";
+} from "./store.js?v=20261002-login-contact";
 import {
   readIdPhoto,
   readLicenseQR,
   validThaiId,
   normalizeDigits,
 } from "./import-document.js";
-import { renderReport } from "./report.js?v=20261002-contact";
+import { renderReport } from "./report.js?v=20261002-login-contact";
 // Existing application extracted from the shipped bundle; shared UI is unchanged.
 import {
   c,
@@ -406,10 +406,18 @@ async function kg(e, t, n) {
         events: i.events,
         aiEnabled: !1,
         signature: i.signature,
+        contact: i.contact || null,
       };
     if (t?.action === `clear`) {
       await clearWorkspace();
       return { ok: true };
+    }
+    if (t?.action === 'contact') {
+      const contact=validateContact(t.contact);
+      i.contact=contact;
+      i.documents=i.documents.map(doc=>doc.kind==='identity'?{...doc,fields:{...doc.fields,...contact}}:doc);
+      await Tg(i);
+      return {ok:true};
     }
     if (t?.action === `signature`) {
       if (
@@ -527,7 +535,7 @@ async function kg(e, t, n) {
         ["fullName", "address", "birthDate"].some((key) => !n[key]?.trim())
       )
         throw Error("กรุณาตรวจชื่อ ที่อยู่ และวันเกิดให้ครบ");
-      if(e.kind === "identity") Object.assign(n,validateContact(n));
+      if(e.kind === "identity") {Object.assign(n,validateContact(n));i.contact=validateContact(n);}
       const existing = i.documents.find((doc) => doc.kind === e.kind);
       if (a.startsWith("pending:") && existing && !t.replaceConfirmed)
         throw Error("แทนที่ข้อมูลเดิม? กรุณายืนยันก่อนบันทึก");
@@ -970,6 +978,7 @@ function Vg() {
   function Le(e) {
     k(e);
     let t = { ...e.fields };
+    if(e.kind === "identity" && n?.contact)Object.assign(t,n.contact);
     if (!e.verified && e.rawText)
       for (let [n, r] of Object.entries(xg(e.rawText)))
         t[n]?.trim() || (t[n] = r);
@@ -1322,6 +1331,8 @@ function Vg() {
   if (!entered && n)
     return D.createElement(LocalLogin, {
       signature: n.signature,
+      contact:n.contact,
+      onSaveContact:async(contact)=>{await zg('/api/workspace',{action:'contact',contact});await Fe();},
       onSave: async (signature) => {
         await zg("/api/workspace", { action: "signature", signature });
         await Fe();
@@ -2272,7 +2283,7 @@ function Vg() {
             ),
             (0, B.jsx)(`p`, {
               className: `small-note`,
-              children: `หลังอัปโหลดบัตรประชาชน ต้องกรอกเบอร์โทรศัพท์และ Gmail ในหน้าตรวจข้อมูลก่อนยืนยัน ข้อมูลเก็บในเครื่อง ยังไม่ส่งให้ AI หรือหน่วยงานรัฐ`,
+              children: `หลังอัปโหลดบัตรประชาชน ข้อมูลติดต่อจากหน้าเข้าสู่ระบบจะเติมให้ กรุณาตรวจเบอร์โทรศัพท์และ Gmail ก่อนยืนยัน ข้อมูลเก็บในเครื่อง ยังไม่ส่งให้ AI หรือหน่วยงานรัฐ`,
             }),
             (0, B.jsxs)(Om, {
               onClick: We,

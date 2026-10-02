@@ -1,3 +1,4 @@
+import {validateContact} from './contact-core.js';
 import { D as React } from "./shared-ui.js";
 import { imageCanvas } from "./import-document.js";
 import { thaiDate } from "./report.js";
@@ -116,8 +117,20 @@ export function SignaturePad({ value, onSave }) {
     h("p", { role: "status" }, message),
   );
 }
-export function LocalLogin({ signature, onSave, onEnter, onClear }) {
+export function LocalLogin({ signature, contact, onSaveContact, onSave, onEnter, onClear }) {
   const [ready, setReady] = React.useState(false);
+  const [phone,setPhone]=React.useState(contact?.phone||'');
+  const [email,setEmail]=React.useState(contact?.email||'');
+  const [saving,setSaving]=React.useState(false);
+  const [error,setError]=React.useState('');
+  React.useEffect(()=>{setPhone(contact?.phone||'');setEmail(contact?.email||'');},[contact?.phone,contact?.email]);
+  async function proceed(){
+    if(saving)return;
+    setSaving(true);setError('');
+    try{await onSaveContact(validateContact({phone,email}));if(ready)onEnter();else setReady(true);}
+    catch(err){setError(err.message);}
+    finally{setSaving(false);}
+  }
   return h(
     "main",
     { className: "assistant-login" },
@@ -129,17 +142,23 @@ export function LocalLogin({ signature, onSave, onEnter, onClear }) {
       null,
       "พื้นที่ส่วนตัวบนอุปกรณ์นี้ เอกสารไม่ถูกส่งขึ้นเซิร์ฟเวอร์ ใช้ข้อมูลจำลองในการทดลอง",
     ),
+    h('section',{className:'assistant-panel'},
+      h('h3',null,'ข้อมูลติดต่อสำหรับเอกสาร'),
+      h('label',{className:'field-label'},'เบอร์โทรศัพท์ (จำเป็น)',h('input',{type:'tel',autoComplete:'tel',required:true,maxLength:20,value:phone,disabled:saving,onChange:e=>setPhone(e.target.value)})),
+      h('label',{className:'field-label'},'Gmail (จำเป็น)',h('input',{type:'email',autoComplete:'email',required:true,maxLength:254,placeholder:'name@gmail.com',value:email,disabled:saving,onChange:e=>setEmail(e.target.value)})),
+      h('p',{className:'small-note'},'บันทึกเมื่อกดดำเนินการต่อ ใช้เติมข้อมูลติดต่อในหน้าอัปโหลดเอกสารและใบสรุป เก็บเฉพาะในเบราว์เซอร์นี้'),
+      error&&h('p',{role:'alert'},error)),
     ready && h(SignaturePad, { value: signature, onSave }),
     h(
       "section",
       { className: "assistant-panel" },
-      h("button", { type: "button", className:"login-primary", onClick: ready ? onEnter : ()=>setReady(true) }, ready ? "เข้าสู่พื้นที่ของฉัน →" : "ทดลองเข้าสู่ระบบด้วย ThaiD →"),
+      h("button", { type: "button", className:"login-primary", disabled:saving, onClick:proceed }, ready ? "เข้าสู่พื้นที่ของฉัน →" : "ทดลองเข้าสู่ระบบด้วย ThaiD →"),
       h(
         "p",
         { className: "small-note" },
         ready ? "ลายมือชื่อเป็นตัวเลือก เพิ่มหรือวาดใหม่ได้จากปุ่มบัญชีบนหน้าเว็บ" : "โหมดจำลองเท่านั้น ยังไม่เชื่อม ThaiD ไม่ยืนยันตัวตน และไม่ดึงข้อมูลทะเบียนจากรัฐ",
       ),
-      onClear && h("button", {type:"button", className:"text-action", onClick:onClear}, "ล้างข้อมูลในเครื่องนี้"),
+      onClear && h("button", {type:"button", className:"text-action", disabled:saving,onClick:onClear}, "ล้างข้อมูลในเครื่องนี้"),
     ),
   );
 }
