@@ -1,3 +1,5 @@
+import {portalEnabled} from './portal-client.js';
+import {PortalTracking} from './portal-tracking.js';
 import {documentContact} from './contact-core.js';
 import {StationDestination} from './station-destination.js?v=20261002-auto';
 import {NearestStationSearch} from './nearest-station-ui.js?v=20261002-auto';
@@ -80,17 +82,18 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    h('label',null,'1. รายละเอียดเหตุการณ์',h('textarea',{required:true,value:details,maxLength:4000,rows:4,disabled:locked,placeholder:'เกิดอะไรขึ้น รถที่เกี่ยวข้อง และความเสียหายที่พบ',onChange:e=>setDetails(e.target.value)})),
    h(VoiceInput,{value:details,disabled:locked,onBusyChange:setVoiceBusy,onComplete:text=>{setDetails(text);setVoiceRevision(v=>v+1);}}),
    h(LegalDraftPanel,{input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy||voiceBusy,onBusyChange:setAIBusy,autoGenerate:voiceRevision}),
-   h('label',{className:'evidence-upload'},'2. ภาพหรือวิดีโอหลักฐาน',h('input',{ref:fileInput,type:'file',accept:'image/jpeg,image/png,video/mp4,video/webm',multiple:true,disabled:locked,onChange:files}),h('small',null,'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · เก็บเฉพาะในเครื่อง')),
+   h('label',{className:'evidence-upload'},'2. ภาพหรือวิดีโอหลักฐาน',h('input',{ref:fileInput,type:'file',accept:'image/jpeg,image/png,video/mp4,video/webm',multiple:true,disabled:locked,onChange:files}),h('small',null,portalEnabled()?'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · แนบส่งให้เจ้าหน้าที่เมื่อยืนยัน':'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · เก็บเฉพาะในเครื่อง')),
    h('div',{className:'evidence-grid'},...evidence.map(item=>h('figure',{key:item.id},item.mime.startsWith('video/')?h('video',{src:item.image,controls:true,preload:'metadata'}):h('img',{src:item.image,alt:'หลักฐานที่แนบ'}),h('figcaption',null,item.name),h('button',{type:'button',disabled:locked,onClick:()=>setEvidence(all=>all.filter(e=>e.id!==item.id))},'นำไฟล์นี้ออก')))),
    h(DocumentChecklist,{topic:'accident',documents,selected:documentIds,labels:DOCUMENT_LABELS,onChange:setDocumentIds}),
    requiredMissing&&h('p',{className:'quick-notice'},'เพิ่มเอกสารจำเป็นทั้ง 3 รายการในคลังเอกสารและตรวจยืนยันก่อนส่งคำขอ กรมธรรม์ประกันภัยไม่บังคับ'),
    h('p',{className:'small-note'},missing?'ยังไม่มีข้อมูลบัตรที่ยืนยันแล้ว ระบบจะไม่แต่งข้อมูลผู้แจ้ง กรุณาเพิ่มบัตรในคลังและตรวจยืนยันก่อนส่ง':'ใช้ข้อมูลบัตรที่คุณยืนยันแล้วโดยอัตโนมัติ ไม่ต้องกรอกซ้ำ'),
-   h('p',{className:'small-note'},'ตรวจข้อความสำนวนด้านบนก่อนบันทึก ใบสรุปจะใช้ร่างที่คุณยืนยัน พร้อมคำบอกเล่าเดิมและข้อมูลที่ยังขาด บันทึกในเครื่อง ยังไม่ส่งให้หน่วยงานจริง'),
+   h('p',{className:'small-note'},portalEnabled()?'เมื่อกดส่ง ชื่อ ข้อมูลติดต่อ รายละเอียด และไฟล์ที่เลือกจะถูกส่งไปยังระบบเจ้าหน้าที่ต้นแบบ กรุณาตรวจสอบก่อนยืนยัน':'ตรวจข้อความสำนวนด้านบนก่อนบันทึก ใบสรุปจะใช้ร่างที่คุณยืนยัน พร้อมคำบอกเล่าเดิมและข้อมูลที่ยังขาด บันทึกในเครื่อง ยังไม่ส่งให้หน่วยงานจริง'),
    !evidence.length&&h('p',{className:'small-note'},'ก่อนส่ง: แนบภาพหรือวิดีโอหลักฐานอย่างน้อย 1 ไฟล์'),
    error&&h('p',{role:'alert',className:'quick-error',tabIndex:-1,ref:node=>node?.focus()},error),
-   h('button',{className:'quick-submit',type:'submit',disabled:locked},busy||'ส่งคำขอจำลองและสร้างเอกสาร →')));
+   h('button',{className:'quick-submit',type:'submit',disabled:locked},busy||(portalEnabled()?'ส่งคำขอไปยังระบบเจ้าหน้าที่':'ส่งคำขอจำลองและสร้างเอกสาร →'))));
 }
-export function CaseTracking({record,onPrint,onClose,onStationChange}) {
+export function CaseTracking(props) { if(props.record.remote)return h(PortalTracking,props);return h(LocalCaseTracking,props); }
+function LocalCaseTracking({record,onPrint,onClose,onStationChange}) {
  const [choice,setChoice]=React.useState(record.station),[saving,setSaving]=React.useState(false),[saveError,setSaveError]=React.useState('');
  React.useEffect(()=>setChoice(record.station),[record.station]);
  return h('div',{className:'tracking-backdrop'},h('section',{className:'tracking-card',role:'dialog','aria-modal':true,'aria-label':'ติดตามคำขอ'},

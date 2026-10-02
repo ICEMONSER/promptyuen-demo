@@ -1,3 +1,4 @@
+import {portalEnabled,prepareRemote,submitRemote} from './portal-client.js';
 import {validateContact} from './contact-core.js';
 import { LegalDraftPanel } from './legal-draft.js?v=20261002-login-contact';
 import { legalInputFromRecord, reviewedLegalDraft } from './legal-review.js';
@@ -8,7 +9,7 @@ import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js?v=20261002-login-contact";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261002-report-no-questions-v2";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-login-contact";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-portal-1";
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-login-contact";
 import {
   readWorkspace,
@@ -391,10 +392,13 @@ async function kg(e, t, n) {
   let r = new URL(e, `https://demo.invalid`),
     i = await wg(),
     a = r.searchParams.get(`id`) || t?.id;
+  if(r.pathname==='/api/portal-retry' && n==='POST'){const record=i.cases.find(c=>c.id===t.id);if(!record)throw Error('ไม่พบคำขอ');prepareRemote(record);await Tg(i);try{await submitRemote(record,i.documents);}finally{await Tg(i);}return {case:record};}
   if (r.pathname === '/api/accident' && n === 'POST') {
     const record = makeAccident(t, i.documents);
+    if(portalEnabled())prepareRemote(record);
     i.cases.unshift(record);
     await Tg(i);
+    if(portalEnabled()){try{await submitRemote(record,i.documents);}finally{await Tg(i);}}
     return {case:record};
   }
   if (r.pathname === `/api/workspace`) {
@@ -700,9 +704,10 @@ async function kg(e, t, n) {
         throw Error("กรุณาเลือกสถานีตำรวจ");
       if (!t.confirmed || yg(e.service, e.fields).length)
         throw Error(`ข้อมูลยังไม่ครบหรือยังไม่ยืนยัน`);
+      if(portalEnabled()){prepareRemote(e);await Tg(i);try{await submitRemote(e,i.documents);}finally{await Tg(i);}}
       ((e.status = `simulated`),
         (e.reference =
-          `DEMO-` + crypto.randomUUID().slice(0, 8).toUpperCase()));
+          e.remote?.id || `DEMO-` + crypto.randomUUID().slice(0, 8).toUpperCase()));
     } else throw Error(`รายการไม่ถูกต้อง`);
     if (t.action === 'edit' && Object.hasOwn(t, 'legalDraft')) {
       const draft = reviewedLegalDraft(t.legalDraft, legalInputFromRecord(e));
@@ -999,7 +1004,7 @@ function Vg() {
       ));
   }
   function ze(e) {
-    if(e.status==='simulated'){setTracking(e);return;}
+    if(e.status==='simulated'||e.remote){setTracking(e);return;}
     setCaseDocumentIds(e.documentIds || []);
     setStationChoice(e.station || null);
     setLegalChoice(e.legalDraft || null);
@@ -1342,7 +1347,7 @@ function Vg() {
     });
   return (0, B.jsxs)(Ym, {
     children: [
-      tracking && D.createElement(CaseTracking,{record:tracking,onStationChange:tracking.quickAccident?async(station)=>{const result=await zg('/api/cases',{id:tracking.id,revision:tracking.revision,action:'station',station},'PATCH');setTracking(result.case);await Fe();}:undefined,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
+      tracking && D.createElement(CaseTracking,{record:tracking,onRetry:async()=>{const result=await zg('/api/portal-retry',{id:tracking.id});setTracking(result.case);await Fe();},onStationChange:tracking.quickAccident?async(station)=>{const result=await zg('/api/cases',{id:tracking.id,revision:tracking.revision,action:'station',station},'PATCH');setTracking(result.case);await Fe();}:undefined,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
       (0, B.jsx)(pg, { richColors: !0, position: `top-center` }),
       (0, B.jsxs)(Xm, {
         className: `app-sidebar`,
