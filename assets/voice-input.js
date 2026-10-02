@@ -35,7 +35,7 @@ export function VoiceInput({value, disabled, onComplete, onBusyChange}) {
   }
   return h('section', {'aria-label': 'เล่าเหตุการณ์ด้วยเสียงภาษาไทย'},
     h('p', {className: 'small-note'}, 'พูดภาษาไทยได้ตามธรรมชาติ เมื่อหยุดพูด ระบบจะเติมข้อความและสร้างร่างภาษาทางการให้ตรวจแก้ การถอดเสียงอาจส่งเสียงไปยังผู้ให้บริการเบราว์เซอร์ เว็บนี้ไม่บันทึกไฟล์เสียง'),
-    h('button', {type: 'button', className: 'voice-record-button', 'aria-pressed': listening, disabled: !Recognition || (!listening && disabled), onClick: () => listening ? session.current?.stop() : start()}, listening ? '■ หยุดพูด · เรียบเรียงเป็นภาษากฎหมายอัตโนมัติ' : '🎙 กดพูดเล่าเหตุการณ์'),
+    h('button', {type: 'button', className: 'voice-record-button', 'aria-pressed': listening, disabled: !Recognition || (!listening && disabled), onClick: () => listening ? session.current?.stop() : start()}, listening ? '■ หยุดและเรียบเรียง' : '🎙 กดพูดเล่าเหตุการณ์'),
     h('p', {className: 'small-note'}, 'พูด → แปลงเป็นข้อความ → เรียบเรียงร่างภาษากฎหมายอัตโนมัติ ไม่ต้องกดสร้างร่างซ้ำ'),
     !Recognition && h('p', null, 'เบราว์เซอร์นี้ไม่รองรับการถอดเสียง ใช้ไมโครโฟนบนแป้นพิมพ์เพื่อกรอกข้อความ หรือพิมพ์แล้วกดสร้างร่างภาษาทางการ'),
     listening && h('p', {role: 'status'}, 'กำลังฟังภาษาไทย… กดหยุดเมื่อเล่าจบ'),

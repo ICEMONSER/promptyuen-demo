@@ -29,18 +29,33 @@ test('errors preserve original; disposed sessions cannot overwrite text',()=>{
 });
 test('Thai collision sample produces formal facts without invented vehicle details',async()=>{
  const draft=await generateLegalDraft({details:'รถผมเพิ่งโดนชน ไฟท้ายแตก',eventDate:'2 ตุลาคม 2569 เวลา 10:00 น.',eventPlace:'ถนนทดสอบ'});
- assert.match(draft.formalNarrative,/ได้รับความเสียหายบริเวณไฟท้าย/);
+ assert.match(draft.formalNarrative,/ไฟท้ายแตก/);
  assert.doesNotMatch(draft.formalNarrative,/ด้านซ้าย|ด้านขวา|ชนท้าย|ไม่ทราบทะเบียน/);
  assert.ok(draft.missingQuestions.some(q=>q.includes('ทะเบียน')));
  const negative='รถผมไม่ได้โดนชน ไฟท้ายไม่ได้แตก';
- assert.ok((await generateLegalDraft({details:negative})).formalNarrative.includes(negative));
+ await assert.rejects(generateLegalDraft({details:negative}),/ยังเรียบเรียง/);
 });
 
 test('requested spoken phrase becomes a structured draft with explicit missing fields',async()=>{
  const draft=await generateLegalDraft({details:'ตอนนี้รถผมโดนชน ไฟท้ายพัง',eventDate:'2 ตุลาคม 2569 เวลา 14:00',eventPlace:'ถนนทดสอบ'});
- assert.match(draft.formalNarrative,/ข้าพเจ้าจึงประสงค์แจ้งความลงบันทึกประจำวัน/);
+ assert.match(draft.formalNarrative,/ข้าพเจ้าจึงประสงค์แจ้งข้อเท็จจริงต่อพนักงานสอบสวน/);
  assert.match(draft.formalNarrative,/2 ตุลาคม 2569 เวลา 14:00/);
  assert.match(draft.formalNarrative,/ถนนทดสอบ/);
- assert.match(draft.formalNarrative,/\[ระบุเลขทะเบียนรถ\]/);
+ assert.doesNotMatch(draft.formalNarrative,/\[|\]/);
+ assert.ok(draft.missingQuestions.some(q=>q.includes('ทะเบียน')));
  assert.doesNotMatch(draft.formalNarrative,/ชนแล้วหนี|ด้านท้ายรถ|ด้านซ้าย|ด้านขวา/);
+});
+
+test('rewrites varied spoken clauses into ordered facts without quoting or omitting facts',async()=>{
+ const draft=await generateLegalDraft({details:'ผมจอดรถอยู่แล้วโดนชนท้าย ไฟท้ายซ้ายแตก กันชนบุบ ผมไม่บาดเจ็บครับ'});
+ assert.match(draft.formalNarrative,/ขณะรถยนต์ของข้าพเจ้าจอดอยู่/);
+ assert.match(draft.formalNarrative,/ถูกชนบริเวณด้านท้าย/);
+ assert.match(draft.formalNarrative,/ไฟท้ายด้านซ้ายแตก และ กันชนบุบ/);
+ assert.match(draft.formalNarrative,/ข้าพเจ้าไม่ได้รับบาดเจ็บ/);
+ assert.doesNotMatch(draft.formalNarrative,/ผม|โดน|ครับ|\[|“/);
+});
+test('unknown or conflicting clauses cannot be silently discarded',async()=>{
+ for(const details of ['รถผมโดนชน ไฟท้ายไม่แตก','รถผมโดนชน ไฟท้ายแตก แต่เป็นรอยเก่า','รถผมโดนชน อีกฝ่ายบอกว่าไม่ได้ชน','รถผมไม่ได้โดนชน']) {
+  await assert.rejects(generateLegalDraft({details}),/ยังเรียบเรียง/);
+ }
 });

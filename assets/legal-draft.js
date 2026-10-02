@@ -1,5 +1,5 @@
 import { D as React } from './shared-ui.js';
-import { generateLegalDraft, legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-voice2';
+import { generateLegalDraft, legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-voice3';
 const h = React.createElement;
 
 export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange, autoGenerate = 0 }) {
@@ -33,7 +33,7 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
   React.useEffect(() => { if (autoGenerate) generate(); }, [autoGenerate]);
   return h('section', { className: 'assistant-panel legal-draft', 'aria-label': 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน' },
     h('h3', null, 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน'),
-    h('p', { className: 'small-note' }, 'โหมดสาธิตฟรี: เรียบเรียงด้วยแม่แบบในเครื่อง ไม่ใช่ GenAI ไม่ต้องใช้คีย์ และไม่ส่งข้อมูลออกนอกเครื่อง'),
+    h('p', { className: 'small-note' }, 'เรียบเรียงฟรีในเครื่อง รองรับคำบอกเล่าอุบัติเหตุบางรูปแบบ ไม่ใช่ GenAI หากแปลความไม่ครบจะแจ้งให้ตรวจคำถอดเสียง โดยไม่ตัดข้อเท็จจริงทิ้ง'),
     !disabled && h(React.Fragment, null,
       h('button', { type: 'button', disabled: busy || !input.details?.trim(), onClick: generate }, busy ? 'กำลังเรียบเรียงข้อเท็จจริง…' : current ? 'เรียบเรียงสำนวนใหม่' : 'สร้างร่างภาษาทางการ (สาธิตฟรี)')),
     error && h('p', { role: 'alert', className: 'quick-error' }, error),
@@ -46,7 +46,7 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
       current.missingQuestions.length > 0 && h('div', { className: 'location-note' },
         h('strong', null, 'ข้อมูลที่ควรสอบถามเพิ่มเติม'),
         h('ul', null, ...current.missingQuestions.map((question, i) => h('li', { key: i }, question))),
-        h('small', null, 'เพิ่มคำตอบในรายละเอียดเหตุการณ์ แล้วกดเรียบเรียงใหม่ได้ รายการที่ยังขาดจะปรากฏในใบสรุป')),
+        h('small', null, 'ตรวจเติมข้อมูลที่ทราบในร่างด้านบนก่อนยืนยัน รายการที่ยังขาดจะปรากฏแยกในใบสรุป')),
       h('label', { className: 'map-consent' }, h('input', { type: 'checkbox', checked: !!current.reviewed, disabled: disabled || busy,
         onChange: e => { try { const { formalNarrative, knownFacts, missingQuestions } = current; if (e.target.checked) validateLegalDraft({ formalNarrative, knownFacts, missingQuestions }, input); setError(''); onChange({ ...current, reviewed: e.target.checked, reviewedAt: e.target.checked ? new Date().toISOString() : null }); } catch (err) { setError(err.message); } } }),
         'ตรวจแล้วว่าร่างตรงกับข้อเท็จจริงที่แจ้ง และยืนยันใช้ข้อความนี้ในใบสรุป'),
