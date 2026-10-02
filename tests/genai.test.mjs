@@ -32,3 +32,14 @@ test('worker generation, cancellation and fresh retry release pending work',asyn
  const second=service.generate(input);workers[1].onmessage({data:{type:'result',reply}});
  assert.match((await second).formalNarrative,/ข้าพเจ้า/);service.cancel();
 });
+test('runtime failure clears the lock, preserves useful error and allows retry',async()=>{
+ let worker;
+ const service=createBrowserGenAI({gpu:{},workerFactory:()=>worker={postMessage(){},terminate(){}}});
+ const first=service.generate(input);
+ worker.onerror();await assert.rejects(first,/โหลด GenAI ไม่สำเร็จ/);
+ const second=service.generate(input);
+ worker.onmessage({data:{type:'error',message:'หน่วยความจำไม่พอ'}});
+ await assert.rejects(second,/หน่วยความจำไม่พอ/);
+ const third=service.generate(input);worker.onmessage({data:{type:'result',reply}});
+ await third;service.cancel();
+});
