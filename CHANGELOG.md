@@ -1,3 +1,9 @@
+## 2026-10-02 — Report presentation cleanup
+- Removed affiliation/position placeholders and original-account/attachment-list sections. Manual test: print an accident report and confirm these sections are absent.
+- Bold current-location text opens Google Maps at the recorded incident coordinates. Manual test: click the text in the opening and narrative; both open the same incident point.
+- Preserved evidence images and certified copies with document-type captions instead of filenames. Manual test: print a case with photos and ID copy and confirm images remain without upload filenames.
+- Records without valid incident coordinates show bold location text without a guessed map link.
+
 ## 2026-10-02 — เลือกสถานีอัตโนมัติและซ่อนตำแหน่งผู้ใช้
 
 - ขอสิทธิ์ตำแหน่งอัตโนมัติเมื่อเริ่มแจ้งเหตุ ไม่มีปุ่มตำแหน่งหรือช่องพิกัด; ทดสอบ: เปิดหมวดอุบัติเหตุและอนุญาตตำแหน่ง สถานีต้องถูกเลือกเอง
