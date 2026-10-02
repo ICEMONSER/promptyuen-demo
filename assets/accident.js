@@ -93,11 +93,12 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    h('button',{className:'quick-submit',type:'submit',disabled:locked},busy||(portalEnabled()?'ส่งคำขอไปยังระบบเจ้าหน้าที่':'ส่งคำขอจำลองและสร้างเอกสาร →'))));
 }
 export function CaseTracking(props) { if(props.record.remote)return h(PortalTracking,props);return h(LocalCaseTracking,props); }
-function LocalCaseTracking({record,onPrint,onClose,onStationChange}) {
+function LocalCaseTracking({record,onPrint,onClose,onStationChange,onRetry}) {
  const [choice,setChoice]=React.useState(record.station),[saving,setSaving]=React.useState(false),[saveError,setSaveError]=React.useState('');
  React.useEffect(()=>setChoice(record.station),[record.station]);
  return h('div',{className:'tracking-backdrop'},h('section',{className:'tracking-card',role:'dialog','aria-modal':true,'aria-label':'ติดตามคำขอ'},
   h('button',{className:'text-action',onClick:onClose,autoFocus:true},'ปิด'),h('span',{className:'login-step'},'ติดตามคำขอของคุณ'),h('h2',null,record.status==='simulated'?'บันทึกคำขอจำลองแล้ว':'คำขอนี้ยังเป็นฉบับร่าง'),h('p',null,record.reference||'ยังไม่มีเลขคำขอ'),
+  h('section',{className:'portal-message-box'},h('h3',null,'ข้อความจากเจ้าหน้าที่'),h('p',null,'ยังไม่มีข้อความจากเจ้าหน้าที่'),h('p',{className:'small-note'},portalEnabled()?'คำขอนี้ยังไม่ได้ส่งเข้าระบบเจ้าหน้าที่ กดส่งคำขอด้านล่างเพื่อเริ่มติดตาม':'กำลังเตรียมเชื่อมระบบหน่วยงาน คำขอนี้ยังเก็บอยู่ในเครื่อง'),h('h3',null,'ส่งข้อมูลเพิ่มเติม'),h('p',{className:'small-note'},'ช่องตอบข้อความและแนบเอกสารจะเปิดเมื่อเจ้าหน้าที่เปลี่ยนสถานะเป็น “ขอข้อมูลเพิ่มเติม”'),portalEnabled()&&onRetry&&h('button',{className:'quick-submit',disabled:saving,onClick:async()=>{setSaving(true);setSaveError('');try{await onRetry()}catch(e){setSaveError(e.message)}finally{setSaving(false)}}},saving?'กำลังส่ง…':'ส่งคำขอนี้เข้าระบบเจ้าหน้าที่')),
   h('ol',{className:'tracking-steps'},...trackingSteps(record).map((step,i)=>h('li',{key:step.title,className:step.done?'done':''},h('span',null,step.done?'✓':i+1),h('div',null,h('strong',null,step.title),h('p',null,step.detail))))),
   h(StationDestination,{station:choice,incident:record.location,onChange:onStationChange?setChoice:undefined,disabled:saving}),
   onStationChange&&choice&&choice!==record.station&&h('button',{type:'button',disabled:saving,onClick:async()=>{setSaving(true);setSaveError('');try{await onStationChange(choice);}catch(e){setSaveError(e.message);}finally{setSaving(false);}}},saving?'กำลังบันทึก…':'บันทึกสถานีที่เปลี่ยน'),

@@ -9,7 +9,7 @@ import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js?v=20261002-login-contact";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261002-report-no-questions-v2";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-portal-1";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-portal-2";
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-login-contact";
 import {
   readWorkspace,

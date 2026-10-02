@@ -8,3 +8,5 @@
 .quick-flow .voice-record-button:focus-visible{outline:3px solid #14263e;outline-offset:3px}
 .quick-flow .voice-record-button[aria-pressed="true"]{background:#14263e;border-color:#14263e}
 .quick-flow .voice-record-button:disabled{opacity:.55;cursor:not-allowed}
+
+.portal-message-box{margin:20px 0;padding:20px;border:1px solid #cedbee;border-radius:12px;background:#f4f8ff}.portal-message-box h3{color:#244974;margin:0 0 10px}.portal-message-box h3:not(:first-child){margin-top:22px}
