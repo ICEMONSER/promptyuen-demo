@@ -1,4 +1,4 @@
-import {policeLetter,letterStyles} from './police-letter.js?v=20261002-report-clean';
+import {policeLetter,letterStyles} from './police-letter.js?v=20261002-report-no-questions-v2';
 import {legalInputFromRecord, reviewedLegalDraft} from './legal-review.js';
 import {DOCUMENT_LABELS} from './case-config.js';
 import {validPoint} from './station-core.js';
@@ -61,9 +61,7 @@ export function renderReport(
     return validPoint(point) ? `<a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent(`${point.lat},${point.lon}`)}" target="_blank" rel="noopener noreferrer">${label}</a>` : label;
   });
   const coordinates = validPoint(point) ? `<p>พิกัดจุดเกิดเหตุ: ${esc(point.lat)}, ${esc(point.lon)}</p>` : '';
-  const facts = legal
-    ? `<p>${esc(legal.formalNarrative)}</p><p><small>${legal.mode === "local-demo" ? "ร่างสาธิตเรียบเรียงด้วยแม่แบบในเครื่อง ไม่ใช่ GenAI" : "ร่างเรียบเรียงด้วย AI จากข้อมูลผู้แจ้ง"} ผู้แจ้งตรวจข้อความแล้ว พนักงานสอบสวนต้องตรวจสอบข้อเท็จจริงเพิ่มเติม</small></p><h3>คำบอกเล่าต้นฉบับของผู้แจ้ง</h3><p>${field("details")}</p>${legal.missingQuestions.length ? `<h3>ประเด็นที่ยังต้องสอบถามเพิ่มเติม</h3><ol>${legal.missingQuestions.map(question=>`<li>${esc(question)}</li>`).join('')}</ol>` : ''}`
-    : `<p>${field("details")}</p>`;
+  const facts = `<p>${esc(legal?.formalNarrative || record.fields.details?.value || "................................")}</p>`;
   const sections = police
     ? `
     <section><h2>๑. ข้อมูลผู้แจ้ง</h2><p>ข้าพเจ้า ${field("fullName")} เลขประจำตัวประชาชน ${field("nationalId")}</p><p>เกิดวันที่ ${date("birthDate")} ที่อยู่ ${field("address")}</p><p>หมายเลขโทรศัพท์ ${field("phone")}</p></section>
