@@ -11,7 +11,7 @@ export function createBrowserGenAI({workerFactory=()=>new Worker(new URL('./gena
     if(!gpu)throw Error('อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับ WebGPU จึงใช้ GenAI ฟรีในเครื่องไม่ได้ กรุณาเปิดด้วยเบราว์เซอร์ที่รองรับ เช่น Chrome บนคอมพิวเตอร์');
     worker ||= workerFactory();
     return new Promise((resolve,reject)=>{
-      pending={reject,timer:setTimeout(()=>cancel('ดาวน์โหลดโมเดลนานเกินกำหนด กรุณาตรวจอินเทอร์เน็ตแล้วลองใหม่'),20*60*1000)};
+      pending={reject,timer:setTimeout(()=>cancel('ดาวน์โหลดโมเดลนานเกินกำหนด กรุณาตรวจอินเทอร์เน็ตแล้วลองใหม่'),10*60*1000)};
       const fail=message=>cancel(message);
       worker.onerror=()=>fail('โหลด GenAI ไม่สำเร็จ ตรวจอินเทอร์เน็ตและความสามารถของอุปกรณ์ แล้วลองใหม่');
       worker.onmessage=({data})=>{
