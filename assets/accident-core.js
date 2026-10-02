@@ -1,6 +1,6 @@
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
 import {reviewedLegalDraft} from './legal-review.js';
-import {validPoint} from './station-core.js';
+import {validPoint,incidentMapUrl,policeSearchUrl} from './station-core.js';
 // Local simulated submission only; never communicates with an agency.
 export const EVIDENCE_LIMIT = 5;
 export function bangkokDateTime(now = new Date()) {
@@ -44,4 +44,13 @@ export function trackingSteps(record) {
     {title:'เจ้าหน้าที่รับเรื่อง',done:false,detail:'ยังไม่มีสถานะจากหน่วยงาน'},
     {title:'ดำเนินการเสร็จสิ้น',done:false,detail:'รอระบบหน่วยงานในอนาคต'},
   ];
+}
+
+// Changing the destination never changes the event location, evidence or legal draft.
+export function changeAccidentStation(record,station,revision,now=new Date()) {
+ if(!record.quickAccident)throw Error('คำขอนี้ไม่รองรับการเปลี่ยนสถานี');
+ if(record.revision!==revision)throw Error('กรุณาโหลดใหม่ มีการแก้ไขคำขอ');
+ if(!station||typeof station.name!=='string'||!station.name.trim()||station.name.length>150||(!station.manual&&!validPoint(station)))throw Error('กรุณาเลือกสถานีหรือระบุชื่อสถานีให้ถูกต้อง');
+ const destination={...station,name:station.name.trim(),incident:record.location||null,mapUrl:validPoint(station)?incidentMapUrl(station):policeSearchUrl(null,station.name)};
+ return {...record,station:destination,revision:record.revision+1,updatedAt:now.toISOString()};
 }

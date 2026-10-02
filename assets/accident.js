@@ -1,4 +1,5 @@
-import {NearestStationSearch} from './nearest-station-ui.js?v=20261002-real-stations';
+import {StationDestination} from './station-destination.js?v=20261002-auto';
+import {NearestStationSearch} from './nearest-station-ui.js?v=20261002-auto';
 import {nearestPoliceStation} from './nearest-station.js?v=20261002-real-stations';
 import {D as React} from './shared-ui.js';
 import {imageCanvas} from './import-document.js';
@@ -6,7 +7,7 @@ import {toDataURL} from './store.js';
 import {parseIncidentPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl} from './station-core.js';
 import {LegalDraftPanel} from './legal-draft.js';
 import {reviewedLegalDraft} from './legal-review.js';
-import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js';
+import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261002-auto';
 import {thaiDate} from './report.js';
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
 import {DocumentChecklist} from './document-checklist.js';
@@ -14,6 +15,7 @@ const h=React.createElement;
 export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPoliceStation}) {
  const [when,setWhen]=React.useState('now'),[details,setDetails]=React.useState(''),[eventDate,setDate]=React.useState(''),[eventPlace,setPlace]=React.useState(''),[evidence,setEvidence]=React.useState([]),[point,setPoint]=React.useState(null),[busy,setBusy]=React.useState(''),[error,setError]=React.useState('');
  const [latitude,setLatitude]=React.useState(''),[longitude,setLongitude]=React.useState(''),[stationName,setStationName]=React.useState(''),[legalDraft,setLegalDraft]=React.useState(null),[aiBusy,setAIBusy]=React.useState(false),[incidentNow,setIncidentNow]=React.useState(()=>new Date());
+ const [stationOverride,setStationOverride]=React.useState(false);
  const [automaticStation,setAutomaticStation]=React.useState(null),[stationBusy,setStationBusy]=React.useState(false);
  const locked=!!busy||aiBusy||stationBusy;
  let currentPoint=null,coordinateError='',searchUrl='',mapUrl='';
@@ -27,7 +29,20 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
  const requiredMissing=checklist('accident',documents,documentIds).some(d=>d.required&&!d.selected);
  const guard=React.useRef(false);
  const fileInput=React.useRef(null);
- async function locate(){if(!navigator.geolocation){setError('อุปกรณ์ไม่รองรับตำแหน่ง กรุณาพิมพ์สถานที่เอง');return;}setBusy('กำลังหาตำแหน่ง');setError('');try{const position=await new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:12000,maximumAge:0}));const p={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy};setPoint(p);setLatitude(p.lat.toFixed(6));setLongitude(p.lon.toFixed(6));setStationName('');setPlace(`พิกัด ${p.lat.toFixed(6)}, ${p.lon.toFixed(6)} (คลาดเคลื่อนประมาณ ${Math.round(p.accuracy)} เมตร)`);}catch{setError('ไม่ได้รับตำแหน่ง กรุณาอนุญาตหรือพิมพ์สถานที่เกิดเหตุด้านล่าง');}finally{setBusy('');}}
+ React.useEffect(()=>{
+  if(when!=='now')return;
+  let active=true;
+  setBusy('กำลังเลือกสถานีตำรวจใกล้เคียง');setError('');
+  if(!navigator.geolocation){setBusy('');setError('ใช้ตำแหน่งอัตโนมัติไม่ได้ กรุณาระบุสถานที่และเลือกสถานีเอง');return;}
+  navigator.geolocation.getCurrentPosition(position=>{
+   if(!active)return;
+   const p={lat:position.coords.latitude,lon:position.coords.longitude,accuracy:position.coords.accuracy};
+   setPoint(p);setLatitude(p.lat.toFixed(6));setLongitude(p.lon.toFixed(6));setStationName('');
+   setPlace('ตำแหน่งปัจจุบัน ณ เวลาแจ้งเหตุ');setBusy('');
+  },()=>{if(active){setBusy('');setError('ไม่ได้รับอนุญาตหรือหาตำแหน่งไม่สำเร็จ กรุณาระบุสถานที่และเลือกสถานีเอง');}},
+  {enableHighAccuracy:true,timeout:12000,maximumAge:0});
+  return()=>{active=false;};
+ },[when]);
  async function files(event){const incoming=Array.from(event.target.files||[]);event.target.value='';if(incoming.length+evidence.length>EVIDENCE_LIMIT){setError('แนบได้สูงสุด 5 ไฟล์');return;}setBusy('กำลังเตรียมหลักฐาน');setError('');try{const next=[];for(const file of incoming){if(!['image/jpeg','image/png','video/mp4','video/webm'].includes(file.type)||file.size>16*1024*1024)throw Error('ใช้ JPG, PNG, MP4 หรือ WebM ขนาดไม่เกิน 16 MB ต่อไฟล์');const image=file.type.startsWith('image/')?(await imageCanvas(file,1600)).toDataURL('image/jpeg',.82):await toDataURL(file);next.push({id:crypto.randomUUID(),name:file.name,mime:file.type.startsWith('image/')?'image/jpeg':file.type,image});}setEvidence(current=>[...current,...next]);}catch(e){setError(e.message);}finally{setBusy('');}}
  async function submit(event){
   event.preventDefault();if(guard.current||locked)return;guard.current=true;setError('');setBusy('กำลังจัดเตรียมคำขอ');
@@ -53,23 +68,11 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
   h('span',{className:'login-step'},'แจ้งเหตุให้น้อยขั้นตอนที่สุด'),h('h1',null,'อุบัติเหตุทางรถ'),h('p',null,'เล่าเหตุการณ์ แนบหลักฐาน แล้วรับเอกสารสรุปได้ทันที'),
   h('p',{className:'quick-notice'},'ต้นแบบไม่ใช่ช่องทางฉุกเฉินและยังไม่ส่งถึงตำรวจ หากมีอันตรายเร่งด่วน โทร 191 หรือ 1669'),
   h('form',{onSubmit:submit,noValidate:true},
-   h('fieldset',{disabled:locked,className:'when-picker'},h('legend',null,'เหตุเกิดเมื่อไร'),...['now','past'].map(v=>h('label',{key:v,className:when===v?'selected':''},h('input',{type:'radio',name:'incident-when',value:v,checked:when===v,onChange:()=>{setWhen(v);setPoint(null);setLatitude('');setLongitude('');setStationName('');setPlace('');setIncidentNow(new Date());setError('');}}),v==='now'?'เกิดเหตุตอนนี้':'แจ้งย้อนหลัง'))),
-   when==='now'?h('div',{className:'location-note'},h('strong',null,'วันเวลาเกิดเหตุ: '+bangkokDateTime(incidentNow)),h('p',null,'ใช้ตำแหน่งนี้เฉพาะเมื่อคุณอยู่ ณ จุดเกิดเหตุ'),h('button',{type:'button',disabled:locked,onClick:locate},point?'อัปเดตตำแหน่งจุดเกิดเหตุ':'ใช้ตำแหน่งปัจจุบัน'),h('small',null,'เบราว์เซอร์จะขออนุญาต ไม่ใช้ IP ระบุจุดเกิดเหตุ')):h('label',null,'วันและเวลาเกิดเหตุ',h('input',{type:'datetime-local',required:true,value:eventDate,disabled:locked,onChange:e=>setDate(e.target.value)})),
-   h('label',null,when==='now'?'จุดเกิดเหตุ (เติมจากตำแหน่ง หรือพิมพ์เองเมื่อใช้ตำแหน่งไม่ได้)':'สถานที่เกิดเหตุ',h('input',{required:true,value:eventPlace,maxLength:500,disabled:locked,placeholder:'ชื่อสถานที่ พร้อมเขต / อำเภอและจังหวัด',onChange:e=>{setPlace(e.target.value);setPoint(null);setLatitude('');setLongitude('');setStationName('');}})),
-   h('div',{className:'location-note'},
-    h('strong',null,'ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุ'),
-    h('div',{className:'assistant-grid'},
-     h('label',{className:'assistant-field'},'ละติจูด',h('input',{value:latitude,inputMode:'decimal',disabled:locked,placeholder:'เช่น 13.7563',onChange:e=>{setLatitude(e.target.value);setPoint(null);setStationName('');}})),
-     h('label',{className:'assistant-field'},'ลองจิจูด',h('input',{value:longitude,inputMode:'decimal',disabled:locked,placeholder:'เช่น 100.5018',onChange:e=>{setLongitude(e.target.value);setPoint(null);setStationName('');}}))),
-    h('small',null,'ใส่พิกัด หรือวางคู่ละติจูด, ลองจิจูดจาก Google Maps ในช่องสถานที่เกิดเหตุ หากไม่มีพิกัดจะใช้ชื่อสถานที่ที่ระบุ'),
-    coordinateError&&h('p',{role:'alert'},coordinateError),
-    h(NearestStationSearch,{point:currentPoint,disabled:locked,lookup:stationLookup,onBusyChange:setStationBusy,onSelect:station=>{setAutomaticStation(station);setStationName(station?.name||'');}}),
-    automaticStation&&h('p',{role:'status'},`จุดยื่นเอกสารที่เลือกอัตโนมัติ: ${automaticStation.name} · ${automaticStation.distance.toFixed(2)} กม. (ระยะเส้นตรง)`),
-    automaticStation&&h('a',{href:automaticStation.mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูสถานีที่เลือกใน Google Maps'),
-    searchUrl&&h('a',{href:searchUrl,target:'_blank',rel:'noopener noreferrer'},'ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุใน Google Maps ↗'),
-    mapUrl&&h('a',{href:mapUrl,target:'_blank',rel:'noopener noreferrer'},'ดูจุดเกิดเหตุใน Google Maps ↗'),
-    h('small',null,'กดลิงก์เพื่อส่งเฉพาะพิกัดหรือชื่อสถานที่ไปยัง Google Maps แล้วกรอกชื่อสถานีที่เลือก ไม่ส่งคำบอกเล่าหรือหลักฐาน และผลค้นหาไม่ยืนยันเขตรับผิดชอบ'),
-    h('label',{className:'assistant-field'},'ชื่อสถานีตำรวจที่เลือกจากผลค้นหา',h('input',{value:stationName,maxLength:150,disabled:locked,onChange:e=>{setAutomaticStation(null);setStationName(e.target.value);},placeholder:'เช่น สถานีตำรวจ…'}))),
+   h('fieldset',{disabled:locked,className:'when-picker'},h('legend',null,'เหตุเกิดเมื่อไร'),...['now','past'].map(v=>h('label',{key:v,className:when===v?'selected':''},h('input',{type:'radio',name:'incident-when',value:v,checked:when===v,onChange:()=>{setWhen(v);setPoint(null);setLatitude('');setLongitude('');setStationName('');setAutomaticStation(null);setStationOverride(false);setPlace('');setIncidentNow(new Date());setError('');}}),v==='now'?'เกิดเหตุตอนนี้':'แจ้งย้อนหลัง'))),
+   when==='now'?h('p',{className:'small-note'},'วันเวลาเกิดเหตุ: '+bangkokDateTime(incidentNow)):h('label',null,'วันและเวลาเกิดเหตุ',h('input',{type:'datetime-local',required:true,value:eventDate,disabled:locked,onChange:e=>setDate(e.target.value)})),
+   (when==='past'||(!point&&!busy))&&h('label',null,'สถานที่เกิดเหตุ',h('input',{required:true,value:eventPlace,maxLength:500,disabled:locked,placeholder:'ชื่อสถานที่ พร้อมเขต / อำเภอและจังหวัด',onChange:e=>{setPlace(e.target.value);setPoint(null);setLatitude('');setLongitude('');setStationName('');setAutomaticStation(null);}})),
+   h(NearestStationSearch,{enabled:!stationOverride,point:currentPoint,disabled:locked,lookup:stationLookup,onBusyChange:setStationBusy,onSelect:station=>{setAutomaticStation(station);setStationName(station?.name||'');}}),
+   h(StationDestination,{station:automaticStation||(stationName?{id:'manual',name:stationName,manual:true}:null),incident:currentPoint,disabled:locked,onChange:station=>{setStationOverride(true);setAutomaticStation(station);setStationName(station?.name||'');}}),
    h('label',null,'1. รายละเอียดเหตุการณ์',h('textarea',{required:true,value:details,maxLength:4000,rows:4,disabled:locked,placeholder:'เกิดอะไรขึ้น รถที่เกี่ยวข้อง และความเสียหายที่พบ',onChange:e=>setDetails(e.target.value)})),
    h(LegalDraftPanel,{input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy,onBusyChange:setAIBusy}),
    h('label',{className:'evidence-upload'},'2. ภาพหรือวิดีโอหลักฐาน',h('input',{ref:fileInput,type:'file',accept:'image/jpeg,image/png,video/mp4,video/webm',multiple:true,disabled:locked,onChange:files}),h('small',null,'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · เก็บเฉพาะในเครื่อง')),
@@ -82,12 +85,15 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    error&&h('p',{role:'alert',className:'quick-error',tabIndex:-1,ref:node=>node?.focus()},error),
    h('button',{className:'quick-submit',type:'submit',disabled:locked},busy||'ส่งคำขอจำลองและสร้างเอกสาร →')));
 }
-export function CaseTracking({record,onPrint,onClose}) {
+export function CaseTracking({record,onPrint,onClose,onStationChange}) {
+ const [choice,setChoice]=React.useState(record.station),[saving,setSaving]=React.useState(false),[saveError,setSaveError]=React.useState('');
+ React.useEffect(()=>setChoice(record.station),[record.station]);
  return h('div',{className:'tracking-backdrop'},h('section',{className:'tracking-card',role:'dialog','aria-modal':true,'aria-label':'ติดตามคำขอ'},
   h('button',{className:'text-action',onClick:onClose,autoFocus:true},'ปิด'),h('span',{className:'login-step'},'ติดตามคำขอของคุณ'),h('h2',null,record.status==='simulated'?'บันทึกคำขอจำลองแล้ว':'คำขอนี้ยังเป็นฉบับร่าง'),h('p',null,record.reference||'ยังไม่มีเลขคำขอ'),
   h('ol',{className:'tracking-steps'},...trackingSteps(record).map((step,i)=>h('li',{key:step.title,className:step.done?'done':''},h('span',null,step.done?'✓':i+1),h('div',null,h('strong',null,step.title),h('p',null,step.detail))))),
-  h('div',{className:'location-note'},h('strong',null,record.station?.name||'ยังไม่ได้ระบุสถานี'),h('p',null,record.station?`สถานีที่ผู้แจ้งเลือก ไม่ยืนยันเขตรับผิดชอบ${Number.isFinite(record.station.distance)?` · ${record.station.distance.toFixed(1)} กม.`:''}`:'ยังไม่ได้กรอกชื่อสถานีที่เลือกจาก Google Maps'),h('small',null,'ตำแหน่งใกล้ที่สุดไม่จำเป็นต้องเป็นสถานีที่มีอำนาจรับผิดชอบ')),
-  record.location&&h('a',{href:policeSearchUrl(record.location),target:'_blank',rel:'noopener noreferrer'},'ค้นหาสถานีตำรวจใกล้จุดเกิดเหตุใน Google Maps ↗'),
+  h(StationDestination,{station:choice,incident:record.location,onChange:onStationChange?setChoice:undefined,disabled:saving}),
+  onStationChange&&choice&&choice!==record.station&&h('button',{type:'button',disabled:saving,onClick:async()=>{setSaving(true);setSaveError('');try{await onStationChange(choice);}catch(e){setSaveError(e.message);}finally{setSaving(false);}}},saving?'กำลังบันทึก…':'บันทึกสถานีที่เปลี่ยน'),
+  saveError&&h('p',{role:'alert'},saveError),
   record.legalDraft&&h('p',{className:'small-note'},'ใบสรุปมีร่างสำนวนที่คุณตรวจแล้ว พร้อมคำบอกเล่าต้นฉบับ'),
   record.identityMissing&&h('p',{className:'quick-notice'},'เอกสารสรุปยังไม่มีข้อมูลผู้แจ้ง เนื่องจากยังไม่มีบัตรที่ตรวจแล้ว'),
   h('p',null,'วันที่บันทึก '+thaiDate(record.updatedAt)),h('p',{className:'quick-notice'},'ตำรวจยังไม่ได้รับเรื่อง ระบบจะไม่สร้างสถานะว่าเจ้าหน้าที่รับหรือดำเนินการเสร็จเอง'),

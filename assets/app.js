@@ -6,9 +6,9 @@ import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
-import { StationPicker } from "./stations.js?v=20261002-real-stations";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-real-stations";
-import { makeAccident } from "./accident-core.js";
+import { StationPicker } from "./stations.js?v=20261002-auto";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-auto";
+import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-auto";
 import {
   readWorkspace,
   writeWorkspace,
@@ -604,6 +604,10 @@ async function kg(e, t, n) {
         await Tg(i),
         { ok: !0 }
       );
+    if (n==='PATCH' && t.action==='station' && e.quickAccident) {
+      Object.assign(e,changeAccidentStation(e,t.station,t.revision));
+      await Tg(i);return {case:e};
+    }
     if (e.status !== `draft`) throw Error(`คำขอนี้ส่งแบบจำลองแล้ว`);
     if (e.revision !== t.revision) throw Error(`กรุณาโหลดใหม่ มีการแก้ไขคำขอ`);
     let r = _g[e.service];
@@ -1323,7 +1327,7 @@ function Vg() {
     });
   return (0, B.jsxs)(Ym, {
     children: [
-      tracking && D.createElement(CaseTracking,{record:tracking,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
+      tracking && D.createElement(CaseTracking,{record:tracking,onStationChange:tracking.quickAccident?async(station)=>{const result=await zg('/api/cases',{id:tracking.id,revision:tracking.revision,action:'station',station},'PATCH');setTracking(result.case);await Fe();}:undefined,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
       (0, B.jsx)(pg, { richColors: !0, position: `top-center` }),
       (0, B.jsxs)(Xm, {
         className: `app-sidebar`,

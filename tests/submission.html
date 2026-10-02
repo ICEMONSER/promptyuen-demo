@@ -1,9 +1,11 @@
-<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ทดสอบปุ่มส่งเอกสาร</title><link rel="stylesheet" href="../assets/assistant.css"><link rel="stylesheet" href="../assets/round2.css"><body><p>ทดสอบในเครื่องเท่านั้น · ใช้ข้อมูลจำลอง ไม่ส่งถึงตำรวจ</p><button id="attach">แนบภาพทดสอบ</button><div id="root"></div><div id="result"></div><script type="module">
+<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ทดสอบปุ่มส่งเอกสาร</title><link rel="stylesheet" href="../assets/assistant.css"><link rel="stylesheet" href="../assets/round2.css"><body><p>ทดสอบในเครื่องเท่านั้น · ใช้ข้อมูลจำลอง ไม่ส่งถึงตำรวจ</p><button id="attach">แนบภาพทดสอบ</button><div id="root"></div><div id="result"></div><style>body{margin:0}#root{max-width:780px}select{max-width:100%;width:100%;font:inherit}</style><script type="module">
 import {D as React,Ee} from '../assets/shared-ui.js';
-import {AccidentFlow} from '../assets/accident.js';
+import {AccidentFlow} from '../assets/accident.js?v=20261002-auto';
 import {makeAccident} from '../assets/accident-core.js';
 import {renderReport} from '../assets/report.js';
 if(!['localhost','127.0.0.1'].includes(location.hostname))throw Error('Local test only');
+let locationCalls=0;
+Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:success=>{locationCalls++;document.body.dataset.locationCalls=locationCalls;setTimeout(()=>success({coords:{latitude:13.77,longitude:100.68,accuracy:20}}),30);}}});
 const docs=['identity','license','vehicle'].map(kind=>({id:kind,kind,verified:true,name:'เอกสารทดสอบ',fields:{}}));
 Ee.createRoot(document.getElementById('root')).render(React.createElement(AccidentFlow,{documents:docs,onClose:()=>{},onSubmit:async input=>{const record=makeAccident(input,docs);document.getElementById('result').textContent='ผ่าน: บันทึกสำเร็จ · '+record.station.name;const frame=document.createElement('iframe');frame.title='ใบสรุปทดสอบ';frame.srcdoc=renderReport(record,{label:'ทดสอบ',short:'ทดสอบ'},{});document.getElementById('result').append(frame);}}));
 document.getElementById('attach').onclick=()=>{const canvas=document.createElement('canvas');canvas.width=8;canvas.height=8;canvas.toBlob(blob=>{const dt=new DataTransfer();dt.items.add(new File([blob],'test.png',{type:'image/png'}));const input=document.querySelector('input[type=file]');input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));});};
