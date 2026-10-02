@@ -1,3 +1,4 @@
+import {documentContact} from './contact-core.js';
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
 import {reviewedLegalDraft} from './legal-review.js';
 import {validPoint,incidentMapUrl,policeSearchUrl} from './station-core.js';
@@ -24,10 +25,12 @@ export function makeAccident(input, documents, now = new Date()) {
   const documentIds = Array.isArray(input.documentIds) ? input.documentIds.filter(id => documents.some(d => d.id === id && d.verified)) : selectDocuments('accident', documents);
   const missing = checklist('accident', documents, documentIds).filter(d => d.required && !d.selected);
   if (missing.length) throw Error('กรุณาแนบและตรวจยืนยันเอกสารจำเป็น: ' + missing.map(d => DOCUMENT_LABELS[d.type]).join(' · '));
+  const contact=documentContact(documents,documentIds);
   const allowed=['fullName','nationalId','birthDate','address'];
   const identity=documents.find(d=>d.kind==='identity'&&d.verified);
   const fields={};
   for(const key of allowed) if(identity?.fields[key]) fields[key]={value:identity.fields[key],source:identity.name+' · สำเนาข้อมูล ณ วันที่ส่ง'};
+  for(const [key,value] of Object.entries(contact))fields[key]={value,source:'ข้อมูลติดต่อที่ผู้แจ้งยืนยันในหน้าอัปโหลดเอกสาร'};
   fields.details={value:input.details.trim(),source:'ผู้แจ้งระบุ'};
   fields.eventDate={value:date,source:input.when==='now'?input.incidentAt?'เวลาอุปกรณ์เมื่อผู้แจ้งเลือกเกิดเหตุตอนนี้':'เวลาอุปกรณ์ ณ วันที่ส่ง':'ผู้แจ้งระบุ'};
   fields.eventPlace={value:place,source:input.point?.source==='geolocation'?'ตำแหน่งอุปกรณ์ที่ผู้ใช้อนุญาต':'ผู้แจ้งระบุ'};

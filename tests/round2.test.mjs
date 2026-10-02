@@ -7,7 +7,7 @@ import {legalInputFromRecord,reviewedLegalDraft} from '../assets/legal-review.js
 const now=new Date('2026-10-01T10:00:00Z');
 const input={station:{id:'test-station',name:'สถานีทดสอบ',manual:true},when:'now',details:'ข้อมูลทดสอบการชน',eventPlace:'สถานที่ทดสอบ',evidence:[{name:'test.jpg',mime:'image/jpeg',image:'data:image/jpeg;base64,YQ=='}]};
 const reviewedDocuments=()=>[
-  {id:'identity',kind:'identity',verified:true,name:'บัตรตัวอย่าง',fields:{fullName:'นาย ทดสอบ ระบบ',phone:'unneeded'}},
+  {id:'identity',kind:'identity',verified:true,name:'บัตรตัวอย่าง',fields:{fullName:'นาย ทดสอบ ระบบ',phone:'0812345678',email:'test@gmail.com'}},
   {id:'license',kind:'license',verified:true,name:'ใบขับขี่ตัวอย่าง',fields:{licenseNumber:'TEST-LICENSE'}},
   {id:'vehicle',kind:'vehicle',verified:true,name:'ทะเบียนรถตัวอย่าง',fields:{plate:'TEST-PLATE'}},
 ];
@@ -29,7 +29,8 @@ test('identity snapshot excludes unverified docs and unrelated fields',()=>{
   const r=makeAccident(input,docs,now);
   assert.equal(r.fields.fullName.value,'นาย ทดสอบ ระบบ');
   assert.equal(r.fields.fullName.documentId,undefined);
-  assert.equal(r.fields.phone,undefined);
+  assert.equal(r.fields.phone.value,'0812345678');
+  assert.equal(r.fields.email.value,'test@gmail.com');
   assert.ok(!r.documentIds.includes('unverified'));
   docs.find(doc=>doc.id==='identity').fields.fullName='changed';
   assert.equal(r.fields.fullName.value,'นาย ทดสอบ ระบบ');

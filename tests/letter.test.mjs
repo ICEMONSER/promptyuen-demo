@@ -14,7 +14,8 @@ test('letter uses reviewed narrative in body and preserves source in separate an
  assert.ok(html.includes('ระบุสังกัด'));
  assert.ok(html.includes('alt="ตราครุฑตามแบบฟอร์ม"'));
  assert.ok(html.includes('contenteditable="true"'));
- assert.ok(html.includes('โทรสาร'));
+ assert.ok(!html.includes('โทรสาร'));
+ assert.ok(!html.includes('ระบุผู้รับสำเนา'));
  assert.ok(html.includes('ไปรษณีย์อิเล็กทรอนิกส์'));
 });
 test('attachments and letter fields are escaped; stale drafts cannot print',()=>{

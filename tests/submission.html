@@ -13,7 +13,7 @@ if(new URLSearchParams(location.search).has('voice')) {
 }
 let locationCalls=0;
 Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:success=>{locationCalls++;document.body.dataset.locationCalls=locationCalls;setTimeout(()=>success({coords:{latitude:13.77,longitude:100.68,accuracy:20}}),30);}}});
-const docs=['identity','license','vehicle'].map(kind=>({id:kind,kind,verified:true,name:'เอกสารทดสอบ',fields:{}}));
+const docs=['identity','license','vehicle'].map(kind=>({id:kind,kind,verified:true,name:'เอกสารทดสอบ',fields:kind==='identity'?{phone:'0812345678',email:'test@gmail.com'}:{}}));
 Ee.createRoot(document.getElementById('root')).render(React.createElement(AccidentFlow,{documents:docs,onClose:()=>{},onSubmit:async input=>{const record=makeAccident(input,docs);document.getElementById('result').textContent='ผ่าน: บันทึกสำเร็จ · '+record.station.name;const frame=document.createElement('iframe');frame.title='ใบสรุปทดสอบ';frame.srcdoc=renderReport(record,{label:'ทดสอบ',short:'ทดสอบ'},{});document.getElementById('result').append(frame);}}));
 document.getElementById('attach').onclick=()=>{const canvas=document.createElement('canvas');canvas.width=8;canvas.height=8;canvas.toBlob(blob=>{const dt=new DataTransfer();dt.items.add(new File([blob],'test.png',{type:'image/png'}));const input=document.querySelector('input[type=file]');input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));});};
 </script></body></html>

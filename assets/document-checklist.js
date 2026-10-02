@@ -1,3 +1,4 @@
+import {documentContact} from './contact-core.js';
 import { D as React } from "./shared-ui.js";
 import { checklist } from "./case-config.js";
 export function DocumentChecklist({
@@ -8,6 +9,8 @@ export function DocumentChecklist({
   onChange,
 }) {
   const h = React.createElement;
+  let contactReady=false;
+  try{documentContact(documents,selected);contactReady=true;}catch{}
   return h(
     "section",
     { className: "assistant-panel" },
@@ -17,6 +20,7 @@ export function DocumentChecklist({
       { className: "small-note" },
       topic === "accident" ? "เอกสารจำเป็น 3 รายการต้องผ่านการตรวจยืนยันในคลังเอกสาร ส่วนกรมธรรม์ประกันภัยเลือกแนบเพิ่มเติมได้" : "รายการเบื้องต้นสำหรับเตรียมข้อมูล เลือกใช้หรือไม่ใช้เอกสารได้ และตรวจข้อกำหนดกับหน่วยงานอีกครั้ง",
     ),
+    topic === "accident" && h("p", {className:contactReady?"available":"missing"}, contactReady ? "พร้อมใช้ · เบอร์โทรศัพท์และ Gmail · จำเป็น" : "ยังขาดข้อมูลติดต่อ · ต้องกรอกเบอร์โทรศัพท์และ Gmail ในหน้าอัปโหลด/ตรวจบัตรประชาชน แล้วบันทึกยืนยัน"),
     ...checklist(topic, documents, selected).map((item) =>
       h(
         "p",

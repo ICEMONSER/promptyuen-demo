@@ -1,14 +1,15 @@
-import { LegalDraftPanel } from './legal-draft.js?v=20261002-template2';
+import {validateContact} from './contact-core.js';
+import { LegalDraftPanel } from './legal-draft.js?v=20261002-contact';
 import { legalInputFromRecord, reviewedLegalDraft } from './legal-review.js';
 import { legalDraftSource } from './reasoning.js';
 import { EvidencePanel } from "./evidence.js";
 import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
-import { DocumentChecklist } from "./document-checklist.js";
+import { DocumentChecklist } from "./document-checklist.js?v=20261002-contact";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-template2";
-import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-auto";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-contact";
+import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-contact";
 import {
   readWorkspace,
   writeWorkspace,
@@ -21,7 +22,7 @@ import {
   validThaiId,
   normalizeDigits,
 } from "./import-document.js";
-import { renderReport } from "./report.js?v=20261002-template2";
+import { renderReport } from "./report.js?v=20261002-contact";
 // Existing application extracted from the shipped bundle; shared UI is unchanged.
 import {
   c,
@@ -110,7 +111,8 @@ var mg = c({
     nationalId: `เลขประจำตัวประชาชน`,
     birthDate: `วันเดือนปีเกิด`,
     address: `ที่อยู่`,
-    phone: `เบอร์โทรศัพท์`,
+    phone: `เบอร์โทรศัพท์ (จำเป็น)`,
+    email: `Gmail (จำเป็น)`,
     plate: `ทะเบียนรถ`,
     contractNumber: `เลขที่สัญญา`,
     eventDate: `วันที่เกิดเหตุ`,
@@ -203,6 +205,7 @@ var mg = c({
     `birthDate`,
     `address`,
     `phone`,
+    `email`,
     `plate`,
     `contractNumber`,
     `expiryDate`,
@@ -524,6 +527,7 @@ async function kg(e, t, n) {
         ["fullName", "address", "birthDate"].some((key) => !n[key]?.trim())
       )
         throw Error("กรุณาตรวจชื่อ ที่อยู่ และวันเกิดให้ครบ");
+      if(e.kind === "identity") Object.assign(n,validateContact(n));
       const existing = i.documents.find((doc) => doc.kind === e.kind);
       if (a.startsWith("pending:") && existing && !t.replaceConfirmed)
         throw Error("แทนที่ข้อมูลเดิม? กรุณายืนยันก่อนบันทึก");
@@ -1931,7 +1935,7 @@ function Vg() {
                         }),
                         (0, B.jsx)(`h1`, { children: `คลังเอกสาร` }),
                         (0, B.jsx)(`p`, {
-                          children: `เก็บครั้งเดียว ตรวจข้อมูล แล้วเลือกใช้ซ้ำกับเรื่องถัดไป`,
+                          children: `อัปโหลดเอกสาร แล้วกรอกเบอร์โทรศัพท์และ Gmail ในหน้าตรวจบัตรประชาชนให้ครบก่อนบันทึก เพื่อใช้ในใบสรุป`,
                         }),
                       ],
                     }),
@@ -2268,7 +2272,7 @@ function Vg() {
             ),
             (0, B.jsx)(`p`, {
               className: `small-note`,
-              children: `ข้อมูลยังไม่ถูกส่งให้ AI หรือหน่วยงานรัฐในขั้นตอนนี้`,
+              children: `หลังอัปโหลดบัตรประชาชน ต้องกรอกเบอร์โทรศัพท์และ Gmail ในหน้าตรวจข้อมูลก่อนยืนยัน ข้อมูลเก็บในเครื่อง ยังไม่ส่งให้ AI หรือหน่วยงานรัฐ`,
             }),
             (0, B.jsxs)(Om, {
               onClick: We,
@@ -2504,7 +2508,7 @@ function Vg() {
                   }),
                   (0, B.jsx)(`div`, {
                     className: `edit-fields`,
-                    children: (O.kind === "identity" ? ["fullName","nationalId","birthDate","address"] : O.kind === "license" ? ["fullName","nationalId","birthDate","licenseNumber","expiryDate"] : vg).map((e) =>
+                    children: (O.kind === "identity" ? ["fullName","nationalId","birthDate","address","phone","email"] : O.kind === "license" ? ["fullName","nationalId","birthDate","licenseNumber","expiryDate"] : vg).map((e) =>
                       (0, B.jsxs)(
                         `label`,
                         {
@@ -2523,6 +2527,8 @@ function Vg() {
                                 })
                               : (0, B.jsx)(`input`, {
                                   value: A[e] || ``,
+                                  type: e === "email" ? "email" : e === "phone" ? "tel" : "text",
+                                  required: O.kind === "identity" && ["phone","email"].includes(e),
                                   maxLength: 500,
                                   onChange: (t) => {
                                     (j((n) => ({ ...n, [e]: t.target.value })),

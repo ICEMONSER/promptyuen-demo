@@ -1,3 +1,4 @@
+import {documentContact} from './contact-core.js';
 import {StationDestination} from './station-destination.js?v=20261002-auto';
 import {NearestStationSearch} from './nearest-station-ui.js?v=20261002-auto';
 import {nearestPoliceStation} from './nearest-station.js?v=20261002-real-stations';
@@ -5,13 +6,13 @@ import {D as React} from './shared-ui.js';
 import {imageCanvas} from './import-document.js';
 import {toDataURL} from './store.js';
 import {parseIncidentPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl} from './station-core.js';
-import {LegalDraftPanel} from './legal-draft.js?v=20261002-template2';
-import {VoiceInput} from './voice-input.js?v=20261002-template2';
+import {LegalDraftPanel} from './legal-draft.js?v=20261002-contact';
+import {VoiceInput} from './voice-input.js?v=20261002-contact';
 import {reviewedLegalDraft} from './legal-review.js';
-import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261002-auto';
-import {thaiDate} from './report.js?v=20261002-template2';
+import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261002-contact';
+import {thaiDate} from './report.js?v=20261002-contact';
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
-import {DocumentChecklist} from './document-checklist.js';
+import {DocumentChecklist} from './document-checklist.js?v=20261002-contact';
 const h=React.createElement;
 export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPoliceStation}) {
  const [when,setWhen]=React.useState('now'),[details,setDetails]=React.useState(''),[eventDate,setDate]=React.useState(''),[eventPlace,setPlace]=React.useState(''),[evidence,setEvidence]=React.useState([]),[point,setPoint]=React.useState(null),[busy,setBusy]=React.useState(''),[error,setError]=React.useState('');
@@ -54,6 +55,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    if(when==='past'&&(!eventDate||!Number.isFinite(parsedDate.getTime())||parsedDate>new Date()))throw Error('กรุณาระบุวันเวลาเกิดเหตุย้อนหลังให้ถูกต้อง');
    const missingDocs=checklist('accident',documents,documentIds).filter(d=>d.required&&!d.selected);
    if(missingDocs.length)throw Error('กรุณาแนบและตรวจยืนยันเอกสาร: '+missingDocs.map(d=>DOCUMENT_LABELS[d.type]).join(' · '));
+   documentContact(documents,documentIds);
    if(!evidence.length)throw Error('กรุณาแนบภาพหรือวิดีโอหลักฐานอย่างน้อย 1 ไฟล์');
    if(coordinateError)throw Error(coordinateError);
    const reviewed=reviewedLegalDraft(legalDraft,draftInput);

@@ -6,7 +6,7 @@ export function policeLetter({record,field,date,esc,legal,coordinates,signature,
  const narrative=legal?.formalNarrative || record.fields.details?.value || '................................';
  const paragraphs=narrative.split(/\n\s*\n/).filter(Boolean).map(text=>`<p class="letter-body">${esc(text)}</p>`).join('');
  const attachments=[...copies.map(copy=>copy.name),...(record.evidence||[]).map((item,i)=>item.name||`หลักฐานประกอบเหตุการณ์ ${i+1}`)];
- return `<header class="letter-header"><img class="letter-emblem" src="${emblem}" alt="ตราครุฑตามแบบฟอร์ม"><div class="letter-reference"><span>ที่ ${slot('letterNumber','ระบุเลขที่หนังสือ')}</span><span>${slot('organization','ระบุสังกัด')}</span></div></header>
+ return `<header class="letter-header"><img class="letter-emblem" src="${emblem}" alt="ตราครุฑตามแบบฟอร์ม"><div class="letter-reference"><span>ที่ ${record.reference?esc(record.reference):slot('letterNumber','ระบุเลขที่หนังสือ')}</span><span>${slot('organization','ระบุสังกัด')}</span></div></header>
  <p class="letter-date">${esc(thaiDigits(thaiDate(record.submittedAt || record.updatedAt || new Date())))}</p>
  <p><strong>เรื่อง</strong> ${record.service==='accident'?'แจ้งความกรณีอุบัติเหตุรถยนต์':'แจ้งข้อเท็จจริงเพื่อบันทึกไว้เป็นหลักฐาน'}</p>
  <p><strong>เรียน</strong> ${record.station?.name?`พนักงานสอบสวน ${esc(record.station.name)}`:slot('recipient','ระบุผู้รับ')}</p>
@@ -17,7 +17,7 @@ export function policeLetter({record,field,date,esc,legal,coordinates,signature,
  <section class="letter-sign"><p>ขอแสดงความนับถือ</p>
  ${signature?.startsWith('data:image/png;base64,')?`<img src="${esc(signature)}" alt="ลายมือชื่อผู้แจ้ง">`:'<div class="signature-space"></div>'}
  <p>(${slot('fullName','ระบุชื่อ')})</p><p>${slot('position','ระบุตำแหน่ง')}</p></section>
- <div class="letter-contact"><p>${slot('organization','ระบุสังกัด')}</p><p>โทร. ${slot('phone','ระบุหมายเลขโทรศัพท์')}</p><p>โทรสาร ${slot('fax','ระบุหมายเลขโทรสาร')}</p><p>ไปรษณีย์อิเล็กทรอนิกส์ ${slot('email','ระบุอีเมล')}</p><p>สำเนาส่ง ${slot('copyRecipient','ระบุผู้รับสำเนา')}</p></div>
+ <div class="letter-contact"><p>โทร. ${slot('phone','ระบุหมายเลขโทรศัพท์')}</p><p>ไปรษณีย์อิเล็กทรอนิกส์ ${slot('email','ระบุอีเมล')}</p></div>
  <p class="draft-note">ฉบับร่างสำหรับผู้แจ้ง • ไม่ใช่เอกสารที่ออกหรือรับรองโดยหน่วยงานราชการ</p>
  <section class="letter-annex"><h2>ข้อมูลประกอบหนังสือแจ้งข้อเท็จจริง</h2>
  <p>เลขประจำตัวประชาชน ${field('nationalId')}</p><p>เกิดวันที่ ${date('birthDate')}</p>${coordinates}
