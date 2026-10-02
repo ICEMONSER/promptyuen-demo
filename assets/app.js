@@ -1,4 +1,4 @@
-import { LegalDraftPanel } from './legal-draft.js?v=20261002-letter';
+import { LegalDraftPanel } from './legal-draft.js?v=20261002-template2';
 import { legalInputFromRecord, reviewedLegalDraft } from './legal-review.js';
 import { legalDraftSource } from './reasoning.js';
 import { EvidencePanel } from "./evidence.js";
@@ -7,7 +7,7 @@ import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-letter";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-template2";
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-auto";
 import {
   readWorkspace,
@@ -21,7 +21,7 @@ import {
   validThaiId,
   normalizeDigits,
 } from "./import-document.js";
-import { renderReport } from "./report.js?v=20261002-letter";
+import { renderReport } from "./report.js?v=20261002-template2";
 // Existing application extracted from the shipped bundle; shared UI is unchanged.
 import {
   c,

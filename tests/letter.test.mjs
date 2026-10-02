@@ -11,7 +11,11 @@ test('letter uses reviewed narrative in body and preserves source in separate an
  assert.ok(html.indexOf(draft.formalNarrative)<html.indexOf('<section class="letter-annex">'));
  assert.ok(html.indexOf(input.details)>html.indexOf('<section class="letter-annex">'));
  assert.ok(html.includes('พนักงานสอบสวน สถานีทดสอบ'));
- assert.ok(!html.includes('ระบุสังกัด'));
+ assert.ok(html.includes('ระบุสังกัด'));
+ assert.ok(html.includes('alt="ตราครุฑตามแบบฟอร์ม"'));
+ assert.ok(html.includes('contenteditable="true"'));
+ assert.ok(html.includes('โทรสาร'));
+ assert.ok(html.includes('ไปรษณีย์อิเล็กทรอนิกส์'));
 });
 test('attachments and letter fields are escaped; stale drafts cannot print',()=>{
  const html=renderReport({...record,station:{name:'<script>bad</script>'},legalDraft:{reviewed:true,source:'stale',formalNarrative:'STALE'}},{short:'แจ้งเหตุ'},{},[{name:'<b>copy</b>',image:'data:image/png;base64,AA'}]);

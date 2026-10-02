@@ -1,4 +1,4 @@
-import {policeLetter,letterStyles} from './police-letter.js';
+import {policeLetter,letterStyles} from './police-letter.js?v=20261002-template2';
 import {legalInputFromRecord, reviewedLegalDraft} from './legal-review.js';
 import {validPoint} from './station-core.js';
 // Printable preparation form, deliberately distinct from an issued police record.

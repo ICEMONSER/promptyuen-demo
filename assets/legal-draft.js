@@ -11,6 +11,8 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
   const latest = React.useRef(source);
   latest.current = source;
   const generation = React.useRef(0);
+  const attempted = React.useRef(null);
+  const running = React.useRef(false);
   React.useEffect(() => () => { generation.current++; service.current?.cancel(); }, []);
   React.useEffect(() => {
     if (value && value.source !== source) onChange(null);
@@ -18,7 +20,8 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
   }, [source]);
   const current = value?.source === source ? value : null;
   async function generate() {
-    if (busy) return;
+    if (running.current) return;
+    running.current=true; attempted.current=source;
     const id = ++generation.current;
     setBusy(true); onBusyChange?.(true); setError('');
     try {
@@ -30,13 +33,18 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
     } catch (err) {
       if (id === generation.current && latest.current === source) setError(err.message);
     } finally {
-      if (id === generation.current) { setBusy(false); onBusyChange?.(false); }
+      if (id === generation.current) { running.current=false; setBusy(false); onBusyChange?.(false); }
     }
   }
   React.useEffect(() => { if (autoGenerate) generate(); }, [autoGenerate]);
+  React.useEffect(() => {
+    if(disabled || busy || !input.details?.trim() || current || attempted.current===source)return;
+    const timer=setTimeout(()=>generate(),1500);
+    return ()=>clearTimeout(timer);
+  },[source,disabled,busy]);
   return h('section', { className: 'assistant-panel legal-draft', 'aria-label': 'ข้อความสำหรับใบสรุป' },
     h('h3', null, 'ข้อความสำหรับใบสรุป'),
-    h('p', { className: 'small-note' }, 'เมื่อพูดจบ ระบบจะเรียบเรียงและใส่ข้อความในใบสรุปให้โดยอัตโนมัติ ตรวจความถูกต้องก่อนยืนยันเอกสาร'),
+    h('p', { className: 'small-note' }, 'เมื่อพูดจบหรือหยุดพิมพ์ ระบบจะเรียบเรียงและใส่ข้อความในใบสรุปให้โดยอัตโนมัติ ตรวจความถูกต้องก่อนยืนยันเอกสาร'),
     busy && h('p', {role:'status'}, 'กำลังเตรียมข้อความสำหรับเอกสาร… ครั้งแรกอาจใช้เวลาหลายนาที คุณไม่ต้องดาวน์โหลดหรือตั้งค่าเอง'),
     busy && h('button', {type:'button',onClick:()=>service.current?.cancel()}, 'ยกเลิก'),
     !disabled && !busy && (error || !autoGenerate) && h('button', {type:'button',disabled:!input.details?.trim(),onClick:generate}, error ? 'ลองเรียบเรียงอีกครั้ง' : 'เตรียมข้อความสำหรับเอกสาร'),
