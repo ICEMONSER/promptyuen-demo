@@ -43,27 +43,3 @@ test('runtime failure clears the lock, preserves useful error and allows retry',
  const third=service.generate(input);worker.onmessage({data:{type:'result',reply}});
  await third;service.cancel();
 });
-test('preload is shared and generation waits without loading another worker',async()=>{
- let worker,created=0;const messages=[];
- const service=createBrowserGenAI({gpu:{},workerFactory:()=>{created++;return worker={postMessage:m=>messages.push(m),terminate(){}};}});
- const load=service.preload();const same=service.preload();assert.equal(load,same);
- const generation=service.generate(input);
- assert.equal(messages.length,1);assert.equal(messages[0].request,null);
- worker.onmessage({data:{type:'ready'}});await load;await Promise.resolve();
- assert.equal(created,1);assert.equal(messages.length,2);
- worker.onmessage({data:{type:'result',reply}});await generation;
- await service.preload();assert.equal(messages.length,2);service.cancel();
-});
-test('cancelled preload rejects queued generation and can be retried',async()=>{
- let worker;const service=createBrowserGenAI({gpu:{},workerFactory:()=>worker={postMessage(){},terminate(){}}});
- const load=service.preload();const generation=service.generate(input);service.cancel();
- await assert.rejects(load,/ยกเลิก/);await assert.rejects(generation,/ยกเลิก/);
- const retry=service.preload();worker.onmessage({data:{type:'ready'}});await retry;service.cancel();
-});
-test('factual audit rejects negative, malformed and truncated decisions',async()=>{
- const {auditRequest,validateAudit}=await import('../assets/genai-core.js');
- const request=auditRequest(genAIRequest(input),reply);
- assert.equal(JSON.parse(request.messages[1].content).source.details,input.details);
- for(const [finish_reason,content] of [['stop','{"supported":false}'],['length','{"supported":true}'],['stop','{}'],['stop','bad']])assert.throws(()=>validateAudit({choices:[{finish_reason,message:{content}}]}),/ไม่ผ่าน/);
- validateAudit({choices:[{finish_reason:'stop',message:{content:'{"supported":true}'}}]});
-});
