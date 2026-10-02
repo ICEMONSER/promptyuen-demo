@@ -1,13 +1,20 @@
 import { D as React } from './shared-ui.js';
+<<<<<<< HEAD
 import { legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-genai';
 import {browserGenAI} from './browser-genai.js?v=auto-ai2';
+=======
+import { generateLegalDraft, legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-voice3';
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
 const h = React.createElement;
 
 export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange, autoGenerate = 0 }) {
   const [busy, setBusy] = React.useState(false);
+<<<<<<< HEAD
   const service = React.useRef(null);
   const enabled = React.useRef(true);
   const [progress, setProgress] = React.useState('');
+=======
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
   const [error, setError] = React.useState('');
   const source = legalDraftSource(input);
   const latest = React.useRef(source);
@@ -22,13 +29,16 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
   async function generate() {
     if (busy) return;
     const id = ++generation.current;
-    enabled.current=true;
-    setBusy(true); onBusyChange?.(true); setError(''); setProgress('กำลังเปิด GenAI ในเครื่อง…');
+    setBusy(true); onBusyChange?.(true); setError('');
     try {
+<<<<<<< HEAD
       service.current ||= browserGenAI;
       const draft = await service.current.generate(input,message=>{if(id===generation.current)setProgress(message);});
+=======
+      const draft = await generateLegalDraft(input);
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
       if (id === generation.current && latest.current === source) {
-        onChange({ ...draft, source, mode: 'browser-genai', reviewed: false });
+        onChange({ ...draft, source, mode: 'local-demo', reviewed: false });
       }
     } catch (err) {
       if (id === generation.current && latest.current === source) setError(err.message);
@@ -36,14 +46,16 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
       if (id === generation.current) { setBusy(false); onBusyChange?.(false); }
     }
   }
-  React.useEffect(() => { if (autoGenerate) { if(enabled.current) generate(); else setError('คำถอดเสียงพร้อมแล้ว กดเปิด GenAI ฟรีด้านล่างเพื่อดาวน์โหลดโมเดลครั้งแรก หลังจากนั้นจะเรียบเรียงให้อัตโนมัติเมื่อหยุดพูด'); } }, [autoGenerate]);
+  React.useEffect(() => { if (autoGenerate) generate(); }, [autoGenerate]);
   return h('section', { className: 'assistant-panel legal-draft', 'aria-label': 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน' },
     h('h3', null, 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน'),
+<<<<<<< HEAD
     h('p', { className: 'small-note' }, 'GenAI จริง (Qwen2.5) ทำงานในเครื่อง ไม่ต้องมีบัญชีหรือ API key และไม่มีค่าบริการ AI เว็บเริ่มดาวน์โหลดโมเดลขนาดหลาย GB อัตโนมัติตั้งแต่เปิดหน้า ครั้งแรกยังต้องรอโหลดเสร็จ และใช้หน่วยความจำ GPU ประมาณ 2.5 GB ต้องใช้เบราว์เซอร์ที่รองรับ WebGPU คำบอกเล่าไม่ถูกส่งไปยังบริการ AI ภายนอก'),
+=======
+    h('p', { className: 'small-note' }, 'เรียบเรียงฟรีในเครื่อง รองรับคำบอกเล่าอุบัติเหตุบางรูปแบบ ไม่ใช่ GenAI หากแปลความไม่ครบจะแจ้งให้ตรวจคำถอดเสียง โดยไม่ตัดข้อเท็จจริงทิ้ง'),
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
     !disabled && h(React.Fragment, null,
-      h('button', { type: 'button', disabled: busy || !input.details?.trim(), onClick: generate }, busy ? 'GenAI กำลังทำงาน…' : enabled.current ? 'เรียบเรียงใหม่ด้วย GenAI' : 'เปิด GenAI ฟรีและเรียบเรียง (ดาวน์โหลดโมเดล)')),
-    busy && h('p', {role:'status'}, progress),
-    busy && h('button', {type:'button',onClick:()=>service.current?.cancel()}, 'ยกเลิกการดาวน์โหลด / เรียบเรียง'),
+      h('button', { type: 'button', disabled: busy || !input.details?.trim(), onClick: generate }, busy ? 'กำลังเรียบเรียงข้อเท็จจริง…' : current ? 'เรียบเรียงสำนวนใหม่' : 'สร้างร่างภาษาทางการ (สาธิตฟรี)')),
     error && h('p', { role: 'alert', className: 'quick-error' }, error),
     current && h(React.Fragment, null,
       h('label', { className: 'assistant-field' }, 'ร่างสำนวนภาษาทางการ — ตรวจแก้ได้',
@@ -58,7 +70,11 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
       h('label', { className: 'map-consent' }, h('input', { type: 'checkbox', checked: !!current.reviewed, disabled: disabled || busy,
         onChange: e => { try { const { formalNarrative, knownFacts, missingQuestions } = current; if (e.target.checked) validateLegalDraft({ formalNarrative, knownFacts, missingQuestions }, input); setError(''); onChange({ ...current, reviewed: e.target.checked, reviewedAt: e.target.checked ? new Date().toISOString() : null }); } catch (err) { setError(err.message); } } }),
         'ตรวจแล้วว่าร่างตรงกับข้อเท็จจริงที่แจ้ง และยืนยันใช้ข้อความนี้ในใบสรุป'),
+<<<<<<< HEAD
       !disabled && h('button', { type: 'button', disabled: busy, onClick: () => onChange(null) }, 'ยกเลิกร่าง และใช้คำบอกเล่าเดิม')),
     h('small', null, 'มีการตรวจร่างเทียบต้นฉบับด้วยโมเดลอีกครั้ง แต่ยังอาจผิดพลาดได้ ต้องตรวจข้อเท็จจริงก่อนยืนยัน'),
+=======
+      !disabled && h('button', { type: 'button', disabled: busy, onClick: () => onChange(null) }, 'ยกเลิกร่างสาธิต และใช้คำบอกเล่าเดิม')),
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
     h('small', null, 'เป็นร่างจากข้อมูลผู้แจ้งสำหรับให้พนักงานสอบสวนตรวจสอบ ไม่ใช่ข้อวินิจฉัยความผิดหรือสำนวนสอบสวนที่รับรองแล้ว'));
 }

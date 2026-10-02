@@ -5,8 +5,13 @@ import {D as React} from './shared-ui.js';
 import {imageCanvas} from './import-document.js';
 import {toDataURL} from './store.js';
 import {parseIncidentPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl} from './station-core.js';
+<<<<<<< HEAD
 import {LegalDraftPanel} from './legal-draft.js?v=20261002-auto-genai';
 import {VoiceInput} from './voice-input.js?v=20261002-auto-genai';
+=======
+import {LegalDraftPanel} from './legal-draft.js?v=20261002-voice3';
+import {VoiceInput} from './voice-input.js?v=20261002-voice3';
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
 import {reviewedLegalDraft} from './legal-review.js';
 import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261002-auto';
 import {thaiDate} from './report.js';

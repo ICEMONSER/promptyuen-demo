@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import './genai-startup.js?v=auto-ai2';
 import { LegalDraftPanel } from './legal-draft.js?v=20261002-auto-genai';
+=======
+import { LegalDraftPanel } from './legal-draft.js';
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
 import { legalInputFromRecord, reviewedLegalDraft } from './legal-review.js';
 import { legalDraftSource } from './reasoning.js';
 import { EvidencePanel } from "./evidence.js";
@@ -8,7 +12,11 @@ import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
 import { StationPicker } from "./stations.js?v=20261002-auto";
+<<<<<<< HEAD
 import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-auto-genai";
+=======
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-voice3";
+>>>>>>> parent of 13af73c (Integrate real free on-device GenAI without user API keys)
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-auto";
 import {
   readWorkspace,
