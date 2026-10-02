@@ -191,5 +191,5 @@ export async function certifiedCopy(doc, signature) {
       original.height + 140,
     );
   }
-  return { name: doc.name, image: canvas.toDataURL("image/jpeg", 0.9) };
+  return { kind: doc.kind, image: canvas.toDataURL("image/jpeg", 0.9) };
 }

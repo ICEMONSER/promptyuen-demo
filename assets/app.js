@@ -6,7 +6,7 @@ import { EvidencePanel } from "./evidence.js";
 import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js?v=20261002-login-contact";
-import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261002-login-contact";
+import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261002-report-clean";
 import { StationPicker } from "./stations.js?v=20261002-auto";
 import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-login-contact";
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-login-contact";
@@ -22,7 +22,7 @@ import {
   validThaiId,
   normalizeDigits,
 } from "./import-document.js";
-import { renderReport } from "./report.js?v=20261002-login-contact";
+import { renderReport } from "./report.js?v=20261002-report-clean";
 // Existing application extracted from the shipped bundle; shared UI is unchanged.
 import {
   c,

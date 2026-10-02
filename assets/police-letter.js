@@ -1,29 +1,26 @@
 import {emblem} from './letter-emblem.js';
 // Citizen-authored letter layout, based on the supplied external-letter reference.
-export function policeLetter({record,field,date,esc,legal,coordinates,signature,copies,thaiDate}) {
+export function policeLetter({record,field,date,esc,legal,coordinates,signature,copies,thaiDate,locationText}) {
  const slot=(key,label)=>record.fields[key]?.value?esc(record.fields[key].value):`<span class="letter-slot" contenteditable="true" aria-label="${label}">[${label}]</span>`;
  const thaiDigits=value=>String(value).replace(/[0-9]/g,n=>'๐๑๒๓๔๕๖๗๘๙'[n]);
  const narrative=legal?.formalNarrative || record.fields.details?.value || '................................';
- const paragraphs=narrative.split(/\n\s*\n/).filter(Boolean).map(text=>`<p class="letter-body">${esc(text)}</p>`).join('');
- const attachments=[...copies.map(copy=>copy.name),...(record.evidence||[]).map((item,i)=>item.name||`หลักฐานประกอบเหตุการณ์ ${i+1}`)];
- return `<header class="letter-header"><img class="letter-emblem" src="${emblem}" alt="ตราครุฑตามแบบฟอร์ม"><div class="letter-reference"><span>ที่ ${record.reference?esc(record.reference):slot('letterNumber','ระบุเลขที่หนังสือ')}</span><span>${slot('organization','ระบุสังกัด')}</span></div></header>
+ const paragraphs=narrative.split(/\n\s*\n/).filter(Boolean).map(text=>`<p class="letter-body">${locationText(text)}</p>`).join('');
+ return `<header class="letter-header"><img class="letter-emblem" src="${emblem}" alt="ตราครุฑตามแบบฟอร์ม"><div class="letter-reference"><span>ที่ ${record.reference?esc(record.reference):slot('letterNumber','ระบุเลขที่หนังสือ')}</span></div></header>
  <p class="letter-date">${esc(thaiDigits(thaiDate(record.submittedAt || record.updatedAt || new Date())))}</p>
  <p><strong>เรื่อง</strong> ${record.service==='accident'?'แจ้งความกรณีอุบัติเหตุรถยนต์':'แจ้งข้อเท็จจริงเพื่อบันทึกไว้เป็นหลักฐาน'}</p>
  <p><strong>เรียน</strong> ${record.station?.name?`พนักงานสอบสวน ${esc(record.station.name)}`:slot('recipient','ระบุผู้รับ')}</p>
- <p class="letter-body letter-opening">ด้วย ${slot('fullName','ระบุชื่อผู้แจ้งความ')} ขอแจ้งข้อเท็จจริงเกี่ยวกับเหตุการณ์เมื่อ ${date('eventDate')} ณ ${field('eventPlace')} โดยมีรายละเอียดดังนี้</p>
+ <p class="letter-body letter-opening">ด้วย ${slot('fullName','ระบุชื่อผู้แจ้งความ')} ขอแจ้งข้อเท็จจริงเกี่ยวกับเหตุการณ์เมื่อ ${date('eventDate')} ณ ${locationText(record.fields.eventPlace?.value || '................................')} โดยมีรายละเอียดดังนี้</p>
  ${paragraphs}
  <p class="letter-body">ในการนี้ ${record.fields.organization?.value?esc(record.fields.organization.value):'ข้าพเจ้า'} ใคร่ขอแจ้งความกรณีเหตุการณ์ดังกล่าว เพื่อให้ ${esc(record.station?.name || 'พนักงานสอบสวน')} ได้โปรดตรวจสอบข้อเท็จจริงและดำเนินการตามอำนาจหน้าที่ต่อไป</p>
  <p class="letter-body">จึงเรียนมาเพื่อโปรดทราบและดำเนินการต่อไปด้วย</p>
  <section class="letter-sign"><p>ขอแสดงความนับถือ</p>
  ${signature?.startsWith('data:image/png;base64,')?`<img src="${esc(signature)}" alt="ลายมือชื่อผู้แจ้ง">`:'<div class="signature-space"></div>'}
- <p>(${slot('fullName','ระบุชื่อ')})</p><p>${slot('position','ระบุตำแหน่ง')}</p></section>
+ <p>(${slot('fullName','ระบุชื่อ')})</p></section>
  <div class="letter-contact"><p>โทร. ${slot('phone','ระบุหมายเลขโทรศัพท์')}</p><p>ไปรษณีย์อิเล็กทรอนิกส์ ${slot('email','ระบุอีเมล')}</p></div>
  <p class="draft-note">ฉบับร่างสำหรับผู้แจ้ง • ไม่ใช่เอกสารที่ออกหรือรับรองโดยหน่วยงานราชการ</p>
  <section class="letter-annex"><h2>ข้อมูลประกอบหนังสือแจ้งข้อเท็จจริง</h2>
  <p>เลขประจำตัวประชาชน ${field('nationalId')}</p><p>เกิดวันที่ ${date('birthDate')}</p>${coordinates}
- <h3>คำบอกเล่าต้นฉบับของผู้แจ้ง</h3><p>${field('details')}</p>
  ${legal?`<p><small>${legal.mode==='local-demo'?'ร่างสาธิตเรียบเรียงด้วยแม่แบบในเครื่อง ไม่ใช่ GenAI':'ร่างเรียบเรียงด้วย AI จากข้อมูลผู้แจ้ง'} ผู้แจ้งตรวจข้อความแล้ว พนักงานสอบสวนต้องตรวจสอบข้อเท็จจริงเพิ่มเติม</small></p>${legal.missingQuestions.length?`<h3>ประเด็นที่ยังต้องสอบถามเพิ่มเติม</h3><ol>${legal.missingQuestions.map(q=>`<li>${esc(q)}</li>`).join('')}</ol>`:''}`:''}
- ${attachments.length?`<h3>สิ่งที่ส่งมาด้วย</h3><ol>${attachments.map(name=>`<li>${esc(name)}</li>`).join('')}</ol>`:''}
  <p>เอกสารประกอบจำนวน ${copies.length} ฉบับ · หลักฐานเหตุการณ์ ${(record.evidence||[]).length} รายการ</p></section>`;
 }
 export const letterStyles=`

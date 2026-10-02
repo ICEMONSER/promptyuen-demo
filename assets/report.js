@@ -1,5 +1,6 @@
-import {policeLetter,letterStyles} from './police-letter.js?v=20261002-contact';
+import {policeLetter,letterStyles} from './police-letter.js?v=20261002-report-clean';
 import {legalInputFromRecord, reviewedLegalDraft} from './legal-review.js';
+import {DOCUMENT_LABELS} from './case-config.js';
 import {validPoint} from './station-core.js';
 // Printable preparation form, deliberately distinct from an issued police record.
 export const escapeHtml = (value) =>
@@ -54,6 +55,11 @@ export function renderReport(
   const police = record.service === "police" || record.service === "accident";
   const legal = reviewedLegalDraft(record.legalDraft, legalInputFromRecord(record));
   const point = record.location || record.station?.incident;
+  // Link the recorded incident point, never the selected station or a guessed location.
+  const locationText = value => esc(value).replace(/ตำแหน่งปัจจุบัน/g, () => {
+    const label = '<strong>ตำแหน่งปัจจุบัน</strong>';
+    return validPoint(point) ? `<a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent(`${point.lat},${point.lon}`)}" target="_blank" rel="noopener noreferrer">${label}</a>` : label;
+  });
   const coordinates = validPoint(point) ? `<p>พิกัดจุดเกิดเหตุ: ${esc(point.lat)}, ${esc(point.lon)}</p>` : '';
   const facts = legal
     ? `<p>${esc(legal.formalNarrative)}</p><p><small>${legal.mode === "local-demo" ? "ร่างสาธิตเรียบเรียงด้วยแม่แบบในเครื่อง ไม่ใช่ GenAI" : "ร่างเรียบเรียงด้วย AI จากข้อมูลผู้แจ้ง"} ผู้แจ้งตรวจข้อความแล้ว พนักงานสอบสวนต้องตรวจสอบข้อเท็จจริงเพิ่มเติม</small></p><h3>คำบอกเล่าต้นฉบับของผู้แจ้ง</h3><p>${field("details")}</p>${legal.missingQuestions.length ? `<h3>ประเด็นที่ยังต้องสอบถามเพิ่มเติม</h3><ol>${legal.missingQuestions.map(question=>`<li>${esc(question)}</li>`).join('')}</ol>` : ''}`
@@ -70,9 +76,9 @@ export function renderReport(
             `<section><h2>${index + 1}. ${esc(labels[key])}</h2><p>${/Date$/.test(key) ? date(key) : field(key)}</p></section>`,
         )
         .join("");
-  const letter=police ? policeLetter({record,field,date,esc,legal,coordinates,signature,copies,thaiDate}) : '';
+  const letter=police ? policeLetter({record,field,date,esc,legal,coordinates,signature,copies,thaiDate,locationText}) : '';
   return `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ร่าง${esc(service.short)}</title><style>
   *{box-sizing:border-box}body{margin:0;background:#eee;color:#111;font:16px/1.85 Tahoma,sans-serif}.toolbar{padding:12px;text-align:center}.paper{max-width:210mm;min-height:297mm;margin:16px auto;padding:20mm;background:white}header{text-align:center;border-bottom:2px solid #222;padding-bottom:12px}h1{font-size:23px;margin:0}h2{font-size:17px;margin:16px 0 6px}p{margin:6px 0;white-space:pre-wrap;overflow-wrap:anywhere}.date,.sign{text-align:right}small{font-size:12px}.sign{margin-top:24px}.sign img{display:block;margin-left:auto;width:180px;max-height:80px;object-fit:contain}.copy{break-before:page;text-align:center}.copy img{max-width:100%;max-height:235mm;object-fit:contain}section{break-inside:auto}h2{break-after:avoid}img{break-inside:avoid}button{font:inherit;padding:8px 16px}@media(max-width:600px){.paper{padding:20px;min-height:0;margin:0;width:100%}h1{font-size:20px}}@page{size:A4;margin:20mm}@media print{body{background:white}.toolbar{display:none}.paper{padding:0;margin:0;max-width:none;min-height:0}.copy{min-height:0}.copy img{max-height:230mm}}
   ${police?letterStyles:''}
-  </style></head><body><div class="toolbar"><button onclick="window.print()">พิมพ์ / บันทึกเป็นพีดีเอฟ</button></div><main class="paper${police?' police-letter':''}">${police?letter:`<header><strong>บันทึกเตรียมข้อมูลสำหรับยื่นต่อหน่วยงาน</strong><h1>${esc(service.label)}</h1><small>ฉบับร่างสำหรับผู้แจ้ง • ไม่ใช่เอกสารที่ออกหรือรับรองโดยหน่วยงานราชการ</small></header><p class="date">วันที่ ${esc(thaiDate())}</p><p>เรียน ${esc(record.station?.name || service.agency)}</p>${sections}<section class="sign">${signature?.startsWith("data:image/png;base64,") ? `<img src="${esc(signature)}" alt="ลายมือชื่อผู้แจ้ง">` : ""}<p>ลงชื่อ ........................................ ผู้แจ้ง</p><p>(${field("fullName")})</p></section><p><small>${esc(service.note)}</small></p>`}${(record.evidence || []).map((item) => `<section><h2>ภาพประกอบเหตุการณ์</h2><p>${esc(item.label)}</p><p>${esc(item.analysis?.summary_th)}</p>${item.image?.startsWith("data:image/jpeg;base64,") ? `<img style="max-width:100%;max-height:100mm" src="${esc(item.image)}" alt="ภาพประกอบเหตุการณ์">` : ""}</section>`).join("")}${copies.map((copy) => `<section class="copy"><h2>${esc(copy.name)}</h2><img src="${esc(copy.image)}" alt="สำเนาเอกสารที่รับรองแล้ว"></section>`).join("")}</main></body></html>`;
+  </style></head><body><div class="toolbar"><button onclick="window.print()">พิมพ์ / บันทึกเป็นพีดีเอฟ</button></div><main class="paper${police?' police-letter':''}">${police?letter:`<header><strong>บันทึกเตรียมข้อมูลสำหรับยื่นต่อหน่วยงาน</strong><h1>${esc(service.label)}</h1><small>ฉบับร่างสำหรับผู้แจ้ง • ไม่ใช่เอกสารที่ออกหรือรับรองโดยหน่วยงานราชการ</small></header><p class="date">วันที่ ${esc(thaiDate())}</p><p>เรียน ${esc(record.station?.name || service.agency)}</p>${sections}<section class="sign">${signature?.startsWith("data:image/png;base64,") ? `<img src="${esc(signature)}" alt="ลายมือชื่อผู้แจ้ง">` : ""}<p>ลงชื่อ ........................................ ผู้แจ้ง</p><p>(${field("fullName")})</p></section><p><small>${esc(service.note)}</small></p>`}${(record.evidence || []).map((item) => `<section><h2>ภาพประกอบเหตุการณ์</h2><p>${esc(item.label)}</p><p>${esc(item.analysis?.summary_th)}</p>${item.image?.startsWith("data:image/jpeg;base64,") ? `<img style="max-width:100%;max-height:100mm" src="${esc(item.image)}" alt="ภาพประกอบเหตุการณ์">` : ""}</section>`).join("")}${copies.map((copy, index) => `<section class="copy"><h2>${esc(DOCUMENT_LABELS[copy.kind] ? `สำเนา${DOCUMENT_LABELS[copy.kind]}` : `สำเนาเอกสาร ${index + 1}`)}</h2><img src="${esc(copy.image)}" alt="สำเนาเอกสารที่รับรองแล้ว"></section>`).join("")}</main></body></html>`;
 }
