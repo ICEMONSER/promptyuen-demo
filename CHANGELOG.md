@@ -1,3 +1,6 @@
+## 2026-10-02 — Remove report review notes
+- Removed the AI drafting/review note and follow-up question heading/list from printed police and accident letters. Manual test: open a reviewed report with pending questions and confirm neither block appears while the narrative and copies remain.
+
 ## 2026-10-02 — Report presentation cleanup
 - Removed affiliation/position placeholders and original-account/attachment-list sections. Manual test: print an accident report and confirm these sections are absent.
 - Bold current-location text opens Google Maps at the recorded incident coordinates. Manual test: click the text in the opening and narrative; both open the same incident point.
