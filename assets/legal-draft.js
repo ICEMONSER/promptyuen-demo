@@ -1,9 +1,9 @@
 import { D as React } from './shared-ui.js';
-import { legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-auto-voice';
-import {createBrowserGenAI} from './browser-genai.js?v=20261002-auto-voice';
+import { legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261003-concierge';
+import {caseAI} from './browser-genai.js?v=20261003-concierge';
 const h = React.createElement;
 
-export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange, autoGenerate = 0 }) {
+export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange, autoGenerate = 0, autoPrepare = true }) {
   const [busy, setBusy] = React.useState(false);
   const service = React.useRef(null);
   const [error, setError] = React.useState('');
@@ -25,7 +25,7 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
     const id = ++generation.current;
     setBusy(true); onBusyChange?.(true); setError('');
     try {
-      service.current ||= createBrowserGenAI();
+      service.current ||= caseAI();
       const draft = await service.current.generate(input);
       if (id === generation.current && latest.current === source) {
         onChange({ ...draft, source, mode: 'browser-genai', reviewed: false });
@@ -38,13 +38,13 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
   }
   React.useEffect(() => { if (autoGenerate) generate(); }, [autoGenerate]);
   React.useEffect(() => {
-    if(disabled || busy || !input.details?.trim() || current || attempted.current===source)return;
+    if(!autoPrepare || disabled || busy || !input.details?.trim() || current || attempted.current===source)return;
     const timer=setTimeout(()=>generate(),1500);
     return ()=>clearTimeout(timer);
-  },[source,disabled,busy]);
+  },[source,disabled,busy,autoPrepare]);
   return h('section', { className: 'assistant-panel legal-draft', 'aria-label': 'ข้อความสำหรับใบสรุป' },
     h('h3', null, 'ข้อความสำหรับใบสรุป'),
-    h('p', { className: 'small-note' }, 'เมื่อพูดจบหรือหยุดพิมพ์ ระบบจะเรียบเรียงและใส่ข้อความในใบสรุปให้โดยอัตโนมัติ ตรวจความถูกต้องก่อนยืนยันเอกสาร'),
+    h('p', { className: 'small-note' }, autoPrepare ? 'เมื่อพูดจบหรือหยุดพิมพ์ ระบบจะเรียบเรียงและใส่ข้อความในใบสรุปให้โดยอัตโนมัติ ตรวจความถูกต้องก่อนยืนยันเอกสาร' : 'กดปุ่มเมื่อต้องการเรียบเรียงข้อความ แล้วตรวจความถูกต้องก่อนยืนยันเอกสาร'),
     busy && h('p', {role:'status'}, 'กำลังเตรียมข้อความสำหรับเอกสาร… ครั้งแรกอาจใช้เวลาหลายนาที คุณไม่ต้องดาวน์โหลดหรือตั้งค่าเอง'),
     busy && h('button', {type:'button',onClick:()=>service.current?.cancel()}, 'ยกเลิก'),
     !disabled && !busy && (error || !autoGenerate) && h('button', {type:'button',disabled:!input.details?.trim(),onClick:generate}, error ? 'ลองเรียบเรียงอีกครั้ง' : 'เตรียมข้อความสำหรับเอกสาร'),
@@ -58,7 +58,7 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
       current.missingQuestions.length > 0 && h('div', { className: 'location-note' },
         h('strong', null, 'ข้อมูลที่ควรสอบถามเพิ่มเติม'),
         h('ul', null, ...current.missingQuestions.map((question, i) => h('li', { key: i }, question))),
-        h('small', null, 'ตรวจเติมข้อมูลที่ทราบในร่างด้านบนก่อนยืนยัน รายการที่ยังขาดจะปรากฏแยกในใบสรุป')),
+        h('small', null, 'ตรวจเติมข้อมูลที่ทราบในร่างด้านบนก่อนยืนยัน คำถามใช้ตรวจข้อมูลในหน้านี้เท่านั้น ไม่พิมพ์ในใบสรุป')),
       h('label', { className: 'map-consent' }, h('input', { type: 'checkbox', checked: !!current.reviewed, disabled: disabled || busy,
         onChange: e => { try { const { formalNarrative, knownFacts, missingQuestions } = current; if (e.target.checked) validateLegalDraft({ formalNarrative, knownFacts, missingQuestions }, input); setError(''); onChange({ ...current, reviewed: e.target.checked, reviewedAt: e.target.checked ? new Date().toISOString() : null }); } catch (err) { setError(err.message); } } }),
         'ตรวจแล้วว่าร่างตรงกับข้อเท็จจริงที่แจ้ง และยืนยันใช้ข้อความนี้ในใบสรุป'),

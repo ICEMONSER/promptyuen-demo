@@ -9,8 +9,8 @@ import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js?v=20261002-login-contact";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261002-report-no-questions-v2";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-portal-2";
-import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-login-contact";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261003-concierge";
+import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261003-concierge";
 import {
   readWorkspace,
   writeWorkspace,
@@ -1347,7 +1347,7 @@ function Vg() {
     });
   return (0, B.jsxs)(Ym, {
     children: [
-      tracking && D.createElement(CaseTracking,{record:tracking,onRetry:async()=>{const result=await zg('/api/portal-retry',{id:tracking.id});setTracking(result.case);await Fe();},onStationChange:tracking.quickAccident?async(station)=>{const result=await zg('/api/cases',{id:tracking.id,revision:tracking.revision,action:'station',station},'PATCH');setTracking(result.case);await Fe();}:undefined,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
+      tracking && D.createElement(CaseTracking,{record:tracking,documents:Ze,onRetry:async()=>{const result=await zg('/api/portal-retry',{id:tracking.id});setTracking(result.case);await Fe();},onStationChange:tracking.quickAccident?async(station)=>{const result=await zg('/api/cases',{id:tracking.id,revision:tracking.revision,action:'station',station},'PATCH');setTracking(result.case);await Fe();}:undefined,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
       (0, B.jsx)(pg, { richColors: !0, position: `top-center` }),
       (0, B.jsxs)(Xm, {
         className: `app-sidebar`,
