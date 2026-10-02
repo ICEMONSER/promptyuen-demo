@@ -116,4 +116,4 @@ test('report escapes AI narrative and missing questions as text',()=>{
   assert.ok(!html.includes('<script>'));
 });
 
-test('submission requires destination and retains retrieved station',()=>{assert.throws(()=>makeAccident({...input,station:null},reviewedDocuments(),now),/สถานีตำรวจ/);const station={id:'google-test',name:'สถานีผลค้นหา',provider:'google',distance:0.2,incident:{lat:13,lon:100}};const r=makeAccident({...input,station},reviewedDocuments(),now);assert.equal(r.station.id,'google-test');assert.ok(renderReport(r,{label:'ทดสอบ',short:'ทดสอบ'},{}).includes('เรียน สถานีผลค้นหา'));});
+test('submission requires destination and retains retrieved station',()=>{assert.throws(()=>makeAccident({...input,station:null},reviewedDocuments(),now),/สถานีตำรวจ/);const station={id:'google-test',name:'สถานีผลค้นหา',provider:'google',distance:0.2,incident:{lat:13,lon:100}};const r=makeAccident({...input,station},reviewedDocuments(),now);assert.equal(r.station.id,'google-test');assert.ok(renderReport(r,{label:'ทดสอบ',short:'ทดสอบ'},{}).includes('พนักงานสอบสวน สถานีผลค้นหา'));});
