@@ -77,7 +77,7 @@ test('incident time stays fixed while the user reviews an AI draft',()=>{
   assert.throws(()=>makeAccident({...input,incidentAt:'invalid'},reviewedDocuments(),submittedAt),/วันเวลา/);
   assert.throws(()=>makeAccident({...input,incidentAt:new Date(submittedAt.getTime()+60000).toISOString()},reviewedDocuments(),submittedAt),/วันเวลา/);
 });
-test('printed police and accident reports include reviewed narrative, original words and missing questions',()=>{
+test('printed police and accident reports include reviewed narrative and missing questions without original account section',()=>{
   const source={details:input.details,eventDate:bangkokDateTime(now),eventPlace:input.eventPlace};
   const legalDraft=reviewedDraftFor(source);
   const r=makeAccident({...input,legalDraft},reviewedDocuments(),now);
@@ -85,10 +85,8 @@ test('printed police and accident reports include reviewed narrative, original w
   for(const kind of ['accident','police']){
     const html=renderReport({...r,service:kind},service,{});
     assert.ok(html.includes(legalDraft.formalNarrative));
-    assert.ok(html.includes(input.details));
     assert.ok(html.includes(legalDraft.missingQuestions[0]));
-    assert.ok(html.indexOf(legalDraft.formalNarrative)<html.indexOf(input.details));
-    assert.ok(html.includes('คำบอกเล่าต้นฉบับ'));
+    assert.ok(!html.includes('คำบอกเล่าต้นฉบับ'));
   }
 });
 test('reports never print stale or unreviewed AI text',()=>{
@@ -103,7 +101,6 @@ test('reports never print stale or unreviewed AI text',()=>{
     const html=renderReport(record,service,{});
     assert.ok(!html.includes(legalDraft.formalNarrative));
     assert.ok(!html.includes(legalDraft.missingQuestions[0]));
-    assert.ok(html.includes(input.details));
   }
 });
 test('report escapes AI narrative and missing questions as text',()=>{
