@@ -1,13 +1,11 @@
 import { D as React } from './shared-ui.js';
-import { legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-genai';
-import {createBrowserGenAI} from './browser-genai.js';
+import { legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-auto-voice';
+import {createBrowserGenAI} from './browser-genai.js?v=20261002-auto-voice';
 const h = React.createElement;
 
 export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange, autoGenerate = 0 }) {
   const [busy, setBusy] = React.useState(false);
   const service = React.useRef(null);
-  const enabled = React.useRef(false);
-  const [progress, setProgress] = React.useState('');
   const [error, setError] = React.useState('');
   const source = legalDraftSource(input);
   const latest = React.useRef(source);
@@ -22,11 +20,10 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
   async function generate() {
     if (busy) return;
     const id = ++generation.current;
-    enabled.current=true;
-    setBusy(true); onBusyChange?.(true); setError(''); setProgress('กำลังเปิด GenAI ในเครื่อง…');
+    setBusy(true); onBusyChange?.(true); setError('');
     try {
       service.current ||= createBrowserGenAI();
-      const draft = await service.current.generate(input,setProgress);
+      const draft = await service.current.generate(input);
       if (id === generation.current && latest.current === source) {
         onChange({ ...draft, source, mode: 'browser-genai', reviewed: false });
       }
@@ -36,17 +33,16 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
       if (id === generation.current) { setBusy(false); onBusyChange?.(false); }
     }
   }
-  React.useEffect(() => { if (autoGenerate) { if(enabled.current) generate(); else setError('คำถอดเสียงพร้อมแล้ว กดเปิด GenAI ฟรีด้านล่างเพื่อดาวน์โหลดโมเดลครั้งแรก หลังจากนั้นจะเรียบเรียงให้อัตโนมัติเมื่อหยุดพูด'); } }, [autoGenerate]);
-  return h('section', { className: 'assistant-panel legal-draft', 'aria-label': 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน' },
-    h('h3', null, 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน'),
-    h('p', { className: 'small-note' }, 'GenAI จริง (Qwen2.5) ทำงานในเครื่อง ไม่ต้องมีบัญชีหรือ API key และไม่มีค่าบริการ AI ครั้งแรกต้องดาวน์โหลดโมเดลขนาดหลาย GB และใช้หน่วยความจำ GPU ประมาณ 2.5 GB ต้องใช้เบราว์เซอร์ที่รองรับ WebGPU คำบอกเล่าไม่ถูกส่งไปยังบริการ AI ภายนอก'),
-    !disabled && h(React.Fragment, null,
-      h('button', { type: 'button', disabled: busy || !input.details?.trim(), onClick: generate }, busy ? 'GenAI กำลังทำงาน…' : enabled.current ? 'เรียบเรียงใหม่ด้วย GenAI' : 'เปิด GenAI ฟรีและเรียบเรียง (ดาวน์โหลดโมเดล)')),
-    busy && h('p', {role:'status'}, progress),
-    busy && h('button', {type:'button',onClick:()=>service.current?.cancel()}, 'ยกเลิกการดาวน์โหลด / เรียบเรียง'),
+  React.useEffect(() => { if (autoGenerate) generate(); }, [autoGenerate]);
+  return h('section', { className: 'assistant-panel legal-draft', 'aria-label': 'ข้อความสำหรับใบสรุป' },
+    h('h3', null, 'ข้อความสำหรับใบสรุป'),
+    h('p', { className: 'small-note' }, 'เมื่อพูดจบ ระบบจะเรียบเรียงและใส่ข้อความในใบสรุปให้โดยอัตโนมัติ ตรวจความถูกต้องก่อนยืนยันเอกสาร'),
+    busy && h('p', {role:'status'}, 'กำลังเตรียมข้อความสำหรับเอกสาร… ครั้งแรกอาจใช้เวลาหลายนาที คุณไม่ต้องดาวน์โหลดหรือตั้งค่าเอง'),
+    busy && h('button', {type:'button',onClick:()=>service.current?.cancel()}, 'ยกเลิก'),
+    !disabled && !busy && (error || !autoGenerate) && h('button', {type:'button',disabled:!input.details?.trim(),onClick:generate}, error ? 'ลองเรียบเรียงอีกครั้ง' : 'เตรียมข้อความสำหรับเอกสาร'),
     error && h('p', { role: 'alert', className: 'quick-error' }, error),
     current && h(React.Fragment, null,
-      h('label', { className: 'assistant-field' }, 'ร่างสำนวนภาษาทางการ — ตรวจแก้ได้',
+      h('label', { className: 'assistant-field' }, 'ข้อความที่จะใช้ในเอกสาร — ตรวจแก้ได้',
         h('textarea', { rows: 7, maxLength: 6000, value: current.formalNarrative, disabled: disabled || busy,
           onChange: e => onChange({ ...current, formalNarrative: e.target.value, reviewed: false, reviewedAt: null }) })),
       current.knownFacts.length > 0 && h('details', null, h('summary', null, 'ข้อความต้นทางที่ใช้อ้างอิง'),
