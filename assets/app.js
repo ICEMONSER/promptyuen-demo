@@ -6,9 +6,9 @@ import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
-import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-auto";
-import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-auto";
+import { StationPicker } from "./stations.js?v=20261002-real-stations";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-real-stations";
+import { makeAccident } from "./accident-core.js";
 import {
   readWorkspace,
   writeWorkspace,
@@ -604,10 +604,6 @@ async function kg(e, t, n) {
         await Tg(i),
         { ok: !0 }
       );
-    if (n==='PATCH' && t.action==='station' && e.quickAccident) {
-      Object.assign(e,changeAccidentStation(e,t.station,t.revision));
-      await Tg(i);return {case:e};
-    }
     if (e.status !== `draft`) throw Error(`คำขอนี้ส่งแบบจำลองแล้ว`);
     if (e.revision !== t.revision) throw Error(`กรุณาโหลดใหม่ มีการแก้ไขคำขอ`);
     let r = _g[e.service];
@@ -1327,7 +1323,7 @@ function Vg() {
     });
   return (0, B.jsxs)(Ym, {
     children: [
-      tracking && D.createElement(CaseTracking,{record:tracking,onStationChange:tracking.quickAccident?async(station)=>{const result=await zg('/api/cases',{id:tracking.id,revision:tracking.revision,action:'station',station},'PATCH');setTracking(result.case);await Fe();}:undefined,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
+      tracking && D.createElement(CaseTracking,{record:tracking,onClose:()=>setTracking(null),onPrint:()=>jg('/print/'+tracking.id).catch(e=>Zh.error(e.message))}),
       (0, B.jsx)(pg, { richColors: !0, position: `top-center` }),
       (0, B.jsxs)(Xm, {
         className: `app-sidebar`,
@@ -1341,4 +1337,1528 @@ function Vg() {
                 (0, B.jsx)(`span`, {
                   className: `brand-icon`,
                   children: (0, B.jsx)(z, {}),
-              ... (74 KB left)
+                }),
+                (0, B.jsxs)(`span`, {
+                  children: [
+                    `พร้อมยื่น`,
+                    (0, B.jsx)(`small`, { children: `พร้อมยื่น` }),
+                  ],
+                }),
+              ],
+            }),
+          }),
+          (0, B.jsxs)(eh, {
+            children: [
+              (0, B.jsx)(`div`, {
+                className: `nav-label`,
+                children: `พื้นที่ของคุณ`,
+              }),
+              (0, B.jsx)(th, {
+                children: Ig.map(({ id: n, icon: r, label: i }) =>
+                  (0, B.jsx)(
+                    nh,
+                    {
+                      children: (0, B.jsxs)(ih, {
+                        isActive: e === n,
+                        onClick: () => {t(n);setQuickAccident(false);},
+                        children: [
+                          (0, B.jsx)(r, {}),
+                          (0, B.jsx)(`span`, { children: i }),
+                          n === `documents` &&
+                            Ze.length > 0 &&
+                            (0, B.jsx)(`b`, {
+                              className: `nav-count`,
+                              children: Ze.length,
+                            }),
+                        ],
+                      }),
+                    },
+                    n,
+                  ),
+                ),
+              }),
+              (0, B.jsxs)(`div`, {
+                className: `sidebar-note`,
+                children: [
+                  (0, B.jsx)(be, { size: 22 }),
+                  (0, B.jsxs)(`strong`, {
+                    children: [
+                      `เอกสารของคุณ`,
+                      (0, B.jsx)(`br`, {}),
+                      `คุณเป็นคนตัดสินใจ`,
+                    ],
+                  }),
+                  (0, B.jsx)(`p`, {
+                    children: `ตรวจข้อมูลและอนุญาตทุกครั้ง ก่อนนำไปใช้ในคำขอ`,
+                  }),
+                ],
+              }),
+              (0, B.jsxs)(`button`, {
+                className: `demo-button`,
+                disabled: nt || !n,
+                onClick: Ve,
+                children: [
+                  (0, B.jsx)(M, { size: 17 }),
+                  (0, B.jsx)(`span`, {
+                    children:
+                      c === `demo` ? `กำลังเตรียม...` : `ลองด้วยข้อมูลตัวอย่าง`,
+                  }),
+                ],
+              }),
+            ],
+          }),
+          (0, B.jsx)($m, {
+            children: (0, B.jsxs)(`div`, {
+              className: `profile`,
+              children: [
+                (0, B.jsx)(`span`, { children: `พ` }),
+                (0, B.jsxs)(`div`, {
+                  children: [
+                    `พื้นที่ส่วนตัว`,
+                    (0, B.jsx)(`small`, {
+                      children: n
+                        ? `พื้นที่เก็บเอกสารส่วนตัว`
+                        : `เข้าสู่ระบบเพื่อเก็บเอกสาร`,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          }),
+        ],
+      }),
+      (0, B.jsxs)(`main`, {
+        className: `app-main`,
+        children: [
+          (0, B.jsxs)(`header`, {
+            className: `topbar`,
+            children: [
+              (0, B.jsxs)(`div`, {
+                children: [
+                  (0, B.jsx)(Zm, {}),
+                  (0, B.jsx)(`span`, { children: V }),
+                ],
+              }),
+              (0, B.jsxs)(`div`, {
+                className: `header-right`,
+                children: [
+                  D.createElement("button",{className:"account-action",onClick:()=>setEntered(false)},"บัญชี / ลายเซ็น"),
+                  (0, B.jsx)(`span`, {
+                    className: `engine-label`,
+                    children: n?.aiEnabled
+                      ? `AI พร้อมใช้งาน`
+                      : `แบบนำทาง + OCR`,
+                  }),
+                  (0, B.jsx)(`span`, {
+                    className: `prototype-pill`,
+                    children: `ต้นแบบ`,
+                  }),
+                ],
+              }),
+            ],
+          }),
+          (0, B.jsxs)(`div`, {
+            className: `info-strip`,
+            style: { margin: `20px 28px 0` },
+            children: [
+              (0, B.jsx)(be, { size: 18 }),
+              (0, B.jsxs)(`p`, {
+                children: [
+                  (0, B.jsx)(`strong`, { children: `รุ่นทดลองฟรี` }),
+                  ` · เอกสารและคำขอเก็บในเบราว์เซอร์นี้ ไม่ส่งถึงหน่วยงานรัฐ การค้นหาสถานีส่งเฉพาะตำแหน่งเมื่อคุณอนุญาต`,
+                ],
+              }),
+            ],
+          }),
+          i &&
+            (0, B.jsxs)(`div`, {
+              className: `load-banner`,
+              role: `alert`,
+              children: [
+                (0, B.jsx)(`p`, { children: i }),
+                o
+                  ? (0, B.jsxs)(`a`, {
+                      href: `/signin-with-chatgpt?return_to=/`,
+                      target: `_top`,
+                      children: [(0, B.jsx)(fe, { size: 16 }), ` เข้าสู่ระบบ`],
+                    })
+                  : (0, B.jsxs)(Om, {
+                      variant: `outline`,
+                      onClick: () => Fe(),
+                      children: [(0, B.jsx)(_e, { size: 16 }), ` ลองใหม่`],
+                    }),
+              ],
+            }),
+          e === `chat` && quickAccident && D.createElement(AccidentFlow,{documents:Ze,onClose:()=>setQuickAccident(false),onSubmit:async(input)=>{const result=await zg('/api/accident',input);await Fe();setQuickAccident(false);t('cases');setTracking(result.case);}}),
+          e === `chat` && !quickAccident &&
+            (0, B.jsxs)(`div`, {
+              className: `workspace`,
+              children: [
+                (0, B.jsxs)(`section`, {
+                  className: `main-panel`,
+                  children: [
+                    (0, B.jsxs)(`div`, {
+                      className: `page-heading`,
+                      children: [
+                        (0, B.jsx)(`p`, {
+                          className: `eyebrow`,
+                          children: `เตรียมเอกสารให้ง่ายขึ้น`,
+                        }),
+                        (0, B.jsxs)(`h1`, {
+                          children: [
+                            `เรื่องเอกสาร `,
+                            (0, B.jsx)(`span`, { children: `ให้เราช่วย` }),
+                          ],
+                        }),
+                        (0, B.jsx)(`p`, {
+                          children: `เล่าสิ่งที่ต้องการ เราจะช่วยเตรียมข้อมูลที่ต้องใช้`,
+                        }),
+                      ],
+                    }),
+                    p
+                      ? (0, B.jsxs)(`div`, {
+                          className: `active-service`,
+                          children: [
+                            (0, B.jsxs)(`span`, {
+                              children: [
+                                (0, B.jsx)(re, { size: 18 }),
+                                $e.short,
+                              ],
+                            }),
+                            (0, B.jsxs)(Om, {
+                              variant: `ghost`,
+                              size: `sm`,
+                              onClick: () => {
+                                (m(null), f(``));
+                              },
+                              children: [
+                                (0, B.jsx)(ge, { size: 16 }),
+                                ` เริ่มเรื่องใหม่`,
+                              ],
+                            }),
+                          ],
+                        })
+                      : (0, B.jsx)(B.Fragment, {
+                          children: (0, B.jsx)(`div`, {
+                            className: `service-grid`,
+                            children: Lg.map(({ id: e, icon: t, label: r }) =>
+                              (0, B.jsxs)(
+                                `button`,
+                                {
+                                  disabled: !n || nt,
+                                  className: `service-card`,
+                                  onClick: () => Be(e),
+                                  children: [
+                                    (0, B.jsx)(t, { size: 22 }),
+                                    (0, B.jsx)(`span`, { children: r }),
+                                    (0, B.jsx)(ge, { size: 16 }),
+                                  ],
+                                },
+                                e,
+                              ),
+                            ),
+                          }),
+                        }),
+                    (0, B.jsxs)(`div`, {
+                      className: `chat-panel`,
+                      children: [
+                        (0, B.jsxs)(`div`, {
+                          className: `message-list`,
+                          role: `log`,
+                          "aria-label": `บทสนทนา`,
+                          "aria-live": `polite`,
+                          children: [
+                            p
+                              ? p.messages.map((e, t) =>
+                                  (0, B.jsxs)(
+                                    `div`,
+                                    {
+                                      className:
+                                        e.role === `user`
+                                          ? `user-message`
+                                          : `assistant-message`,
+                                      children: [
+                                        e.role === `assistant` &&
+                                          (0, B.jsx)(`span`, {
+                                            className: `ai-avatar`,
+                                            children: (0, B.jsx)(xe, {
+                                              size: 19,
+                                            }),
+                                          }),
+                                        (0, B.jsxs)(`div`, {
+                                          children: [
+                                            e.role === `assistant` &&
+                                              (0, B.jsxs)(`strong`, {
+                                                children: [
+                                                  `พร้อมยื่น `,
+                                                  (0, B.jsx)(`small`, {
+                                                    children:
+                                                      e.mode === `ai`
+                                                        ? `AI`
+                                                        : `แบบนำทาง`,
+                                                  }),
+                                                ],
+                                              }),
+                                            (0, B.jsx)(`p`, {
+                                              children: e.text,
+                                            }),
+                                          ],
+                                        }),
+                                      ],
+                                    },
+                                    t,
+                                  ),
+                                )
+                              : (0, B.jsxs)(`div`, {
+                                  className: `assistant-message`,
+                                  children: [
+                                    (0, B.jsx)(`span`, {
+                                      className: `ai-avatar`,
+                                      children: (0, B.jsx)(xe, { size: 19 }),
+                                    }),
+                                    (0, B.jsxs)(`div`, {
+                                      children: [
+                                        (0, B.jsx)(`strong`, {
+                                          children: `พร้อมยื่น`,
+                                        }),
+                                        (0, B.jsxs)(`p`, {
+                                          children: [
+                                            `สวัสดีครับ วันนี้ต้องการให้ช่วยเรื่องเอกสารอะไร?`,
+                                            (0, B.jsx)(`br`, {}),
+                                            `พิมพ์เล่าได้เลย หรือเลือกเรื่องด้านบนเพื่อเริ่มต้น`,
+                                          ],
+                                        }),
+                                        (0, B.jsx)(`button`, {
+                                          className: `text-button`,
+                                          onClick: Ve,
+                                          disabled: !n || nt,
+                                          children: `ยังไม่มีเอกสาร? ทดลองด้วยข้อมูลสมมติ`,
+                                        }),
+                                      ],
+                                    }),
+                                  ],
+                                }),
+                            c === `chat` &&
+                              (0, B.jsxs)(`p`, {
+                                className: `working-label`,
+                                children: [
+                                  (0, B.jsx)(ue, {
+                                    className: `animate-spin`,
+                                    size: 16,
+                                  }),
+                                  ` กำลังจัดข้อมูลและดูสิ่งที่ยังขาด...`,
+                                ],
+                              }),
+                            (0, B.jsx)(`div`, { ref: Pe }),
+                          ],
+                        }),
+                        p?.status === `simulated`
+                          ? (0, B.jsxs)(`div`, {
+                              className: `submitted-chat`,
+                              children: [
+                                (0, B.jsx)(ee, { size: 20 }),
+                                ` คำขอนี้ส่งแบบจำลองแล้ว `,
+                                (0, B.jsx)(`button`, {
+                                  onClick: () => ze(p),
+                                  children: `ดูรายละเอียด`,
+                                }),
+                              ],
+                            })
+                          : (0, B.jsxs)(`form`, {
+                              className: `composer`,
+                              onSubmit: Ue,
+                              children: [
+                                (0, B.jsx)(`textarea`, {
+                                  value: d,
+                                  maxLength: 4e3,
+                                  onChange: (e) => f(e.target.value),
+                                  "aria-label": `เล่าเรื่องที่ต้องการ`,
+                                  placeholder: `เช่น กระเป๋าสตางค์หาย ต้องการเตรียมข้อมูลแจ้งความ...`,
+                                  onKeyDown: (e) => {
+                                    e.key === `Enter` &&
+                                      !e.shiftKey &&
+                                      !e.nativeEvent.isComposing &&
+                                      (e.preventDefault(), Ue());
+                                  },
+                                }),
+                                (0, B.jsxs)(`div`, {
+                                  children: [
+                                    (0, B.jsxs)(`span`, {
+                                      children: [
+                                        (0, B.jsx)(be, { size: 14 }),
+                                        ` คุณตรวจทานก่อนเสมอ`,
+                                      ],
+                                    }),
+                                    (0, B.jsxs)(Om, {
+                                      disabled: !n || nt || !d.trim(),
+                                      type: `submit`,
+                                      children: [
+                                        (0, B.jsx)(ye, { size: 16 }),
+                                        ` ส่งข้อความ`,
+                                      ],
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            }),
+                        n?.aiEnabled &&
+                          Bg(
+                            _,
+                            v,
+                            `อนุญาตส่งบทสนทนาและรายละเอียดเรื่องให้ OpenAI เพื่อช่วยจัดข้อมูล`,
+                            `chat-ai-consent`,
+                          ),
+                      ],
+                    }),
+                    (0, B.jsxs)(`div`, {
+                      className: `scope-note`,
+                      children: [
+                        (0, B.jsx)(be, { size: 16 }),
+                        (0, B.jsx)(`p`, {
+                          children: `พื้นที่ทดลอง: ยังไม่เชื่อมฐานข้อมูลหรือระบบรับเรื่องของภาครัฐ`,
+                        }),
+                      ],
+                    }),
+                    !n?.aiEnabled &&
+                      (0, B.jsx)(`p`, {
+                        className: `mode-note`,
+                        children: `บทสนทนาแบบนำทางตามช่องข้อมูล · อ่านภาพด้วย OCR ฟรี ไม่ใช่ AI สนทนา`,
+                      }),
+                  ],
+                }),
+                (0, B.jsxs)(`aside`, {
+                  className: `context-panel`,
+                  children: [
+                    (0, B.jsxs)(`div`, {
+                      className: `context-heading`,
+                      children: [
+                        (0, B.jsx)(se, { size: 20 }),
+                        (0, B.jsx)(`h2`, {
+                          children: p
+                            ? `ข้อมูลสำหรับคำขอนี้`
+                            : `เอกสารที่ใช้ซ้ำได้`,
+                        }),
+                      ],
+                    }),
+                    p
+                      ? (0, B.jsxs)(`div`, {
+                          className: `case-summary`,
+                          children: [
+                            (0, B.jsxs)(`div`, {
+                              className: `completion`,
+                              children: [
+                                (0, B.jsxs)(`b`, { children: [tt, `%`] }),
+                                (0, B.jsx)(`span`, {
+                                  children: `ข้อมูลตามรายการต้นแบบ`,
+                                }),
+                              ],
+                            }),
+                            (0, B.jsx)(Ah, {
+                              value: tt,
+                              "aria-label": `ความครบถ้วนของข้อมูล`,
+                            }),
+                            (0, B.jsx)(`div`, {
+                              className: `required-list`,
+                              children: $e.required.map((e) =>
+                                (0, B.jsxs)(
+                                  `div`,
+                                  {
+                                    className: et.includes(e)
+                                      ? `missing`
+                                      : `complete`,
+                                    children: [
+                                      et.includes(e)
+                                        ? (0, B.jsx)(`span`, {
+                                            className: `open-circle`,
+                                          })
+                                        : (0, B.jsx)(P, { size: 15 }),
+                                      (0, B.jsx)(`span`, { children: hg[e] }),
+                                    ],
+                                  },
+                                  e,
+                                ),
+                              ),
+                            }),
+                            (0, B.jsxs)(Om, {
+                              className: `full-button`,
+                              onClick: () => ze(p),
+                              children: [
+                                (0, B.jsx)(ae, { size: 16 }),
+                                ` ตรวจร่างคำขอ`,
+                              ],
+                            }),
+                            (0, B.jsxs)(`p`, {
+                              className: `small-note`,
+                              children: [
+                                Object.values(p.fields).filter(
+                                  (e) => e.documentId,
+                                ).length,
+                                ` ช่องใช้ข้อมูลจากเอกสารเดิม`,
+                              ],
+                            }),
+                          ],
+                        })
+                      : Ze.length
+                        ? (0, B.jsxs)(`div`, {
+                            className: `compact-docs`,
+                            children: [
+                              Ze.slice(0, 4).map((e) =>
+                                (0, B.jsxs)(
+                                  `button`,
+                                  {
+                                    onClick: () => Le(e),
+                                    className: `compact-doc`,
+                                    children: [
+                                      (0, B.jsx)(z, { size: 20 }),
+                                      (0, B.jsxs)(`span`, {
+                                        children: [
+                                          (0, B.jsx)(`strong`, {
+                                            children: e.name,
+                                          }),
+                                          (0, B.jsx)(`small`, {
+                                            children: e.verified
+                                              ? `ตรวจแล้ว · พร้อมใช้`
+                                              : `รอตรวจข้อมูล`,
+                                          }),
+                                        ],
+                                      }),
+                                      (0, B.jsx)(I, { size: 15 }),
+                                    ],
+                                  },
+                                  e.id,
+                                ),
+                              ),
+                              (0, B.jsxs)(Om, {
+                                variant: `outline`,
+                                className: `full-button`,
+                                onClick: () => b(!0),
+                                children: [
+                                  (0, B.jsx)(we, { size: 16 }),
+                                  ` เพิ่มเอกสาร`,
+                                ],
+                              }),
+                            ],
+                          })
+                        : (0, B.jsxs)(`div`, {
+                            className: `empty-doc`,
+                            children: [
+                              (0, B.jsx)(`div`, {
+                                className: `document-symbol`,
+                                children: (0, B.jsx)(z, { size: 29 }),
+                              }),
+                              (0, B.jsx)(`h3`, {
+                                children: `เริ่มจากเอกสารของคุณ`,
+                              }),
+                              (0, B.jsxs)(`p`, {
+                                children: [
+                                  `อัปโหลดครั้งเดียว เลือกนำข้อมูล`,
+                                  (0, B.jsx)(`br`, {}),
+                                  `ไปใช้กับคำขอที่ต้องการ`,
+                                ],
+                              }),
+                              (0, B.jsxs)(Om, {
+                                disabled: !n,
+                                variant: `outline`,
+                                onClick: () => b(!0),
+                                children: [
+                                  (0, B.jsx)(we, { size: 16 }),
+                                  ` อัปโหลดเอกสาร`,
+                                ],
+                              }),
+                            ],
+                          }),
+                    (0, B.jsxs)(`div`, {
+                      className: `steps-card`,
+                      children: [
+                        (0, B.jsx)(`span`, {
+                          className: `eyebrow`,
+                          children: `จากเอกสาร สู่คำขอ`,
+                        }),
+                        [
+                          `อัปโหลดและตรวจข้อมูล`,
+                          `เล่าเรื่องที่ต้องการ`,
+                          `ตรวจร่างและยืนยัน`,
+                        ].map((e, t) =>
+                          (0, B.jsxs)(
+                            `div`,
+                            {
+                              className: `step`,
+                              children: [
+                                (0, B.jsx)(`b`, { children: t + 1 }),
+                                (0, B.jsx)(`span`, { children: e }),
+                              ],
+                            },
+                            e,
+                          ),
+                        ),
+                      ],
+                    }),
+                    (0, B.jsxs)(`div`, {
+                      className: `trust-note`,
+                      children: [
+                        (0, B.jsx)(be, { size: 20 }),
+                        (0, B.jsxs)(`p`, {
+                          children: [
+                            `เลือกใช้เฉพาะข้อมูลที่จำเป็น`,
+                            (0, B.jsx)(`br`, {}),
+                            (0, B.jsx)(`span`, {
+                              children: `ทุกคำขอต้องได้รับการยืนยันจากคุณ`,
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          e === `documents` &&
+            (0, B.jsxs)(`div`, {
+              className: `content-page`,
+              children: [
+                (0, B.jsxs)(`div`, {
+                  className: `section-heading`,
+                  children: [
+                    (0, B.jsxs)(`div`, {
+                      children: [
+                        (0, B.jsx)(`p`, {
+                          className: `eyebrow`,
+                          children: `คลังเอกสารของคุณ`,
+                        }),
+                        (0, B.jsx)(`h1`, { children: `คลังเอกสาร` }),
+                        (0, B.jsx)(`p`, {
+                          children: `เก็บครั้งเดียว ตรวจข้อมูล แล้วเลือกใช้ซ้ำกับเรื่องถัดไป`,
+                        }),
+                      ],
+                    }),
+                    (0, B.jsxs)(Om, {
+                      disabled: !n || nt,
+                      onClick: () => b(!0),
+                      children: [
+                        (0, B.jsx)(we, { size: 17 }),
+                        ` อัปโหลดเอกสาร`,
+                      ],
+                    }),
+                  ],
+                }),
+                (0, B.jsxs)(`div`, {
+                  className: `info-strip`,
+                  children: [
+                    (0, B.jsx)(de, { size: 18 }),
+                    (0, B.jsx)(`p`, {
+                      children: `ไฟล์เก็บในระบบต้นแบบส่วนตัว ไม่ใช่ฐานข้อมูลภาครัฐ แนะนำใช้เอกสารจำลองหรือปิดข้อมูลอ่อนไหวขณะสาธิต`,
+                    }),
+                  ],
+                }),
+                !n && !i
+                  ? (0, B.jsx)(Im, { className: `h-56 w-full` })
+                  : Ze.length
+                    ? (0, B.jsx)(`div`, {
+                        className: `document-grid`,
+                        children: Ze.map((e) =>
+                          (0, B.jsxs)(
+                            `article`,
+                            {
+                              className: `document-card`,
+                              children: [
+                                e.image?.startsWith("data:image/") ? D.createElement("img",{className:"doc-thumbnail",src:e.image,alt:gg[e.kind],loading:"lazy"}) : D.createElement("div",{className:"doc-placeholder"},D.createElement("strong",null,gg[e.kind]),e.demo?"ข้อมูลสมมติ":e.mime==="application/pdf"?"เอกสาร PDF":"ยังไม่มีภาพตัวอย่าง"),
+                                (0, B.jsxs)(`div`, {
+                                  className: `document-card-top`,
+                                  children: [
+                                    (0, B.jsx)(`span`, {
+                                      className: `doc-icon`,
+                                      children: (0, B.jsx)(z, { size: 23 }),
+                                    }),
+                                    (0, B.jsx)(`span`, {
+                                      className:
+                                        `badge ` +
+                                        (e.verified ? `green` : `orange`),
+                                      children: e.verified
+                                        ? `ตรวจข้อมูลแล้ว`
+                                        : `รอตรวจข้อมูล`,
+                                    }),
+                                  ],
+                                }),
+                                (0, B.jsx)(`h2`, { children: e.name }),
+                                (0, B.jsxs)(`p`, {
+                                  children: [
+                                    gg[e.kind],
+                                    e.demo
+                                      ? ` · ข้อมูลสมมติ`
+                                      : ` · ${(e.size / 1024 / 1024).toFixed(2)} MB`,
+                                  ],
+                                }),
+                                (0, B.jsxs)(`div`, {
+                                  className: `doc-meta`,
+                                  children: [
+                                    (0, B.jsxs)(`span`, {
+                                      children: [
+                                        Object.values(e.fields).filter(Boolean)
+                                          .length,
+                                        ` ช่องข้อมูล`,
+                                      ],
+                                    }),
+                                    (0, B.jsx)(`span`, {
+                                      children: new Date(
+                                        e.createdAt,
+                                      ).toLocaleDateString(`th-TH`, {
+                                        timeZone: `Asia/Bangkok`,
+                                      }),
+                                    }),
+                                  ],
+                                }),
+                                (0, B.jsxs)(`div`, {
+                                  className: `card-actions`,
+                                  children: [
+                                    (0, B.jsxs)(Om, {
+                                      variant: `outline`,
+                                      onClick: () => Le(e),
+                                      children: [
+                                        (0, B.jsx)(ae, { size: 15 }),
+                                        ` ตรวจ / แก้ไข`,
+                                      ],
+                                    }),
+                                    (0, B.jsx)(Om, {
+                                      variant: `ghost`,
+                                      size: `icon`,
+                                      "aria-label": `ลบ ` + e.name,
+                                      onClick: () =>
+                                        Ne({
+                                          type: `documents`,
+                                          id: e.id,
+                                          name: e.name,
+                                        }),
+                                      children: (0, B.jsx)(Se, { size: 16 }),
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            },
+                            e.id,
+                          ),
+                        ),
+                      })
+                    : (0, B.jsxs)(`div`, {
+                        className: `large-empty`,
+                        children: [
+                          (0, B.jsx)(se, { size: 42 }),
+                          (0, B.jsx)(`h2`, {
+                            children: `ยังไม่มีเอกสารในคลัง`,
+                          }),
+                          (0, B.jsx)(`p`, {
+                            children: `อัปโหลดภาพเอกสาร หรือเริ่มทดลองด้วยข้อมูลสมมติ`,
+                          }),
+                          (0, B.jsx)(Om, {
+                            variant: `outline`,
+                            disabled: !n || nt,
+                            onClick: Ve,
+                            children: `ใช้ข้อมูลตัวอย่าง`,
+                          }),
+                        ],
+                      }),
+              ],
+            }),
+          e === `cases` &&
+            (0, B.jsxs)(`div`, {
+              className: `content-page`,
+              children: [
+                (0, B.jsxs)(`div`, {
+                  className: `section-heading`,
+                  children: [
+                    (0, B.jsxs)(`div`, {
+                      children: [
+                        (0, B.jsx)(`p`, {
+                          className: `eyebrow`,
+                          children: `คำขอของคุณ`,
+                        }),
+                        (0, B.jsx)(`h1`, { children: `คำขอของฉัน` }),
+                        (0, B.jsx)(`p`, {
+                          children: `กลับมาทำต่อ ตรวจร่าง และดูหลักฐานการส่งแบบจำลอง`,
+                        }),
+                      ],
+                    }),
+                    (0, B.jsxs)(Om, {
+                      onClick: () => {
+                        (t(`chat`), m(null));
+                      },
+                      children: [(0, B.jsx)(ge, { size: 17 }), ` สร้างคำขอ`],
+                    }),
+                  ],
+                }),
+                n?.cases.length
+                  ? (0, B.jsx)(`div`, {
+                      className: `case-list`,
+                      children: n.cases.map((e) =>
+                        (0, B.jsxs)(
+                          `article`,
+                          {
+                            className: `request-card`,
+                            children: [
+                              (0, B.jsx)(`div`, {
+                                className: `request-icon`,
+                                children:
+                                  e.status === `simulated`
+                                    ? (0, B.jsx)(ee, {})
+                                    : (0, B.jsx)(z, {}),
+                              }),
+                              (0, B.jsxs)(`div`, {
+                                className: `request-info`,
+                                children: [
+                                  (0, B.jsxs)(`div`, {
+                                    children: [
+                                      (0, B.jsx)(`h2`, {
+                                        children: _g[e.service].short,
+                                      }),
+                                      (0, B.jsx)(`span`, {
+                                        className:
+                                          `badge ` +
+                                          (e.status === `simulated`
+                                            ? `blue`
+                                            : `orange`),
+                                        children:
+                                          e.status === `simulated`
+                                            ? `ส่งแบบจำลองแล้ว`
+                                            : `ฉบับร่าง`,
+                                      }),
+                                    ],
+                                  }),
+                                  (0, B.jsx)(`p`, {
+                                    children:
+                                      e.fields.details?.value?.slice(0, 100) ||
+                                      _g[e.service].agency,
+                                  }),
+                                  (0, B.jsxs)(`small`, {
+                                    children: [
+                                      e.reference || `ยังไม่ส่ง`,
+                                      ` · `,
+                                      Rg(e.updatedAt),
+                                    ],
+                                  }),
+                                  e.status === `simulated` &&
+                                    (0, B.jsx)(`p`, {
+                                      className: `simulation-label`,
+                                      children: `บันทึกเฉพาะในต้นแบบ · หน่วยงานภาครัฐยังไม่ได้รับเรื่อง`,
+                                    }),
+                                ],
+                              }),
+                              (0, B.jsxs)(`div`, {
+                                className: `request-actions`,
+                                children: [
+                                  (0, B.jsx)(Om, {
+                                    variant: `outline`,
+                                    onClick: () => {
+                                      (m(e),
+                                        t(`chat`),
+                                        e.status === `simulated` && ze(e));
+                                    },
+                                    children:
+                                      e.status === `draft`
+                                        ? `ทำต่อ`
+                                        : `ดูรายละเอียด`,
+                                  }),
+                                  (0, B.jsx)(Om, {
+                                    variant: `ghost`,
+                                    size: `icon`,
+                                    "aria-label":
+                                      `ลบคำขอ ` + _g[e.service].short,
+                                    onClick: () =>
+                                      Ne({
+                                        type: `cases`,
+                                        id: e.id,
+                                        name: _g[e.service].short,
+                                      }),
+                                    children: (0, B.jsx)(Se, { size: 16 }),
+                                  }),
+                                ],
+                              }),
+                            ],
+                          },
+                          e.id,
+                        ),
+                      ),
+                    })
+                  : (0, B.jsxs)(`div`, {
+                      className: `large-empty`,
+                      children: [
+                        (0, B.jsx)(re, { size: 42 }),
+                        (0, B.jsx)(`h2`, { children: `ยังไม่มีคำขอ` }),
+                        (0, B.jsx)(`p`, {
+                          children: `เริ่มเล่าเรื่องที่ต้องการให้ผู้ช่วย แล้วร่างจะถูกเก็บไว้ที่นี่`,
+                        }),
+                        (0, B.jsx)(Om, {
+                          onClick: () => t(`chat`),
+                          children: `เริ่มเตรียมคำขอ`,
+                        }),
+                      ],
+                    }),
+              ],
+            }),
+        ],
+      }),
+      (0, B.jsx)(ah, {
+        open: y,
+        onOpenChange: (e) => {
+          c || b(e);
+        },
+        children: (0, B.jsxs)(ch, {
+          className: `upload-dialog`,
+          children: [
+            (0, B.jsxs)(lh, {
+              children: [
+                (0, B.jsx)(uh, { children: `เพิ่มเอกสารเข้าคลัง` }),
+                (0, B.jsx)(dh, {
+                  children: `รองรับเจเพ็ก พีเอ็นจี และพีดีเอฟ ไม่เกิน 8 เมกะไบต์ต่อไฟล์`,
+                }),
+              ],
+            }),
+            (0, B.jsxs)(`label`, {
+              className: `field-label`,
+              children: [
+                `ประเภทเอกสาร`,
+                (0, B.jsxs)(Sh, {
+                  value: C,
+                  onValueChange: w,
+                  children: [
+                    (0, B.jsx)(wh, {
+                      className: `w-full`,
+                      children: (0, B.jsx)(Ch, {}),
+                    }),
+                    (0, B.jsx)(Th, {
+                      children: Object.entries(gg).map(([e, t]) =>
+                        (0, B.jsx)(Eh, { value: e, children: t }, e),
+                      ),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            (0, B.jsxs)(`label`, {
+              className: `drop-zone`,
+              onDragOver: (e) => e.preventDefault(),
+              onDrop: (e) => {
+                (e.preventDefault(), S(e.dataTransfer.files[0] || null));
+              },
+              children: [
+                (0, B.jsx)(we, { size: 28 }),
+                (0, B.jsx)(`strong`, {
+                  children: x ? x.name : `เลือกไฟล์ หรือลากเอกสารมาวาง`,
+                }),
+                (0, B.jsx)(`span`, {
+                  children: x
+                    ? `${(x.size / 1024 / 1024).toFixed(2)} MB`
+                    : `ภาพชัด ตัวอักษรไม่ขาด ช่วยให้อ่านได้ดีขึ้น`,
+                }),
+                (0, B.jsx)(`input`, {
+                  type: `file`,
+                  accept: `image/png,image/jpeg,application/pdf`,
+                  onChange: (e) => S(e.target.files?.[0] || null),
+                  "aria-label": `เลือกไฟล์เอกสาร`,
+                }),
+              ],
+            }),
+            Bg(
+              T,
+              E,
+              `อนุญาตเก็บไฟล์และข้อมูลในระบบต้นแบบเพื่อเตรียมคำขอ สามารถลบได้ภายหลัง`,
+              `storage-consent`,
+            ),
+            (0, B.jsx)(`p`, {
+              className: `small-note`,
+              children: `ข้อมูลยังไม่ถูกส่งให้ AI หรือหน่วยงานรัฐในขั้นตอนนี้`,
+            }),
+            (0, B.jsxs)(Om, {
+              onClick: We,
+              disabled: !x || !T || nt,
+              children: [
+                c === `upload`
+                  ? (0, B.jsx)(ue, { className: `animate-spin`, size: 17 })
+                  : (0, B.jsx)(we, { size: 17 }),
+                ` อัปโหลดเอกสาร`,
+              ],
+            }),
+          ],
+        }),
+      }),
+      (0, B.jsx)(ah, {
+        open: !!le,
+        onOpenChange: (e) => {
+          !e && !c && pe(null);
+        },
+        children: (0, B.jsxs)(ch, {
+          children: [
+            (0, B.jsxs)(lh, {
+              children: [
+                (0, B.jsx)(uh, { children: `เริ่มเตรียมคำขอ` }),
+                (0, B.jsx)(dh, {
+                  children: `เลือกเรื่องและเอกสารที่จะให้ผู้ช่วยนำข้อมูลมาใช้`,
+                }),
+              ],
+            }),
+            (0, B.jsxs)(Sh, {
+              value: le || `general`,
+              onValueChange: (e) => {
+                pe(e);
+                g(selectDocuments(e, n?.documents || []));
+              },
+              children: [
+                (0, B.jsx)(wh, {
+                  className: `w-full`,
+                  children: (0, B.jsx)(Ch, {}),
+                }),
+                (0, B.jsx)(Th, {
+                  children: Object.entries(_g).map(([e, t]) =>
+                    (0, B.jsx)(Eh, { value: e, children: t.short }, e),
+                  ),
+                }),
+              ],
+            }),
+            (0, B.jsx)(DocumentChecklist, {
+              topic: le,
+              documents: n?.documents || [],
+              selected: h,
+              labels: gg,
+            }),
+            (0, B.jsxs)(`div`, {
+              className: `selection-docs`,
+              children: [
+                (0, B.jsx)(`strong`, {
+                  children: `ใช้ข้อมูลจากเอกสารที่ตรวจแล้ว`,
+                }),
+                Qe.length
+                  ? Qe.map((e) =>
+                      (0, B.jsx)(
+                        `div`,
+                        {
+                          children: Bg(
+                            h.includes(e.id),
+                            (t) =>
+                              g((n) =>
+                                t
+                                  ? [...new Set([...n, e.id])]
+                                  : n.filter((t) => t !== e.id),
+                              ),
+                            (0, B.jsxs)(B.Fragment, {
+                              children: [
+                                e.name,
+                                (0, B.jsx)(`small`, {
+                                  children: e.demo
+                                    ? `ข้อมูลสมมติ`
+                                    : `ข้อมูลที่คุณตรวจแล้ว`,
+                                }),
+                              ],
+                            }),
+                          ),
+                        },
+                        e.id,
+                      ),
+                    )
+                  : (0, B.jsx)(`p`, {
+                      children: `ยังไม่มีเอกสารที่ตรวจแล้ว เริ่มคำขอและกรอกข้อมูลเองได้`,
+                    }),
+              ],
+            }),
+            Bg(
+              Ce,
+              Te,
+              `อนุญาตนำข้อมูลที่จำเป็นจากเอกสารที่เลือกมาเติมในคำขอนี้`,
+              `use-consent`,
+            ),
+            (0, B.jsx)(`p`, {
+              className: `small-note`,
+              children: le && _g[le].note,
+            }),
+            (0, B.jsx)(Om, {
+              disabled: !Ce || nt,
+              onClick: He,
+              children: c === `start` ? `กำลังเตรียม...` : `เริ่มเตรียมคำขอ`,
+            }),
+          ],
+        }),
+      }),
+      (0, B.jsx)(km, {
+        open: !!O,
+        onOpenChange: (e) => {
+          if (!e && !c) {
+            if (O) pendingDocs.delete(O.id);
+            k(null);
+          }
+        },
+        children: (0, B.jsxs)(Mm, {
+          className: `document-sheet`,
+          children: [
+            (0, B.jsxs)(Nm, {
+              children: [
+                (0, B.jsx)(Pm, { children: `ตรวจข้อมูลเอกสาร` }),
+                (0, B.jsx)(Fm, { children: O?.name }),
+              ],
+            }),
+            O &&
+              (0, B.jsxs)(`div`, {
+                className: `sheet-body`,
+                children: [
+                  !O.demo &&
+                    (0, B.jsxs)(B.Fragment, {
+                      children: [
+                        (0, B.jsxs)(`a`, {
+                          className: `file-preview-link`,
+                          href: `/api/documents?id=` + encodeURIComponent(O.id),
+                          target: `_blank`,
+                          rel: `noreferrer`,
+                          children: [
+                            (0, B.jsx)(ae, { size: 16 }),
+                            ` เปิดไฟล์ต้นฉบับเพื่อตรวจเทียบ`,
+                          ],
+                        }),
+                        (0, B.jsxs)(`div`, {
+                          className: `read-actions`,
+                          children: [
+                            O.mime.startsWith(`image/`) &&
+                              (0, B.jsxs)(Om, {
+                                variant: `outline`,
+                                disabled: nt,
+                                onClick: Ge,
+                                children: [
+                                  (0, B.jsx)(ve, { size: 16 }),
+                                  c === `ocr`
+                                    ? `กำลังอ่านภาพ...`
+                                    : O.kind === "license"
+                                      ? `อ่านคิวอาร์ใบขับขี่`
+                                      : `อ่านข้อความจากภาพ`,
+                                ],
+                              }),
+                            n?.aiEnabled &&
+                              (0, B.jsxs)(Om, {
+                                variant: `outline`,
+                                disabled: nt || !oe,
+                                onClick: Ke,
+                                children: [
+                                  (0, B.jsx)(xe, { size: 16 }),
+                                  c === `vision`
+                                    ? `AI กำลังอ่าน...`
+                                    : `อ่านด้วย Vision AI`,
+                                ],
+                              }),
+                          ],
+                        }),
+                        c === `ocr` &&
+                          (0, B.jsxs)(`div`, {
+                            className: `ocr-status`,
+                            children: [
+                              (0, B.jsx)(Ah, { value: te }),
+                              (0, B.jsxs)(`span`, {
+                                children: [
+                                  `อ่านภาพ `,
+                                  te,
+                                  `% · ครั้งแรกอาจใช้เวลาสักครู่`,
+                                ],
+                              }),
+                            ],
+                          }),
+                        n?.aiEnabled &&
+                          Bg(
+                            oe,
+                            ce,
+                            `อนุญาตส่งไฟล์นี้ให้ OpenAI เพื่ออ่านข้อมูล`,
+                            `vision-consent`,
+                          ),
+                        !n?.aiEnabled &&
+                          (0, B.jsx)(`p`, {
+                            className: `small-note`,
+                            children:
+                              O.mime === `application/pdf`
+                                ? `ไฟล์พีดีเอฟ: เปิดไฟล์เทียบและกรอกข้อมูลเอง การรับรองสำเนาอัตโนมัติรองรับเฉพาะภาพ`
+                                : `OCR อ่านภาพในเบราว์เซอร์ ข้อมูลที่อ่านอาจผิด กรุณาตรวจทุกช่อง`,
+                          }),
+                      ],
+                    }),
+                  (0, B.jsxs)(`div`, {
+                    className: `info-strip`,
+                    children: [
+                      (0, B.jsx)(be, { size: 18 }),
+                      (0, B.jsx)(`p`, {
+                        children: `ไฟล์ใหม่ยังไม่บันทึก กรุณาตรวจชื่อ ที่อยู่ วันเกิด และเลขบัตรให้ถูกต้องก่อนยืนยัน เบราว์เซอร์อ่านชิปบัตรไม่ได้ ใช้ได้เฉพาะภาพหรือคิวอาร์`,
+                      }),
+                    ],
+                  }),
+                  O.rawText &&
+                    (0, B.jsxs)(Om, {
+                      variant: `outline`,
+                      disabled: nt,
+                      onClick: Re,
+                      children: [
+                        (0, B.jsx)(ve, { size: 16 }),
+                        ` เติมช่องว่างจากข้อความ OCR`,
+                      ],
+                    }),
+                  (0, B.jsxs)(`p`, {
+                    className: `small-note`,
+                    children: [
+                      `มีข้อมูล `,
+                      Object.values(A).filter((e) => e.trim()).length,
+                      ` ช่อง · ข้อความรบกวนไม่ใช่ข้อมูลที่ยืนยันแล้ว`,
+                    ],
+                  }),
+                  (0, B.jsx)(`div`, {
+                    className: `edit-fields`,
+                    children: (O.kind === "identity" ? ["fullName","nationalId","birthDate","address"] : O.kind === "license" ? ["fullName","nationalId","birthDate","licenseNumber","expiryDate"] : vg).map((e) =>
+                      (0, B.jsxs)(
+                        `label`,
+                        {
+                          className: `field-label`,
+                          children: [
+                            hg[e],
+                            e === `address`
+                              ? (0, B.jsx)(`textarea`, {
+                                  value: A[e] || ``,
+                                  maxLength: 4e3,
+                                  onChange: (t) => {
+                                    (j((n) => ({ ...n, [e]: t.target.value })),
+                                      F(!1));
+                                  },
+                                  rows: 2,
+                                })
+                              : (0, B.jsx)(`input`, {
+                                  value: A[e] || ``,
+                                  maxLength: 500,
+                                  onChange: (t) => {
+                                    (j((n) => ({ ...n, [e]: t.target.value })),
+                                      F(!1));
+                                  },
+                                }),
+                          ],
+                        },
+                        e,
+                      ),
+                    ),
+                  }),
+                  Bg(
+                    N,
+                    F,
+                    `ตรวจข้อมูลเทียบกับต้นฉบับแล้ว และอนุญาตเก็บข้อมูลที่แก้ไข`,
+                    `document-confirm`,
+                  ),
+                  (0, B.jsxs)(Om, {
+                    className: `full-button`,
+                    disabled:
+                      !N || nt || !Object.values(A).some((e) => e.trim()),
+                    onClick: qe,
+                    children: [
+                      (0, B.jsx)(P, { size: 17 }),
+                      ` ยืนยันและบันทึกข้อมูล`,
+                    ],
+                  }),
+                  !Object.values(A).some((e) => e.trim()) &&
+                    (0, B.jsx)(`p`, {
+                      className: `small-note`,
+                      children: `ยังไม่มีข้อมูลที่จะยืนยัน กรุณาอ่านข้อความจากภาพหรือกรอกเอง`,
+                    }),
+                  (0, B.jsx)(Om, {
+                    variant: `outline`,
+                    className: `full-button`,
+                    disabled: nt,
+                    onClick: () => {
+                      pendingDocs.delete(O.id);
+                      k(null);
+                    },
+                    children: `ยกเลิก / ปิดโดยไม่บันทึก`,
+                  }),
+                  O.rawText &&
+                    (0, B.jsxs)(
+                      `details`,
+                      {
+                        className: `ocr-text`,
+                        children: [
+                          (0, B.jsx)(`summary`, {
+                            children: `สำหรับตรวจสอบ: ข้อความ OCR ดิบ (อาจมีอักขระเพี้ยน)`,
+                          }),
+                          (0, B.jsx)(`p`, {
+                            className: `small-note`,
+                            children: `เก็บข้อความต้นฉบับไว้ตรวจเทียบเท่านั้น ไม่ใช่ข้อมูลที่นำไปกรอกทั้งก้อน`,
+                          }),
+                          (0, B.jsx)(`pre`, { children: O.rawText }),
+                        ],
+                      },
+                      O.id,
+                    ),
+                ],
+              }),
+          ],
+        }),
+      }),
+      (0, B.jsx)(km, {
+        open: Ee,
+        onOpenChange: (e) => {
+          c || De(e);
+        },
+        children: (0, B.jsxs)(Mm, {
+          className: `review-sheet`,
+          children: [
+            (0, B.jsxs)(Nm, {
+              children: [
+                (0, B.jsx)(Pm, { children: `ตรวจร่างคำขอ` }),
+                (0, B.jsx)(Fm, { children: $e?.label }),
+              ],
+            }),
+            p &&
+              (0, B.jsxs)(`div`, {
+                className: `sheet-body`,
+                children: [
+                  (0, B.jsxs)(`div`, {
+                    className: `info-strip`,
+                    children: [
+                      (0, B.jsx)(be, { size: 18 }),
+                      (0, B.jsx)(`p`, {
+                        children: `ร่างเตรียมข้อมูล ไม่ใช่แบบราชการที่หน่วยงานรับรอง`,
+                      }),
+                    ],
+                  }),
+                  (0, B.jsxs)(`div`, {
+                    className: `recipient`,
+                    children: [
+                      (0, B.jsx)(`span`, {
+                        children: `ผู้รับเรื่องที่คาดว่าจะติดต่อ`,
+                      }),
+                      (0, B.jsx)(`strong`, {
+                        children:
+                          p.fields.recipient?.value ||
+                          p.fields.provider?.value ||
+                          stationChoice?.name ||
+                          p.station?.name ||
+                          $e.agency,
+                      }),
+                    ],
+                  }),
+                  (0, B.jsx)(`div`, {
+                    className: `edit-fields`,
+                    children: [...$e.required, ...$e.optional].map((e) =>
+                      (0, B.jsxs)(
+                        `label`,
+                        {
+                          className: `field-label`,
+                          children: [
+                            hg[e],
+                            ` `,
+                            $e.required.includes(e) &&
+                              (0, B.jsx)(`span`, {
+                                className: `required-star`,
+                                children: `*`,
+                              }),
+                            [`details`, `address`, `reason`].includes(e)
+                              ? (0, B.jsx)(`textarea`, {
+                                  rows: 3,
+                                  disabled: p.status !== `draft`,
+                                  value: Oe[e] || ``,
+                                  maxLength: 4e3,
+                                  onChange: (t) => {
+                                    (ke((n) => ({ ...n, [e]: t.target.value })),
+                                      je(!1));
+                                  },
+                                })
+                              : (0, B.jsx)(`input`, {
+                                  disabled: p.status !== `draft`,
+                                  value: Oe[e] || ``,
+                                  maxLength: 500,
+                                  onChange: (t) => {
+                                    (ke((n) => ({ ...n, [e]: t.target.value })),
+                                      je(!1));
+                                  },
+                                }),
+                            (0, B.jsx)(`small`, {
+                              className: p.fields[e]?.conflict
+                                ? `conflict-source`
+                                : `field-source`,
+                              children: p.fields[e]?.documentId
+                                ? (0, B.jsxs)(B.Fragment, {
+                                    children: [
+                                      (0, B.jsx)(z, { size: 12 }),
+                                      ` `,
+                                      p.fields[e].source,
+                                    ],
+                                  })
+                                : p.fields[e]?.source || `ยังไม่มีข้อมูล`,
+                            }),
+                          ],
+                        },
+                        e,
+                      ),
+                    ),
+                  }),
+                  ["police", "accident"].includes(p.service) && D.createElement(LegalDraftPanel, {
+                    key: 'legal-' + p.id,
+                    input: Oe,
+                    value: legalChoice,
+                    onChange: (draft) => { setLegalChoice(draft); je(false); },
+                    disabled: p.status !== 'draft' || !!c,
+                    onBusyChange: setLegalBusy,
+                  }),
+                  (0, B.jsx)(`p`, {
+                    className: `small-note`,
+                    children: $e.note,
+                  }),
+                  (0, B.jsxs)(`div`, {
+                    className: `export-actions`,
+                    children: [
+                      (0, B.jsxs)(`a`, {
+                        href: `/print/` + p.id,
+                        target: `_blank`,
+                        rel: `noreferrer`,
+                        children: [
+                          (0, B.jsx)(L, { size: 16 }),
+                          ` พิมพ์ / บันทึกเป็นพีดีเอฟ`,
+                        ],
+                      }),
+                      (0, B.jsxs)(`a`, {
+                        href: `/api/export?id=` + p.id,
+                        children: [
+                          (0, B.jsx)(L, { size: 16 }),
+                          ` ดาวน์โหลดข้อมูล`,
+                        ],
+                      }),
+                    ],
+                  }),
+                  (0, B.jsx)(`p`, {
+                    className: `small-note`,
+                    children: `ไฟล์ดาวน์โหลดใช้ข้อมูลที่บันทึกล่าสุด กดบันทึกร่างหลังแก้ไขก่อนดาวน์โหลด`,
+                  }),
+                  p.status === `draft`
+                    ? (0, B.jsxs)(B.Fragment, {
+                        children: [
+                          (0, B.jsx)(Om, {
+                            variant: `outline`,
+                            className: `full-button`,
+                            disabled: nt || legalBusy,
+                            onClick: Je,
+                            children: `บันทึกร่าง`,
+                          }),
+                          p.service === "accident" &&
+                            (0, B.jsx)(EvidencePanel, {
+                              record: p,
+                              onAttach: async (evidence) => {
+                                const result = await zg(
+                                  "/api/cases",
+                                  {
+                                    id: p.id,
+                                    revision: p.revision,
+                                    action: "evidence",
+                                    evidence,
+                                  },
+                                  "PATCH",
+                                );
+                                m(result.case);
+                                await Fe();
+                              },
+                              onRemove: async (evidenceId) => {
+                                const result = await zg(
+                                  "/api/cases",
+                                  {
+                                    id: p.id,
+                                    revision: p.revision,
+                                    action: "removeEvidence",
+                                    evidenceId,
+                                  },
+                                  "PATCH",
+                                );
+                                m(result.case);
+                                await Fe();
+                              },
+                            }),
+                          (0, B.jsx)(DocumentChecklist, {
+                            topic: p.service,
+                            documents: n?.documents || [],
+                            selected: caseDocumentIds,
+                            labels: gg,
+                            onChange: setCaseDocumentIds,
+                          }),
+                          ["police", "accident"].includes(p.service) &&
+                            (0, B.jsx)(StationPicker, {
+                              key: p.id,
+                              initial: p.station,
+                              place: Oe.eventPlace || "",
+                              request: stationRequest,
+                              onSelect: setStationChoice,
+                            }),
+                          Bg(
+                            Ae,
+                            je,
+                            `ตรวจข้อมูลครบแล้ว และเข้าใจว่าการส่งนี้เป็นเพียงการจำลอง ไม่มีหน่วยงานรัฐได้รับเรื่อง`,
+                            `submit-confirm`,
+                          ),
+                          (0, B.jsxs)(Om, {
+                            className: `full-button`,
+                            disabled:
+                              !Ae ||
+                              nt || legalBusy ||
+                              $e.required.some((e) => !Oe[e]?.trim()),
+                            onClick: Ye,
+                            children: [
+                              (0, B.jsx)(ye, { size: 16 }),
+                              ` ยืนยันส่งแบบจำลอง`,
+                            ],
+                          }),
+                        ],
+                      })
+                    : (0, B.jsxs)(`div`, {
+                        className: `receipt`,
+                        children: [
+                          (0, B.jsx)(ee, { size: 24 }),
+                          (0, B.jsx)(`strong`, { children: p.reference }),
+                          (0, B.jsx)(`p`, { children: `ส่งเข้าระบบจำลองแล้ว` }),
+                          (0, B.jsx)(`small`, {
+                            children: `ไม่ใช่เลขรับเรื่องจากหน่วยงานรัฐ`,
+                          }),
+                        ],
+                      }),
+                ],
+              }),
+          ],
+        }),
+      }),
+      (0, B.jsx)(fh, {
+        open: !!Me,
+        onOpenChange: (e) => {
+          e || Ne(null);
+        },
+        children: (0, B.jsxs)(hh, {
+          children: [
+            (0, B.jsxs)(gh, {
+              children: [
+                (0, B.jsxs)(vh, {
+                  children: [
+                    `ลบ`,
+                    Me?.type === `documents` ? `เอกสาร` : `คำขอ`,
+                    `นี้?`,
+                  ],
+                }),
+                (0, B.jsxs)(yh, {
+                  children: [
+                    `“`,
+                    Me?.name,
+                    `” จะถูกลบออกจากต้นแบบและกู้คืนผ่านแอปไม่ได้ `,
+                    Me?.type === `documents`
+                      ? `ข้อมูลอ้างอิงในคำขอจะถูกนำออก กรุณาตรวจคำขออีกครั้ง`
+                      : `ไฟล์ต้นฉบับในคลังเอกสารยังคงอยู่`,
+                  ],
+                }),
+              ],
+            }),
+            (0, B.jsxs)(_h, {
+              children: [
+                (0, B.jsx)(xh, { children: `ยกเลิก` }),
+                (0, B.jsx)(bh, {
+                  onClick: (e) => {
+                    (e.preventDefault(), Xe());
+                  },
+                  disabled: nt,
+                  children: `ลบข้อมูล`,
+                }),
+              ],
+            }),
+          ],
+        }),
+      }),
+    ],
+  });
+}
+(0, Ee.createRoot)(document.getElementById(`root`)).render((0, B.jsx)(Vg, {}));
+
+export { Og as localApi, xg as parseOcr, _g as services };
