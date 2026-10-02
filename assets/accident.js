@@ -1,5 +1,3 @@
-import {PacketExport} from './packet-export.js';
-import {ConciergePanel} from './concierge-panel.js';
 import {portalEnabled} from './portal-client.js';
 import {PortalTracking} from './portal-tracking.js';
 import {documentContact} from './contact-core.js';
@@ -10,10 +8,10 @@ import {D as React} from './shared-ui.js';
 import {imageCanvas} from './import-document.js';
 import {toDataURL} from './store.js';
 import {parseIncidentPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl} from './station-core.js';
-import {LegalDraftPanel} from './legal-draft.js?v=20261003-concierge';
+import {LegalDraftPanel} from './legal-draft.js?v=20261002-contact';
 import {VoiceInput} from './voice-input.js?v=20261002-contact';
 import {reviewedLegalDraft} from './legal-review.js';
-import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261003-concierge';
+import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261002-contact';
 import {thaiDate} from './report.js?v=20261002-contact';
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
 import {DocumentChecklist} from './document-checklist.js?v=20261002-contact';
@@ -21,7 +19,6 @@ const h=React.createElement;
 export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPoliceStation}) {
  const [when,setWhen]=React.useState('now'),[details,setDetails]=React.useState(''),[eventDate,setDate]=React.useState(''),[eventPlace,setPlace]=React.useState(''),[evidence,setEvidence]=React.useState([]),[point,setPoint]=React.useState(null),[busy,setBusy]=React.useState(''),[error,setError]=React.useState('');
  const [latitude,setLatitude]=React.useState(''),[longitude,setLongitude]=React.useState(''),[stationName,setStationName]=React.useState(''),[legalDraft,setLegalDraft]=React.useState(null),[aiBusy,setAIBusy]=React.useState(false),[incidentNow,setIncidentNow]=React.useState(()=>new Date());
- const [concierge,setConcierge]=React.useState(null);
  const [stationOverride,setStationOverride]=React.useState(false);
  const [automaticStation,setAutomaticStation]=React.useState(null),[stationBusy,setStationBusy]=React.useState(false);
  const [voiceBusy,setVoiceBusy]=React.useState(false),[voiceRevision,setVoiceRevision]=React.useState(0);
@@ -68,7 +65,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    const location=currentPoint?{...currentPoint,source:point?'geolocation':'coordinates'}:null;
    let station=automaticStation|| (stationName.trim()?{id:'manual',name:stationName.trim(),manual:true,incident:location,searchUrl}:null);
    if(!station){setBusy('กำลังค้นหาสถานีใกล้ที่สุด');station=await stationLookup(location);setAutomaticStation(station);setStationName(station.name);}
-   await onSubmit({when,details,eventDate,eventPlace:effectivePlace,evidence,point:location,station,documentIds,concierge,legalDraft:reviewed,incidentAt:incidentNow.toISOString()});
+   await onSubmit({when,details,eventDate,eventPlace:effectivePlace,evidence,point:location,station,documentIds,legalDraft:reviewed,incidentAt:incidentNow.toISOString()});
   }catch(e){setError(e.message);}finally{guard.current=false;setBusy('');}
  }
  const missing=!documents.some(d=>d.kind==='identity'&&d.verified);
@@ -84,25 +81,23 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    h(StationDestination,{station:automaticStation||(stationName?{id:'manual',name:stationName,manual:true}:null),incident:currentPoint,disabled:locked,onChange:station=>{setStationOverride(true);setAutomaticStation(station);setStationName(station?.name||'');}}),
    h('label',null,'1. รายละเอียดเหตุการณ์',h('textarea',{required:true,value:details,maxLength:4000,rows:4,disabled:locked,placeholder:'เกิดอะไรขึ้น รถที่เกี่ยวข้อง และความเสียหายที่พบ',onChange:e=>setDetails(e.target.value)})),
    h(VoiceInput,{value:details,disabled:locked,onBusyChange:setVoiceBusy,onComplete:text=>{setDetails(text);setVoiceRevision(v=>v+1);}}),
-   h(ConciergePanel,{input:draftInput,documents,selected:documentIds,station:automaticStation,value:concierge,onChange:setConcierge,disabled:!!busy||voiceBusy,onBusyChange:setAIBusy}),
-   h(LegalDraftPanel,{autoPrepare:false,input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy||voiceBusy,onBusyChange:setAIBusy,autoGenerate:0}),
+   h(LegalDraftPanel,{input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy||voiceBusy,onBusyChange:setAIBusy,autoGenerate:voiceRevision}),
    h('label',{className:'evidence-upload'},'2. ภาพหรือวิดีโอหลักฐาน',h('input',{ref:fileInput,type:'file',accept:'image/jpeg,image/png,video/mp4,video/webm',multiple:true,disabled:locked,onChange:files}),h('small',null,portalEnabled()?'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · แนบส่งให้เจ้าหน้าที่เมื่อยืนยัน':'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · เก็บเฉพาะในเครื่อง')),
    h('div',{className:'evidence-grid'},...evidence.map(item=>h('figure',{key:item.id},item.mime.startsWith('video/')?h('video',{src:item.image,controls:true,preload:'metadata'}):h('img',{src:item.image,alt:'หลักฐานที่แนบ'}),h('figcaption',null,item.name),h('button',{type:'button',disabled:locked,onClick:()=>setEvidence(all=>all.filter(e=>e.id!==item.id))},'นำไฟล์นี้ออก')))),
    h(DocumentChecklist,{topic:'accident',documents,selected:documentIds,labels:DOCUMENT_LABELS,onChange:setDocumentIds}),
    requiredMissing&&h('p',{className:'quick-notice'},'เพิ่มเอกสารจำเป็นทั้ง 3 รายการในคลังเอกสารและตรวจยืนยันก่อนส่งคำขอ กรมธรรม์ประกันภัยไม่บังคับ'),
    h('p',{className:'small-note'},missing?'ยังไม่มีข้อมูลบัตรที่ยืนยันแล้ว ระบบจะไม่แต่งข้อมูลผู้แจ้ง กรุณาเพิ่มบัตรในคลังและตรวจยืนยันก่อนส่ง':'ใช้ข้อมูลบัตรที่คุณยืนยันแล้วโดยอัตโนมัติ ไม่ต้องกรอกซ้ำ'),
-   h('p',{className:'small-note'},portalEnabled()?'เมื่อกดส่ง ชื่อ ข้อมูลติดต่อ รายละเอียด และไฟล์ที่เลือกจะถูกส่งไปยังระบบเจ้าหน้าที่ต้นแบบ กรุณาตรวจสอบก่อนยืนยัน':'ตรวจข้อความสำนวนด้านบนก่อนบันทึก ใบสรุปจะใช้ร่างที่คุณยืนยัน โดยไม่มีหัวข้อคำถามเพิ่มเติม บันทึกในเครื่อง ยังไม่ส่งให้หน่วยงานจริง'),
+   h('p',{className:'small-note'},portalEnabled()?'เมื่อกดส่ง ชื่อ ข้อมูลติดต่อ รายละเอียด และไฟล์ที่เลือกจะถูกส่งไปยังระบบเจ้าหน้าที่ต้นแบบ กรุณาตรวจสอบก่อนยืนยัน':'ตรวจข้อความสำนวนด้านบนก่อนบันทึก ใบสรุปจะใช้ร่างที่คุณยืนยัน พร้อมคำบอกเล่าเดิมและข้อมูลที่ยังขาด บันทึกในเครื่อง ยังไม่ส่งให้หน่วยงานจริง'),
    !evidence.length&&h('p',{className:'small-note'},'ก่อนส่ง: แนบภาพหรือวิดีโอหลักฐานอย่างน้อย 1 ไฟล์'),
    error&&h('p',{role:'alert',className:'quick-error',tabIndex:-1,ref:node=>node?.focus()},error),
    h('button',{className:'quick-submit',type:'submit',disabled:locked},busy||(portalEnabled()?'ส่งคำขอไปยังระบบเจ้าหน้าที่':'ส่งคำขอจำลองและสร้างเอกสาร →'))));
 }
 export function CaseTracking(props) { if(props.record.remote)return h(PortalTracking,props);return h(LocalCaseTracking,props); }
-function LocalCaseTracking({record,documents,onPrint,onClose,onStationChange,onRetry}) {
+function LocalCaseTracking({record,onPrint,onClose,onStationChange,onRetry}) {
  const [choice,setChoice]=React.useState(record.station),[saving,setSaving]=React.useState(false),[saveError,setSaveError]=React.useState('');
  React.useEffect(()=>setChoice(record.station),[record.station]);
  return h('div',{className:'tracking-backdrop'},h('section',{className:'tracking-card',role:'dialog','aria-modal':true,'aria-label':'ติดตามคำขอ'},
   h('button',{className:'text-action',onClick:onClose,autoFocus:true},'ปิด'),h('span',{className:'login-step'},'ติดตามคำขอของคุณ'),h('h2',null,record.status==='simulated'?'บันทึกคำขอจำลองแล้ว':'คำขอนี้ยังเป็นฉบับร่าง'),h('p',null,record.reference||'ยังไม่มีเลขคำขอ'),
-  h(PacketExport,{record,documents}),
   h('section',{className:'portal-message-box'},h('h3',null,'ข้อความจากเจ้าหน้าที่'),h('p',null,'ยังไม่มีข้อความจากเจ้าหน้าที่'),h('p',{className:'small-note'},portalEnabled()?'คำขอนี้ยังไม่ได้ส่งเข้าระบบเจ้าหน้าที่ กดส่งคำขอด้านล่างเพื่อเริ่มติดตาม':'กำลังเตรียมเชื่อมระบบหน่วยงาน คำขอนี้ยังเก็บอยู่ในเครื่อง'),h('h3',null,'ส่งข้อมูลเพิ่มเติม'),h('p',{className:'small-note'},'ช่องตอบข้อความและแนบเอกสารจะเปิดเมื่อเจ้าหน้าที่เปลี่ยนสถานะเป็น “ขอข้อมูลเพิ่มเติม”'),portalEnabled()&&onRetry&&h('button',{className:'quick-submit',disabled:saving,onClick:async()=>{setSaving(true);setSaveError('');try{await onRetry()}catch(e){setSaveError(e.message)}finally{setSaving(false)}}},saving?'กำลังส่ง…':'ส่งคำขอนี้เข้าระบบเจ้าหน้าที่')),
   h('ol',{className:'tracking-steps'},...trackingSteps(record).map((step,i)=>h('li',{key:step.title,className:step.done?'done':''},h('span',null,step.done?'✓':i+1),h('div',null,h('strong',null,step.title),h('p',null,step.detail))))),
   h(StationDestination,{station:choice,incident:record.location,onChange:onStationChange?setChoice:undefined,disabled:saving}),

@@ -1,4 +1,3 @@
-import {conciergeRequest,parseConciergeReply} from './concierge-core.js';
 import {genAIRequest,parseGenAIReply} from './genai-core.js';
 export function createBrowserGenAI({workerFactory=()=>new Worker(new URL('./genai-worker.js',import.meta.url),{type:'module'}),gpu=globalThis.navigator?.gpu}={}) {
   let worker,pending;
@@ -6,9 +5,9 @@ export function createBrowserGenAI({workerFactory=()=>new Worker(new URL('./gena
     worker?.terminate();worker=null;
     if(pending){clearTimeout(pending.timer);pending.reject(Error(message));pending=null;}
   }
-  async function generate(input,onProgress=()=>{},task='draft') {
+  async function generate(input,onProgress=()=>{}) {
     if(pending)throw Error('GenAI กำลังทำงาน กรุณารอหรือกดยกเลิก');
-    const request=task==='concierge'?conciergeRequest(input):genAIRequest(input);
+    const request=genAIRequest(input);
     if(!gpu)throw Error('อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับ WebGPU จึงใช้ GenAI ฟรีในเครื่องไม่ได้ กรุณาเปิดด้วยเบราว์เซอร์ที่รองรับ เช่น Chrome บนคอมพิวเตอร์');
     worker ||= workerFactory();
     return new Promise((resolve,reject)=>{
@@ -27,7 +26,7 @@ export function createBrowserGenAI({workerFactory=()=>new Worker(new URL('./gena
         }
         if(data.type==='result'){
           clearTimeout(pending.timer);pending=null;
-          try{resolve(task==='concierge'?parseConciergeReply(data.reply,input):parseGenAIReply(data.reply,input));}catch(error){reject(error);}
+          try{resolve(parseGenAIReply(data.reply,input));}catch(error){reject(error);}
         }
       };
       try{worker.postMessage({request});}catch{fail('ส่งข้อมูลให้ GenAI ในเครื่องไม่สำเร็จ กรุณาลองใหม่');}
@@ -35,6 +34,3 @@ export function createBrowserGenAI({workerFactory=()=>new Worker(new URL('./gena
   }
   return {generate,cancel};
 }
-
-let shared;
-export const caseAI = () => shared ||= createBrowserGenAI();

@@ -10,5 +10,3 @@
 .quick-flow .voice-record-button:disabled{opacity:.55;cursor:not-allowed}
 
 .portal-message-box{margin:20px 0;padding:20px;border:1px solid #cedbee;border-radius:12px;background:#f4f8ff}.portal-message-box h3{color:#244974;margin:0 0 10px}.portal-message-box h3:not(:first-child){margin-top:22px}
-
-.concierge-panel{overflow-wrap:anywhere}.concierge-panel textarea{display:block;width:100%;box-sizing:border-box}.concierge-fact{border:1px solid #d7e1ea;padding:12px;border-radius:10px;margin:12px 0}.concierge-fact blockquote{margin:8px 0;padding-left:12px;border-left:3px solid #e85d3d;white-space:pre-wrap}.concierge-panel button{margin:5px 6px 5px 0}.concierge-panel input[type=checkbox]{width:auto;margin-right:8px}.concierge-panel summary{cursor:pointer}.packet-notice{padding:12px;background:#fff7e7;border-radius:10px;overflow-wrap:anywhere}

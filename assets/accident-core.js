@@ -1,4 +1,3 @@
-import {buildSources,validateMemory} from './concierge-core.js';
 import {documentContact} from './contact-core.js';
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
 import {reviewedLegalDraft} from './legal-review.js';
@@ -38,10 +37,8 @@ export function makeAccident(input, documents, now = new Date()) {
   const legalDraft = reviewedLegalDraft(input.legalDraft, {details:input.details,eventDate:date,eventPlace:place});
   if(input.legalDraft&&!legalDraft) throw Error('ร่างสำนวนยังไม่ได้ตรวจยืนยัน หรือข้อมูลเหตุการณ์เปลี่ยนแล้ว กรุณาเรียบเรียงใหม่');
   if(!input.station?.name?.trim())throw Error('กรุณาค้นหาและเลือกสถานีตำรวจเป็นจุดยื่นเอกสารก่อน');
-  const sources=buildSources({details:input.details,eventDate:date,eventPlace:place},documents,documentIds);
-  const concierge=validateMemory(input.concierge,sources);
   const id=crypto.randomUUID(), stamp=now.toISOString();
-  return {id,legalDraft,concierge,conciergeSources:concierge?sources:[],service:'accident',status:'simulated',fields,messages:[],documentIds,evidence:input.evidence.map(e=>({...e,label:'หลักฐานที่ผู้ใช้แนบ · ยังไม่ได้วิเคราะห์',analysis:null})),station:input.station||null,location:input.point||null,reference:'DEMO-'+id.slice(0,8).toUpperCase(),revision:0,createdAt:stamp,updatedAt:stamp,governmentSubmitted:false,quickAccident:true,identityMissing:!identity,submittedAt:stamp};
+  return {id,legalDraft,service:'accident',status:'simulated',fields,messages:[],documentIds,evidence:input.evidence.map(e=>({...e,label:'หลักฐานที่ผู้ใช้แนบ · ยังไม่ได้วิเคราะห์',analysis:null})),station:input.station||null,location:input.point||null,reference:'DEMO-'+id.slice(0,8).toUpperCase(),revision:0,createdAt:stamp,updatedAt:stamp,governmentSubmitted:false,quickAccident:true,identityMissing:!identity,submittedAt:stamp};
 }
 export function trackingSteps(record) {
   return [
