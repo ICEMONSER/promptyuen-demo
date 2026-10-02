@@ -20,7 +20,6 @@ export function policeLetter({record,field,date,esc,legal,coordinates,signature,
  <p class="draft-note">ฉบับร่างสำหรับผู้แจ้ง • ไม่ใช่เอกสารที่ออกหรือรับรองโดยหน่วยงานราชการ</p>
  <section class="letter-annex"><h2>ข้อมูลประกอบหนังสือแจ้งข้อเท็จจริง</h2>
  <p>เลขประจำตัวประชาชน ${field('nationalId')}</p><p>เกิดวันที่ ${date('birthDate')}</p>${coordinates}
- ${legal?`<p><small>${legal.mode==='local-demo'?'ร่างสาธิตเรียบเรียงด้วยแม่แบบในเครื่อง ไม่ใช่ GenAI':'ร่างเรียบเรียงด้วย AI จากข้อมูลผู้แจ้ง'} ผู้แจ้งตรวจข้อความแล้ว พนักงานสอบสวนต้องตรวจสอบข้อเท็จจริงเพิ่มเติม</small></p>${legal.missingQuestions.length?`<h3>ประเด็นที่ยังต้องสอบถามเพิ่มเติม</h3><ol>${legal.missingQuestions.map(q=>`<li>${esc(q)}</li>`).join('')}</ol>`:''}`:''}
  <p>เอกสารประกอบจำนวน ${copies.length} ฉบับ · หลักฐานเหตุการณ์ ${(record.evidence||[]).length} รายการ</p></section>`;
 }
 export const letterStyles=`
