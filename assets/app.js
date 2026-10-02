@@ -7,7 +7,7 @@ import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-auto";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-voice";
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-auto";
 import {
   readWorkspace,

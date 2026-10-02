@@ -1,8 +1,8 @@
 import { D as React } from './shared-ui.js';
-import { generateLegalDraft, legalDraftSource, validateLegalDraft } from './reasoning.js';
+import { generateLegalDraft, legalDraftSource, validateLegalDraft } from './reasoning.js?v=20261002-voice';
 const h = React.createElement;
 
-export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange }) {
+export function LegalDraftPanel({ input, value, onChange, disabled = false, onBusyChange, autoGenerate = 0 }) {
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState('');
   const source = legalDraftSource(input);
@@ -30,6 +30,7 @@ export function LegalDraftPanel({ input, value, onChange, disabled = false, onBu
       if (id === generation.current) { setBusy(false); onBusyChange?.(false); }
     }
   }
+  React.useEffect(() => { if (autoGenerate) generate(); }, [autoGenerate]);
   return h('section', { className: 'assistant-panel legal-draft', 'aria-label': 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน' },
     h('h3', null, 'เรียบเรียงสำนวนสำหรับพนักงานสอบสวน'),
     h('p', { className: 'small-note' }, 'โหมดสาธิตฟรี: เรียบเรียงด้วยแม่แบบในเครื่อง ไม่ใช่ GenAI ไม่ต้องใช้คีย์ และไม่ส่งข้อมูลออกนอกเครื่อง'),

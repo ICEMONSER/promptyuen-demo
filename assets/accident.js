@@ -5,7 +5,8 @@ import {D as React} from './shared-ui.js';
 import {imageCanvas} from './import-document.js';
 import {toDataURL} from './store.js';
 import {parseIncidentPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl} from './station-core.js';
-import {LegalDraftPanel} from './legal-draft.js';
+import {LegalDraftPanel} from './legal-draft.js?v=20261002-voice';
+import {VoiceInput} from './voice-input.js';
 import {reviewedLegalDraft} from './legal-review.js';
 import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261002-auto';
 import {thaiDate} from './report.js';
@@ -17,7 +18,8 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
  const [latitude,setLatitude]=React.useState(''),[longitude,setLongitude]=React.useState(''),[stationName,setStationName]=React.useState(''),[legalDraft,setLegalDraft]=React.useState(null),[aiBusy,setAIBusy]=React.useState(false),[incidentNow,setIncidentNow]=React.useState(()=>new Date());
  const [stationOverride,setStationOverride]=React.useState(false);
  const [automaticStation,setAutomaticStation]=React.useState(null),[stationBusy,setStationBusy]=React.useState(false);
- const locked=!!busy||aiBusy||stationBusy;
+ const [voiceBusy,setVoiceBusy]=React.useState(false),[voiceRevision,setVoiceRevision]=React.useState(0);
+ const locked=!!busy||aiBusy||stationBusy||voiceBusy;
  let currentPoint=null,coordinateError='',searchUrl='',mapUrl='';
  try { currentPoint=latitude.trim()||longitude.trim()?parseIncidentPoint(latitude,longitude):parseCoordinateText(eventPlace); } catch(e) { coordinateError=e.message; }
  if(!coordinateError&&(currentPoint||eventPlace.trim())) { try { searchUrl=policeSearchUrl(currentPoint,eventPlace); mapUrl=incidentMapUrl(currentPoint,eventPlace); } catch(e) { coordinateError=e.message; } }
@@ -74,7 +76,8 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    h(NearestStationSearch,{enabled:!stationOverride,point:currentPoint,disabled:locked,lookup:stationLookup,onBusyChange:setStationBusy,onSelect:station=>{setAutomaticStation(station);setStationName(station?.name||'');}}),
    h(StationDestination,{station:automaticStation||(stationName?{id:'manual',name:stationName,manual:true}:null),incident:currentPoint,disabled:locked,onChange:station=>{setStationOverride(true);setAutomaticStation(station);setStationName(station?.name||'');}}),
    h('label',null,'1. รายละเอียดเหตุการณ์',h('textarea',{required:true,value:details,maxLength:4000,rows:4,disabled:locked,placeholder:'เกิดอะไรขึ้น รถที่เกี่ยวข้อง และความเสียหายที่พบ',onChange:e=>setDetails(e.target.value)})),
-   h(LegalDraftPanel,{input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy,onBusyChange:setAIBusy}),
+   h(VoiceInput,{value:details,disabled:locked,onBusyChange:setVoiceBusy,onComplete:text=>{setDetails(text);setVoiceRevision(v=>v+1);}}),
+   h(LegalDraftPanel,{input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy||voiceBusy,onBusyChange:setAIBusy,autoGenerate:voiceRevision}),
    h('label',{className:'evidence-upload'},'2. ภาพหรือวิดีโอหลักฐาน',h('input',{ref:fileInput,type:'file',accept:'image/jpeg,image/png,video/mp4,video/webm',multiple:true,disabled:locked,onChange:files}),h('small',null,'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · เก็บเฉพาะในเครื่อง')),
    h('div',{className:'evidence-grid'},...evidence.map(item=>h('figure',{key:item.id},item.mime.startsWith('video/')?h('video',{src:item.image,controls:true,preload:'metadata'}):h('img',{src:item.image,alt:'หลักฐานที่แนบ'}),h('figcaption',null,item.name),h('button',{type:'button',disabled:locked,onClick:()=>setEvidence(all=>all.filter(e=>e.id!==item.id))},'นำไฟล์นี้ออก')))),
    h(DocumentChecklist,{topic:'accident',documents,selected:documentIds,labels:DOCUMENT_LABELS,onChange:setDocumentIds}),

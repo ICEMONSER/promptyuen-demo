@@ -4,6 +4,13 @@ import {AccidentFlow} from '../assets/accident.js?v=20261002-auto';
 import {makeAccident} from '../assets/accident-core.js';
 import {renderReport} from '../assets/report.js';
 if(!['localhost','127.0.0.1'].includes(location.hostname))throw Error('Local test only');
+if(new URLSearchParams(location.search).has('voice')) {
+ globalThis.SpeechRecognition=class {
+  start(){this.onresult({results:[Object.assign([{transcript:'รถผมเพิ่งโดนชน ไฟท้ายแตก'}],{isFinal:true})]});}
+  stop(){this.onend();}
+  abort(){this.onend();}
+ };
+}
 let locationCalls=0;
 Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:success=>{locationCalls++;document.body.dataset.locationCalls=locationCalls;setTimeout(()=>success({coords:{latitude:13.77,longitude:100.68,accuracy:20}}),30);}}});
 const docs=['identity','license','vehicle'].map(kind=>({id:kind,kind,verified:true,name:'เอกสารทดสอบ',fields:{}}));
