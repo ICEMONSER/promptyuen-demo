@@ -77,7 +77,7 @@ test('incident time stays fixed while the user reviews an AI draft',()=>{
   assert.throws(()=>makeAccident({...input,incidentAt:'invalid'},reviewedDocuments(),submittedAt),/วันเวลา/);
   assert.throws(()=>makeAccident({...input,incidentAt:new Date(submittedAt.getTime()+60000).toISOString()},reviewedDocuments(),submittedAt),/วันเวลา/);
 });
-test('printed police and accident reports include reviewed narrative and missing questions without original account section',()=>{
+test('printed police and accident reports retain reviewed narrative without AI notes or follow-up questions',()=>{
   const source={details:input.details,eventDate:bangkokDateTime(now),eventPlace:input.eventPlace};
   const legalDraft=reviewedDraftFor(source);
   const r=makeAccident({...input,legalDraft},reviewedDocuments(),now);
@@ -85,7 +85,10 @@ test('printed police and accident reports include reviewed narrative and missing
   for(const kind of ['accident','police']){
     const html=renderReport({...r,service:kind},service,{});
     assert.ok(html.includes(legalDraft.formalNarrative));
-    assert.ok(html.includes(legalDraft.missingQuestions[0]));
+    assert.ok(!html.includes(legalDraft.missingQuestions[0]));
+    assert.ok(!html.includes('ประเด็นที่ยังต้องสอบถามเพิ่มเติม'));
+    assert.ok(!html.includes('ร่างเรียบเรียงด้วย AI'));
+    assert.ok(!html.includes('ผู้แจ้งตรวจข้อความแล้ว'));
     assert.ok(!html.includes('คำบอกเล่าต้นฉบับ'));
   }
 });
@@ -103,13 +106,13 @@ test('reports never print stale or unreviewed AI text',()=>{
     assert.ok(!html.includes(legalDraft.missingQuestions[0]));
   }
 });
-test('report escapes AI narrative and missing questions as text',()=>{
+test('report escapes AI narrative and omits follow-up questions',()=>{
   const source={details:input.details,eventDate:bangkokDateTime(now),eventPlace:input.eventPlace};
   const legalDraft={...reviewedDraftFor(source),formalNarrative:'ผู้แจ้งให้ข้อมูลว่า <img src=x onerror=alert(1)>',missingQuestions:['พบพยานหรือไม่ <script>alert(1)</script>']};
   const r=makeAccident({...input,legalDraft},reviewedDocuments(),now);
   const html=renderReport(r,{label:'อุบัติเหตุ',short:'อุบัติเหตุ',note:'ยังไม่ส่งให้รัฐ'},{});
   assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'));
-  assert.ok(html.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
+  assert.ok(!html.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
   assert.ok(!html.includes('<img src=x'));
   assert.ok(!html.includes('<script>'));
 });
