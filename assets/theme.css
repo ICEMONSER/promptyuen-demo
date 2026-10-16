@@ -36,72 +36,9 @@ button, input[type='radio'], input[type='checkbox'] { accent-color: var(--py-pri
 input, textarea { caret-color: var(--py-link); }
 :focus-visible { outline: 3px solid var(--py-link); outline-offset: 4px; }
 ::selection { background: var(--py-secondary); color: var(--py-ink); }
-#landing h1, #landing h2, #landing h3 { font-weight: 600; color: var(--py-ink); text-wrap: balance; letter-spacing: 0; margin: 0; }
-#landing p { margin: 0; text-wrap: pretty; }
-#landing h2 { font-size: 2.25rem; line-height: 1.5; }
-#landing h3 { font-size: 1.25rem; line-height: 1.6; }
 .py-wrap { width: min(var(--py-page-width), calc(100% - 48px)); margin-inline: auto; }
 .py-skip { position: fixed; top: 12px; left: 12px; z-index: 50; padding: 12px 20px; background: var(--py-white); transform: translateY(-180%); }
 .py-skip:focus { transform: none; }
-.py-announcement { padding: 9px 20px; background: var(--py-surface); color: var(--py-ink); text-align: center; font-size: .875rem; }
-.py-announcement a { margin-left: 16px; text-decoration: underline; display: inline-block; }
-.py-header { display: flex; align-items: center; justify-content: space-between; gap: 32px; min-height: 100px; }
-.py-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.625rem; font-weight: 600; text-decoration: none; color: var(--py-ink); flex-shrink: 0; }
-.py-brand svg { width: 34px; height: 34px; fill: none; stroke: var(--py-link); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.py-header nav { display: flex; gap: 32px; margin-left: auto; }
-.py-header nav a { color: var(--py-ink); text-decoration: none; padding-block: 12px; }
-.py-header nav a:hover, .py-footer a:hover { text-decoration: underline; }
-.py-button { display: inline-flex; align-items: center; justify-content: center; gap: 24px; min-height: 58px; padding: 14px 30px; background: var(--py-primary); color: var(--py-on-primary); border: 0; border-radius: 100px; text-decoration: none; font-weight: 600; line-height: 1.7; transition: transform 160ms ease-out, opacity 180ms ease; }
-.py-button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.py-button:hover { opacity: .9; }
-.py-button:active { transform: scale(.98); }
-.py-nav-cta { min-height: 46px; padding: 9px 22px; }
-.py-hero { display: grid; grid-template-columns: 1fr 1fr; column-gap: 64px; row-gap: 36px; align-items: start; padding-block: calc(64px * var(--py-space-scale)) var(--py-section-space); }
-.py-hero-copy { grid-column: 1; }
-#landing .py-hero h1 { font-size: 3.25rem; line-height: 1.45; margin-bottom: 24px; }
-#landing .py-lead { font-size: 1.125rem; max-width: 48ch; margin-bottom: 28px; }
-#landing .py-hero-note { color: var(--py-muted); font-size: .875rem; margin-top: 20px; }
-.py-trust { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 16px; }
-.py-trust p { display: flex; align-items: flex-start; gap: 14px; }
-.py-trust svg { width: 24px; height: 24px; margin-top: 3px; flex: 0 0 24px; fill: none; stroke: var(--py-ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.py-trust small { display: block; font-size: .8125rem; color: var(--py-muted); margin-top: 4px; }
-.py-hero-media { grid-column: 2; grid-row: 1; margin: 0; padding: 24px; background: var(--py-surface); align-self: center; }
-.py-hero-media img { display: block; width: 100%; height: auto; object-fit: contain; border-radius: var(--py-radius); }
-.py-hero-media figcaption { font-size: .8125rem; margin-top: 14px; color: var(--py-muted); }
-.py-stats { background: var(--py-surface); padding-block: calc(64px * var(--py-space-scale)); }
-.py-stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; margin-top: 32px; }
-.py-stat-row strong { display: block; font-size: 4rem; line-height: 1.4; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--py-link); }
-.py-stat-row span { display: block; font-size: 1.125rem; font-weight: 600; }
-.py-stat-row small { display: block; font-size: .875rem; margin-top: 8px; color: var(--py-muted); }
-.py-features { padding-block: var(--py-section-space); display: grid; grid-template-columns: 5fr 6fr; gap: 88px; align-items: start; scroll-margin-top: 24px; }
-.py-feature-copy > p { margin-top: 22px !important; max-width: 43ch; }
-.py-tabs { display: grid; gap: 6px; margin-top: 32px; }
-.py-tabs button { display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; min-height: 62px; padding: 15px 20px; border: 0; border-radius: var(--py-radius); background: transparent; color: var(--py-ink); font-weight: 400; text-align: left; cursor: pointer; transition: background-color 180ms ease; }
-.py-tabs button[aria-selected='true'] { background: var(--py-surface); font-weight: 600; }
-.py-tabs button:hover { background: var(--py-surface); }
-.py-tabs button span { font-size: 1.25rem; }
-.py-feature-panels img { display: block; width: 100%; height: auto; aspect-ratio: 10 / 7; object-fit: contain; background: var(--py-surface); border-radius: var(--py-radius); }
-.py-feature-panels h3 { margin-top: 24px !important; }
-.py-feature-panels p { margin-top: 12px !important; max-width: 54ch; }
-.py-how { background: var(--py-surface); padding-block: var(--py-section-space); }
-.py-how-grid { display: grid; grid-template-columns: 4fr 6fr; gap: 120px; }
-.py-how-grid > div > p { margin-top: 24px !important; }
-.py-how ol { margin: 0; padding-left: 26px; list-style: decimal; }
-.py-how li { padding-left: 14px; margin-bottom: 30px; }
-.py-how li:last-child { margin-bottom: 0; }
-.py-how li::marker { font-size: 1.125rem; font-weight: 600; }
-.py-how li p { margin-top: 8px !important; max-width: 58ch; }
-.py-limits { padding-block: var(--py-section-space); }
-.py-limits dl { display: grid; grid-template-columns: 1fr 1fr; gap: 32px 80px; margin: 36px 0 0; }
-.py-limits dt { font-size: 1.125rem; font-weight: 600; margin-bottom: 10px; }
-.py-limits dd { margin: 0; max-width: 56ch; }
-.py-close { background: var(--py-surface); padding-block: calc(72px * var(--py-space-scale)); }
-.py-close .py-wrap { display: grid; grid-template-columns: 1fr auto; gap: 12px 40px; align-items: center; }
-.py-close p { grid-column: 1; }
-.py-close a { grid-column: 2; grid-row: 1 / 3; }
-.py-footer { padding-block: 48px 80px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; align-items: start; font-size: .875rem; }
-.py-footer nav { display: grid; gap: 12px; }
-.py-footer .insurance-entry { position: static; padding: 0; background: none; color: var(--py-link); font: inherit; box-shadow: none; border-radius: 0; }
 .py-tweaks { position: fixed; right: 16px; bottom: 16px; z-index: 30; max-width: calc(100vw - 32px); }
 .py-tweaks button { cursor: pointer; padding: 10px 16px; min-height: 44px; border: 0; background: var(--py-ink); color: var(--py-white); border-radius: var(--py-radius); }
 #tweaks-toggle { display: flex; gap: 10px; align-items: center; margin-left: auto; }
@@ -170,59 +107,12 @@ input, textarea { caret-color: var(--py-link); }
 #root .review-sheet, #root .document-sheet { background: var(--py-white); color: var(--py-ink); }
 #root .legal-draft summary, #root .tracking-steps p, #root .tracking-steps strong { font-size: .875rem; }
 @media (prefers-reduced-motion: no-preference) {
-  .py-hero-copy { animation: py-arrive 650ms cubic-bezier(.22,1,.36,1) both; }
-  .py-hero-media { animation: py-settle 850ms cubic-bezier(.22,1,.36,1) both; }
   @keyframes py-arrive { from { opacity: .6; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   @keyframes py-settle { from { opacity: .65; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
-}
-@media (max-width: 1000px) {
-  .py-hero { column-gap: 32px; }
-  #landing .py-hero h1 { font-size: 2.5rem; }
-  .py-header nav { gap: 18px; }
-  .py-features { gap: 40px; }
-  .py-how-grid { gap: 64px; }
-  .py-footer { grid-template-columns: 1fr 1fr; }
-  .py-footer nav { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 24px; }
 }
 @media (max-width: 760px) {
   :root { --py-section-space: calc(60px * var(--py-space-scale)); }
   .py-wrap { width: calc(100% - 40px); }
-  .py-announcement { font-size: .8125rem; line-height: 1.8; padding: 10px 20px; }
-  .py-announcement a { margin-left: 4px; }
-  .py-header { min-height: 88px; gap: 16px; }
-  .py-brand { font-size: 1.375rem; gap: 6px; }
-  .py-brand svg { width: 27px; height: 27px; }
-  .py-header nav { display: none; }
-  .py-nav-cta { font-size: .875rem; padding: 10px 16px; }
-  .py-hero { grid-template-columns: 1fr; gap: 28px; padding-top: 30px; }
-  .py-hero-copy, .py-trust, .py-hero-media { grid-column: 1; grid-row: auto; }
-  #landing .py-hero h1 { font-size: 2.125rem; line-height: 1.5; margin-bottom: 18px; }
-  #landing .py-lead { font-size: 1rem; margin-bottom: 24px; }
-  .py-button { min-height: 52px; }
-  .py-trust { grid-template-columns: 1fr; gap: 18px; padding-top: 4px; }
-  .py-trust p { gap: 14px; font-size: .9375rem; }
-  .py-trust small { font-size: .8125rem; margin-top: 0; }
-  .py-hero-media { padding: 18px; }
-  #landing h2 { font-size: 1.75rem; }
-  #landing h3 { font-size: 1.125rem; }
-  .py-stats { padding-block: 48px; }
-  .py-stat-row { grid-template-columns: 1fr; gap: 28px; margin-top: 28px; }
-  .py-stat-row p { display: grid; grid-template-columns: 76px 1fr; column-gap: 20px; }
-  .py-stat-row strong { grid-row: 1 / 3; font-size: 3rem; }
-  .py-stat-row span { font-size: 1rem; align-self: end; }
-  .py-stat-row small { margin-top: 2px; }
-  .py-features { grid-template-columns: 1fr; gap: 28px; }
-  .py-tabs { margin-top: 24px; }
-  .py-tabs button { min-height: 56px; }
-  .py-feature-panels h3 { margin-top: 20px !important; }
-  .py-how-grid { grid-template-columns: 1fr; gap: 32px; }
-  .py-how-grid > div > p { margin-top: 18px !important; }
-  .py-how li { padding-left: 6px; }
-  .py-limits dl { grid-template-columns: 1fr; gap: 28px; margin-top: 28px; }
-  .py-close .py-wrap { grid-template-columns: 1fr; gap: 18px; }
-  .py-close a { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
-  .py-footer { grid-template-columns: 1fr; gap: 20px; padding-block: 36px 90px; }
-  .py-footer nav { grid-column: 1; display: grid; gap: 14px; }
   .py-workspace-bar { padding: 12px 16px; }
   .py-workspace-bar span { display: none; }
   #root .assistant-login { margin: 16px 0; padding: 20px !important; }
@@ -235,7 +125,6 @@ input, textarea { caret-color: var(--py-link); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
-.py-tabs svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 #root .voice-record-button { display: inline-flex; align-items: center; gap: 10px; }
 :root { --sidebar: var(--py-white); --sidebar-foreground: var(--py-ink); --sidebar-accent: var(--py-surface); --sidebar-accent-foreground: var(--py-ink); --sidebar-border: var(--py-border); --sidebar-ring: var(--py-primary); --sidebar-primary: var(--py-primary); --sidebar-primary-foreground: var(--py-on-primary); --secondary: var(--py-surface); --secondary-foreground: var(--py-ink); --accent: var(--py-surface); --accent-foreground: var(--py-ink); --card: var(--py-white); --card-foreground: var(--py-ink); --muted: var(--py-surface); --popover: var(--py-white); --popover-foreground: var(--py-ink); }
 #root .app-sidebar [data-slot='sidebar-inner'] { background: var(--py-surface); color: var(--py-ink); }
@@ -260,20 +149,14 @@ input, textarea { caret-color: var(--py-link); }
 /* Keep the display control in the navigation flow, clear of reading content. */
 .py-tweaks { position: relative; right: auto; bottom: auto; max-width: none; flex-shrink: 0; }
 #tweaks-panel { top: 60px; bottom: auto; }
-.py-feature-panels img { aspect-ratio: auto; height: 370px; padding: 20px; }
 #root .assistant-login > p { max-width: 62ch; }
 @media (max-width: 760px) {
-  .py-header { gap: 12px; }
   #tweaks-toggle { width: 44px; justify-content: center; padding: 10px; }
   #tweaks-toggle span { display: none; }
   #tweaks-panel { top: 58px; }
-  .py-feature-panels img { height: auto; max-height: 420px; padding: 14px; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .py-in { animation: py-arrive 650ms cubic-bezier(.22,1,.36,1); }
-  .py-stat-row .py-in { animation-name: py-figure; }
-  .py-how .py-in { animation-name: py-step; }
-  .py-limits .py-in { animation-name: py-read; }
   @keyframes py-figure { from { opacity: .7; transform: scale(.98); } to { opacity: 1; transform: none; } }
   @keyframes py-step { from { opacity: .7; transform: translateX(8px); } to { opacity: 1; transform: none; } }
   @keyframes py-read { from { opacity: .6; } to { opacity: 1; } }
@@ -281,3 +164,137 @@ input, textarea { caret-color: var(--py-link); }
 #root .more-services { grid-column: 1 / -1; }
 #root .more-services summary { min-height: 44px; padding: 10px 0; cursor: pointer; color: var(--py-link); font-size: .9375rem; }
 #root .more-services > .service-grid { margin-top: 12px; }
+
+/* Landing · "case folder" redesign (Oct 2026). Navy ink, primary for actions, secondary as a highlighter only. */
+:root { --py-navy: #0f1e3a; --py-body: #3b4660; --py-line: #e1e5ec; --py-panel: #f4f6f9; --py-warn-bg: #fff6e2; --py-warn-ink: #8a5a00; --py-mono: 'IBM Plex Mono', ui-monospace, monospace; }
+#landing { color: var(--py-navy); }
+#landing h1, #landing h2, #landing h3 { margin: 0; font-weight: 600; color: var(--py-navy); text-wrap: balance; letter-spacing: 0; }
+#landing p { margin: 0; text-wrap: pretty; }
+#landing h2 { font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem); line-height: 1.5; }
+#landing h3 { font-size: 1.375rem; line-height: 1.5; }
+.py-section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px; margin-bottom: 40px; }
+.py-section-head > p { max-width: 26em; color: var(--py-body); }
+
+.py-announcement { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 12px; padding: 10px 20px; background: var(--py-navy); color: var(--py-white); font-size: .875rem; line-height: 1.6; text-align: center; }
+.py-announcement a { color: var(--py-secondary); font-weight: 600; }
+.py-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--py-secondary); flex: none; }
+
+.py-header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; min-height: 84px; padding-block: 12px; }
+.py-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 600; text-decoration: none; color: var(--py-navy); flex-shrink: 0; }
+.py-brand-mark { width: 36px; height: 36px; border-radius: 8px; background: var(--py-primary); display: grid; place-items: center; }
+.py-brand-mark svg { width: 20px; height: 20px; fill: none; stroke: var(--py-on-primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.py-header nav { display: flex; gap: 28px; margin-left: auto; font-size: .9375rem; }
+.py-header nav a { color: var(--py-body); text-decoration: none; padding-block: 10px; }
+.py-header nav a:hover, .py-footer a:hover { color: var(--py-link); text-decoration: underline; }
+
+.py-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 14px 32px; background: var(--py-primary); color: var(--py-on-primary); border: 0; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 1.0625rem; line-height: 1.6; transition: transform 160ms ease-out, opacity 180ms ease, background-color 180ms ease; }
+.py-button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.py-button:hover { opacity: .9; }
+.py-button:active { transform: scale(.98); }
+.py-nav-cta { min-height: 44px; padding: 8px 22px; font-size: .9375rem; }
+.py-button-ghost { background: transparent; color: var(--py-navy); box-shadow: inset 0 0 0 1.5px #cbd2de; padding-inline: 24px; }
+.py-button-ghost:hover { opacity: 1; background: var(--py-panel); }
+.py-button-highlight { background: var(--py-secondary); color: var(--py-navy); }
+
+.py-hero { display: flex; flex-wrap: wrap; align-items: center; gap: 56px; padding-block: calc(56px * var(--py-space-scale)) calc(88px * var(--py-space-scale)); }
+.py-hero-copy { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.py-eyebrow { font-family: var(--py-mono); font-size: .8125rem; letter-spacing: .06em; color: var(--py-body); }
+#landing .py-hero h1 { font-size: clamp(2.25rem, 1.4rem + 2.8vw, 3.75rem); line-height: 1.4; }
+.py-mark { background: linear-gradient(transparent 62%, var(--py-secondary) 62%, var(--py-secondary) 92%, transparent 92%); color: inherit; padding-inline: 4px; }
+#landing .py-lead { font-size: clamp(1.0625rem, 1rem + .35vw, 1.25rem); color: var(--py-body); max-width: 30em; }
+.py-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+#landing .py-hero-note { font-size: .875rem; line-height: 1.7; color: var(--py-muted); }
+.py-hero-media { flex: 1 1 460px; min-width: 0; margin: 0; position: relative; padding-top: 34px; }
+.py-folder-tab { position: absolute; top: 0; left: 0; height: 40px; padding: 8px 22px 0; background: var(--py-surface); border-radius: 14px 14px 0 0; font-size: .875rem; font-weight: 600; color: var(--py-body); }
+.py-folder { background: var(--py-surface); border-radius: 0 18px 18px 18px; padding: 18px; }
+.py-folder img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid #d5dbe5; background: var(--py-white); }
+.py-checklist { position: relative; margin: -96px 18px 0 auto; width: min(280px, 82%); background: var(--py-white); border: 1px solid #d5dbe5; border-radius: 14px; padding: 18px 20px; box-shadow: 0 12px 32px rgb(15 30 58 / .12); display: grid; gap: 10px; }
+.py-checklist p { display: flex; align-items: center; gap: 10px; font-size: .875rem; line-height: 1.5; }
+.py-checklist .py-checklist-title { font-weight: 600; }
+.py-checklist small { margin-left: auto; font-family: var(--py-mono); font-size: .8125rem; color: var(--py-muted); }
+.py-check { width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center; border: 2px solid #cbd2de; }
+.py-check svg { width: 14px; height: 14px; fill: none; stroke: var(--py-on-primary); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.is-done .py-check { background: var(--py-primary); border-color: var(--py-primary); }
+.is-progress .py-check { border-color: var(--py-secondary); background: var(--py-warn-bg); }
+.py-checklist .is-todo { color: var(--py-muted); }
+.py-hero-media figcaption { margin-top: 12px; font-size: .8125rem; color: var(--py-muted); }
+
+.py-trust { border-block: 1px solid var(--py-line); }
+.py-trust .py-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.py-trust p { display: flex; align-items: flex-start; gap: 14px; padding: 28px 24px 28px 0; font-weight: 600; }
+.py-trust svg { width: 28px; height: 28px; flex: none; margin-top: 2px; fill: none; stroke: var(--py-link); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.py-trust small { display: block; font-size: .875rem; font-weight: 400; line-height: 1.6; color: var(--py-muted); }
+
+.py-stats { padding-block: var(--py-section-space); }
+.py-stats-panel { background: var(--py-primary); color: var(--py-on-primary); border-radius: 24px; padding: clamp(32px, 4.5vw, 64px); display: flex; flex-wrap: wrap; align-items: flex-end; gap: 40px 56px; }
+#landing .py-stats-panel h2 { flex: 1 1 260px; color: inherit; }
+.py-stat-row { flex: 3 1 560px; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 32px; }
+.py-stat-row p { border-top: 3px solid var(--py-secondary); padding-top: 16px; }
+.py-stat-row strong { display: block; font-size: clamp(3.25rem, 2.4rem + 2.6vw, 4.75rem); line-height: 1.1; font-weight: 600; font-variant-numeric: tabular-nums; }
+.py-stat-row span { display: block; margin-top: 8px; font-weight: 600; }
+.py-stat-row small { display: block; font-size: .875rem; line-height: 1.6; opacity: .85; }
+
+.py-features { padding-bottom: var(--py-section-space); scroll-margin-top: 24px; }
+.py-feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); gap: 24px; }
+.py-feature { background: var(--py-panel); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+.py-shot { height: 280px; overflow: hidden; background: var(--py-white); border: 1px solid var(--py-line); border-radius: 12px; }
+.py-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.py-shot-center { display: flex; align-items: center; }
+.py-shot-center img { height: auto; }
+.py-feature-body { display: flex; gap: 14px; align-items: flex-start; }
+.py-num { font-family: var(--py-mono); font-size: .8125rem; color: var(--py-link); padding-top: 6px; }
+.py-kicker { font-size: .875rem; color: var(--py-muted); }
+.py-feature h3 { margin-bottom: 6px !important; }
+.py-feature-body p:last-child { color: var(--py-body); }
+
+.py-how { background: var(--py-surface); padding-block: var(--py-section-space); scroll-margin-top: 24px; }
+.py-how .py-section-head { margin-bottom: 48px; }
+.py-how ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.py-how li { background: var(--py-white); border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; gap: 12px; }
+#landing .py-how h3 { font-size: 1.1875rem; }
+.py-how li p { font-size: .9375rem; line-height: 1.75; color: var(--py-body); }
+.py-step-num { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--py-primary); color: var(--py-on-primary); font-family: var(--py-mono); font-size: .9375rem; }
+.py-step-final { background: var(--py-secondary); color: var(--py-navy); }
+
+.py-limits { padding-block: var(--py-section-space); display: flex; flex-wrap: wrap; gap: 40px 64px; scroll-margin-top: 24px; }
+.py-limits-head { flex: 1 1 280px; display: flex; flex-direction: column; gap: 16px; }
+.py-limits-head > p { color: var(--py-body); }
+.py-warn { width: 52px; height: 52px; border-radius: 14px; background: var(--py-warn-bg); display: grid; place-items: center; }
+.py-warn svg { width: 26px; height: 26px; fill: none; stroke: var(--py-warn-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.py-limits dl { flex: 3 1 560px; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); column-gap: 40px; }
+.py-limits dl > div { border-top: 1px solid #d5dbe5; padding-block: 24px; }
+.py-limits dt { font-size: 1.1875rem; font-weight: 600; margin-bottom: 8px; }
+.py-limits dd { margin: 0; font-size: .9375rem; line-height: 1.8; color: var(--py-body); }
+
+.py-close { padding-bottom: calc(80px * var(--py-space-scale)); }
+.py-close-panel { background: var(--py-navy); color: var(--py-white); border-radius: 24px; padding: clamp(40px, 5vw, 72px) clamp(28px, 5vw, 72px); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 28px 48px; }
+.py-close-panel > div { flex: 1 1 360px; }
+#landing .py-close-panel h2 { color: inherit; margin-bottom: 8px; }
+.py-close-panel p { color: #c9d1e3; }
+
+.py-footer { border-top: 1px solid var(--py-line); font-size: .875rem; line-height: 1.7; }
+.py-footer .py-wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 20px 40px; padding-block: 32px 48px; }
+.py-footer .py-brand { font-size: 1.0625rem; }
+.py-footer p { color: var(--py-muted); }
+.py-footer nav { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+.py-footer nav a { color: var(--py-body); }
+.py-footer .insurance-entry { position: static; padding: 0; background: none; color: var(--py-body); font: inherit; box-shadow: none; border-radius: 0; }
+
+@media (max-width: 760px) {
+  .py-header { min-height: 72px; gap: 12px; }
+  .py-header nav { display: none; }
+  .py-nav-cta { margin-left: auto; padding-inline: 16px; font-size: .875rem; }
+  .py-hero { gap: 40px; padding-top: 28px; }
+  .py-actions .py-button { flex: 1 1 auto; }
+  .py-checklist { margin-top: -64px; }
+  .py-shot { height: 220px; }
+  .py-feature { padding: 18px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .py-hero-copy { animation: py-arrive 650ms cubic-bezier(.22,1,.36,1) both; }
+  .py-hero-media { animation: py-settle 850ms cubic-bezier(.22,1,.36,1) both; }
+  .py-stat-row .py-in { animation-name: py-figure; }
+  .py-how .py-in { animation-name: py-step; }
+  .py-limits .py-in { animation-name: py-read; }
+}
+#landing #tweaks-panel h2 { font-size: 1.125rem; line-height: 1.5; margin-bottom: 20px; }
