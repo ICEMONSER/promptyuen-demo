@@ -20,9 +20,9 @@ import {
 import {
   readIdPhoto,
   readLicenseQR,
-  validThaiId,
+  validNationalId,
   normalizeDigits,
-} from "./import-document.js";
+} from "./import-document.js?v=20261017-insurance-1";
 import { renderReport } from "./report.js?v=20261002-report-no-questions-v2";
 // Existing application extracted from the shipped bundle; shared UI is unchanged.
 import {
@@ -528,7 +528,7 @@ async function kg(e, t, n) {
       if (n.nationalId)
         n.nationalId = normalizeDigits(n.nationalId).replace(/[\s-]/g, "");
       if ((e.kind === "identity" && !e.demo) || n.nationalId) {
-        if (!validThaiId(n.nationalId))
+        if (!validNationalId(n.nationalId))
           throw Error(
             "เลขประจำตัวประชาชนต้องมี 13 หลักและผ่านการตรวจเลขตรวจสอบ กรุณาแก้ไข",
           );
@@ -1122,7 +1122,7 @@ function Vg() {
         const result =
           O.kind === "license"
             ? await readLicenseQR(blob, xg)
-            : { rawText: await readIdPhoto(blob, ne, text => {const fields=xg(text);return Object.keys(fields).length*10+(validThaiId(fields.nationalId||'')?30:0);}) };
+            : { rawText: await readIdPhoto(blob, ne, text => {const fields=xg(text);return Object.keys(fields).length*10+(validNationalId(fields.nationalId||'')?30:0);}) };
         Le(
           (
             await zg(

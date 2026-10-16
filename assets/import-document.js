@@ -30,7 +30,7 @@ export function loadScript(src, globalName) {
 }
 export const normalizeDigits = (text) =>
   String(text).replace(/[๐-๙]/g, (c) => String(c.charCodeAt(0) - 3664));
-export function validThaiId(value) {
+export function validNationalId(value) {
   const id = normalizeDigits(value).replace(/[\s-]/g, "");
   if (!/^[1-8]\d{12}$/.test(id)) return false;
   return (
@@ -176,3 +176,4 @@ export async function readLicenseQR(blob, parseText) {
     throw new Error("ไม่พบคิวอาร์ กรุณาใช้ภาพชัดเจนหรือกรอกข้อมูลเอง");
   return { ...parseLicenseQR(result.data, parseText), rawText: result.data };
 }
+

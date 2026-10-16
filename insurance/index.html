@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="พร้อมยื่น ระบบต้นแบบสำหรับรับประกันภัยรถยนต์และประเมินสินไหมจากภาพถ่าย">
+  <title>พร้อมยื่น · บริษัทประกันภัย</title>
+  <link rel="stylesheet" href="./ui.css?v=20261017-th"><script type="module" src="./ui.js?v=20261017-th"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="./"><span class="brand-mark">IC</span><span>บริษัท<br><strong>ประกันภัย</strong></span></a>
+    <p class="nav-label">ระบบประกันภัยรถยนต์</p>
+    <nav><a href="#underwriting">01 &nbsp; งานรับประกันภัย</a><a href="#claims">02 &nbsp; งานสินไหม</a></nav>
+    <div class="sidebar-note"><span class="dot"></span> ระบบต้นแบบ<p>ใบเสนอราคา กรมธรรม์ และการจ่ายเงินเป็นข้อมูลจำลอง กรุณาใช้ข้อมูลตัวอย่าง</p></div>
+  </aside>
+  <main>
+    <header><span class="eyebrow">พร้อมยื่น / ประกันภัยรถยนต์</span><span class="environment">โหมดทดลอง</span></header>
+    <section class="intro"><p class="eyebrow">ลดงานเอกสาร ดูแลได้รวดเร็วขึ้น</p><h1>ตั้งแต่เสนอราคา<br><span>จนถึงดูแลสินไหม</span></h1><p>ออกกรมธรรม์และประเมินความเสียหายจากภาพถ่ายในพื้นที่เดียว</p></section>
+    <div class="connection"><label>รหัสเข้าถึงระบบ <input id="token" type="password" autocomplete="off" placeholder="กรอกเฉพาะเมื่อผู้ดูแลกำหนดไว้"></label><button id="connect" class="secondary">เชื่อมต่อ</button><p id="connection-status" role="status">กำลังเชื่อมต่อ…</p></div>
+    <div class="metrics"><article><span>ฐานข้อมูล</span><strong id="company-name">บริษัทประกันภัย</strong><small>ข้อมูลลูกค้าและรถยนต์ตัวอย่าง</small></article><article><span>งานรับประกันภัย</span><strong>ออกกรมธรรม์ทันที</strong><small>แสดงรายละเอียดการคำนวณเบี้ย</small></article><article><span>งานสินไหม</span><strong id="vision-mode">ประเมินจากภาพถ่าย</strong><small>ตรวจความมั่นใจและความคุ้มครอง</small></article></div>
+    <div class="modules">
+      <section class="panel" id="underwriting"><div class="panel-heading"><span class="step">01</span><div><p class="eyebrow">พื้นที่ทำงานรับประกันภัย</p><h2>เลือกความคุ้มครองที่เหมาะสม</h2></div></div>
+        <form id="quote-form"><label>ลูกค้า<select id="customer" required></select></label><label>รถยนต์<select id="vehicle" required></select></label>
+          <label>ความคุ้มครอง<select id="coverage"><option value="comprehensive">ความคุ้มครองแบบครอบคลุม</option><option value="collision">เฉพาะการชน</option></select></label>
+          <div class="field-row"><label>ทุนประกัน · บาท<input id="sum-insured" type="number" min="10000" max="800000" step="1" value="600000" required></label><label>ค่าเสียหายส่วนแรก · บาท<input id="deductible" type="number" min="0" max="20000" step="1" value="5000" required></label></div>
+          <button type="submit">คำนวณเบี้ยและเสนอราคา <span>↗</span></button>
+        </form>
+        <div id="quote-result" class="result" aria-live="polite"><p>รายละเอียดเบี้ยประกันจะแสดงที่นี่</p></div>
+        <button id="issue" class="secondary" disabled>ออกกรมธรรม์จำลอง</button><p id="policy-result" class="record" aria-live="polite"></p>
+      </section>
+      <section class="panel" id="claims"><div class="panel-heading"><span class="step">02</span><div><p class="eyebrow">งานสินไหมที่มี AI ช่วยประเมิน</p><h2>ส่งภาพ ประเมิน ดูแลสินไหม</h2></div></div>
+        <form id="claim-form"><label>กรมธรรม์ที่มีผลคุ้มครอง<input id="policy-id" required placeholder="เริ่มจากออกกรมธรรม์ก่อน"></label>
+          <div class="field-row"><label>วันและเวลาเกิดเหตุ<input id="occurred-at" type="datetime-local" step="1" required></label><label>สาเหตุ<select id="cause"><option value="collision">การชน</option><option value="other">ความเสียหายอื่น</option></select></label></div>
+          <label class="upload">ภาพถ่ายอุบัติเหตุ<input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required><span>1–6 ภาพ · JPEG, PNG หรือ WebP · ภาพละไม่เกิน 2 MiB</span></label><div id="previews" class="previews"></div>
+          <button type="submit">ส่งข้อมูลและประเมิน <span>↗</span></button>
+        </form>
+        <div id="claim-result" class="result" aria-live="polite"><p>ประมาณการค่าซ่อมและค่าสินไหมจะแสดงที่นี่</p></div>
+        <button id="retry-assess" class="secondary" disabled>ลองประเมินอีกครั้ง</button><button id="settle" class="secondary" disabled>ดำเนินการจ่ายสินไหมจำลอง</button>
+      </section>
+    </div>
+    <p id="message" role="alert"></p><footer>บริษัทประกันภัย · ใช้อัตราจำลองและผลประเมินภาพจำลองเป็นค่าเริ่มต้น ไม่มีความคุ้มครองหรือการโอนเงินจริง</footer>
+  </main>
+</body></html>
