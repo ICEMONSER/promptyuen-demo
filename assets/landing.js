@@ -81,5 +81,5 @@ if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: re
       observer.unobserve(entry.target);
     }
   }, {threshold: .12});
-  document.querySelectorAll('.py-stats h2, .py-stat-row p, .py-feature, .py-how li, .py-limits dl > div, .py-close h2').forEach(item => observer.observe(item));
+  document.querySelectorAll('.pk-principles .pk-wrap > div, .pk-steps li, .pk-tile, .pk-privacy-lists > div, .pk-access-panel').forEach(item => observer.observe(item));
 }
