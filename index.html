@@ -9,45 +9,61 @@
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" crossorigin href="./assets/index-BnpGzY8H.css">
-  <link rel="stylesheet" href="./assets/assistant.css?v=20261017-design">
-  <link rel="stylesheet" href="./assets/round2.css?v=20261017-design">
-  <link rel="stylesheet" href="./assets/theme.css?v=20261017-design">
-  <script type="module" crossorigin src="./assets/app.js?v=20261017-design"></script>
-  <script type="module" src="./assets/landing.js?v=20261017-design"></script>
+  <link rel="stylesheet" href="./assets/assistant.css?v=20261017-folder">
+  <link rel="stylesheet" href="./assets/round2.css?v=20261017-folder">
+  <link rel="stylesheet" href="./assets/theme.css?v=20261017-folder">
+  <script type="module" crossorigin src="./assets/app.js?v=20261017-folder"></script>
+  <script type="module" src="./assets/landing.js?v=20261017-folder"></script>
 </head>
 <body>
   <a class="py-skip" href="#main-content">ข้ามไปเนื้อหาหลัก</a>
   <div id="landing">
-    <div class="py-announcement">ระบบสาธิตสำหรับเตรียมข้อมูล ไม่ใช่การแจ้งความจริง <a href="#limitations">อ่านข้อจำกัดก่อนใช้</a></div>
+    <div class="py-announcement"><span class="py-dot" aria-hidden="true"></span><span>ระบบสาธิตสำหรับเตรียมข้อมูล ไม่ใช่การแจ้งความจริง</span> <a href="#limitations">อ่านข้อจำกัดก่อนใช้</a></div>
     <header class="py-header py-wrap">
-      <a class="py-brand" href="#main-content" aria-label="พร้อมยื่น หน้าหลัก"><svg aria-hidden="true" viewBox="0 0 32 32"><path d="M8 3h11l6 6v20H8z"/><path d="M18 3v8h7M12 19l4 4 9-10"/></svg><span>พร้อมยื่น</span></a>
+      <a class="py-brand" href="#main-content" aria-label="พร้อมยื่น หน้าหลัก"><span class="py-brand-mark"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="m9 14 2.5 2.5L16 12"/></svg></span><span>พร้อมยื่น</span></a>
       <nav aria-label="เมนูหลัก"><a href="#features">ความสามารถ</a><a href="#how-to">วิธีใช้งาน</a><a href="#limitations">ข้อจำกัด</a></nav>
       <a class="py-button py-nav-cta" href="#workspace">เริ่มเตรียมข้อมูล</a>
-  <aside class="py-tweaks" id="display-tweaks" aria-label="ปรับการแสดงผล"><button type="button" id="tweaks-toggle" aria-label="ปรับการแสดงผล" aria-expanded="false" aria-controls="tweaks-panel"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg><span>ปรับหน้าจอ</span></button><div id="tweaks-panel" hidden><h2>ปรับการแสดงผล</h2><label>สีหลัก <input id="tweak-primary" type="color" value="#1434a2"></label><label>ระยะห่าง <input id="tweak-spacing" type="range" min="80" max="125" value="100"><output for="tweak-spacing">100%</output></label><label>ขนาดตัวอักษร <input id="tweak-font" type="range" min="16" max="20" value="16"><output for="tweak-font">16</output></label><label>ความโค้งมุม <input id="tweak-radius" type="range" min="0" max="28" value="6"><output for="tweak-radius">6</output></label><p id="tweak-contrast" role="status">สีตัวอักษรบนปุ่มปรับให้อ่านชัดอัตโนมัติ</p><button type="button" id="tweaks-reset">คืนค่าเริ่มต้น</button></div></aside>
+      <aside class="py-tweaks" id="display-tweaks" aria-label="ปรับการแสดงผล"><button type="button" id="tweaks-toggle" aria-label="ปรับการแสดงผล" aria-expanded="false" aria-controls="tweaks-panel"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg><span>ปรับหน้าจอ</span></button><div id="tweaks-panel" hidden><h2>ปรับการแสดงผล</h2><label>สีหลัก <input id="tweak-primary" type="color" value="#1434a2"></label><label>ระยะห่าง <input id="tweak-spacing" type="range" min="80" max="125" value="100"><output for="tweak-spacing">100%</output></label><label>ขนาดตัวอักษร <input id="tweak-font" type="range" min="16" max="20" value="16"><output for="tweak-font">16</output></label><label>ความโค้งมุม <input id="tweak-radius" type="range" min="0" max="28" value="6"><output for="tweak-radius">6</output></label><p id="tweak-contrast" role="status">สีตัวอักษรบนปุ่มปรับให้อ่านชัดอัตโนมัติ</p><button type="button" id="tweaks-reset">คืนค่าเริ่มต้น</button></div></aside>
     </header>
     <main id="main-content">
       <section class="py-hero py-wrap" aria-labelledby="hero-title">
         <div class="py-hero-copy">
-          <h1 id="hero-title">เตรียมข้อมูลให้พร้อม<br>ก่อนไปแจ้งความ</h1>
+          <p class="py-eyebrow">แฟ้มเตรียมเรื่อง · ก่อนไปสถานี</p>
+          <h1 id="hero-title">เตรียมข้อมูลให้<mark class="py-mark">พร้อม</mark><br>ก่อนไปแจ้งความ</h1>
           <p class="py-lead">เล่าเหตุการณ์ด้วยคำของคุณ ให้พร้อมยื่นช่วยจัดร่างเอกสาร รวบรวมหลักฐาน และเลือกสถานีที่จะไปติดต่อ</p>
-          <a class="py-button" href="#workspace">เริ่มเตรียมข้อมูล <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+          <div class="py-actions">
+            <a class="py-button" href="#workspace">เริ่มเตรียมข้อมูล <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+            <a class="py-button py-button-ghost" href="#how-to">ดูวิธีใช้งาน</a>
+          </div>
           <p class="py-hero-note">เริ่มด้วยข้อมูลติดต่อ ลายมือชื่อเพิ่มภายหลังได้<br>คุณตรวจยืนยันทุกข้อความ ไม่มีการส่งเรื่องถึงตำรวจ</p>
         </div>
-        <div class="py-trust" aria-label="ข้อมูลเกี่ยวกับระบบ">
+        <figure class="py-hero-media">
+          <div class="py-folder-tab" aria-hidden="true">เรื่อง #ตัวอย่าง · อุบัติเหตุ</div>
+          <div class="py-folder">
+            <img src="./assets/previews/report.jpg" width="740" height="700" fetchpriority="high" alt="หน้าจอจริงของพร้อมยื่นสำหรับเล่าเหตุการณ์และเตรียมข้อมูลอุบัติเหตุ">
+          </div>
+          <div class="py-checklist" aria-hidden="true">
+            <p class="py-checklist-title">ความพร้อมของแฟ้ม</p>
+            <p class="is-done"><span class="py-check"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>ข้อมูลติดต่อ</p>
+            <p class="is-done"><span class="py-check"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>คำบอกเล่าเหตุการณ์</p>
+            <p class="is-progress"><span class="py-check"></span>หลักฐาน <small>2 / 5</small></p>
+            <p class="is-todo"><span class="py-check"></span>เลือกสถานี</p>
+          </div>
+          <figcaption>หน้าจอเตรียมข้อมูลจริง · ตัวอย่างสำหรับสาธิต</figcaption>
+        </figure>
+      </section>
+      <section class="py-trust" aria-label="ข้อมูลเกี่ยวกับระบบ">
+        <div class="py-wrap">
           <p><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span>เอกสารเก็บในเบราว์เซอร์<small>ในโหมดสาธิตที่ยังไม่เชื่อมระบบกลาง</small></span></p>
           <p><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 8h8v8H8zM9 3v5m6-5v5M9 16v5m6-5v5M3 9h5m-5 6h5m8-6h5m-5 6h5"/></svg><span>ร่างด้วยโมเดลในเครื่อง<small>ไม่ต้องใช้คีย์บริการ ไม่เสียค่าเอพีไอ</small></span></p>
           <p><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg><span>ใช้ข้อมูลสถานีจริง<small>จากชุดข้อมูลเปิดกรุงเทพมหานคร</small></span></p>
         </div>
-        <figure class="py-hero-media">
-          <img src="./assets/previews/report.jpg" width="740" height="700" fetchpriority="high" alt="หน้าจอจริงของพร้อมยื่นสำหรับเล่าเหตุการณ์และเตรียมข้อมูลอุบัติเหตุ">
-          <figcaption>หน้าจอเตรียมข้อมูลจริง · ตัวอย่างสำหรับสาธิต</figcaption>
-        </figure>
       </section>
-      <section class="py-stats" aria-labelledby="facts-title">
-        <div class="py-wrap">
-          <h2 id="facts-title">รู้ขอบเขต ก่อนเริ่มเตรียม</h2>
+      <section class="py-stats py-wrap" aria-labelledby="facts-title">
+        <div class="py-stats-panel">
+          <h2 id="facts-title">รู้ขอบเขต<br>ก่อนเริ่มเตรียม</h2>
           <div class="py-stat-row">
             <p><strong>88</strong><span>สถานีในกรุงเทพฯ</span><small>เลือกจุดติดต่อจากชุดข้อมูลจริง</small></p>
             <p><strong>3</strong><span>เอกสารจำเป็นสำหรับอุบัติเหตุ</span><small>บัตรประชาชน ใบขับขี่ ทะเบียนรถ</small></p>
@@ -56,48 +72,49 @@
         </div>
       </section>
       <section class="py-features py-wrap" id="features" aria-labelledby="features-title">
-        <div class="py-feature-copy">
+        <div class="py-section-head">
           <h2 id="features-title">จากคำบอกเล่า<br>สู่ข้อมูลที่พร้อมตรวจ</h2>
           <p>เริ่มจากสิ่งที่จำได้ แล้วค่อยตรวจเติมข้อมูลที่ยังขาด คุณเป็นคนตัดสินใจว่าจะใช้ข้อความใด</p>
-          <div class="py-tabs" role="tablist" aria-label="ความสามารถของพร้อมยื่น" aria-orientation="vertical">
-            <button id="tab-voice" type="button" role="tab" aria-selected="true" aria-controls="panel-voice" tabindex="0">เล่าเหตุการณ์ด้วยเสียง <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
-            <button id="tab-draft" type="button" role="tab" aria-selected="false" aria-controls="panel-draft" tabindex="-1">ตรวจร่างเอกสาร <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
-            <button id="tab-ocr" type="button" role="tab" aria-selected="false" aria-controls="panel-ocr" tabindex="-1">อ่านข้อมูลจากบัตร <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
-            <button id="tab-station" type="button" role="tab" aria-selected="false" aria-controls="panel-station" tabindex="-1">เลือกสถานีตำรวจ <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
-          </div>
         </div>
-        <div class="py-feature-panels">
-          <div id="panel-voice" role="tabpanel" aria-labelledby="tab-voice" tabindex="0">
-            <img src="./assets/previews/voice.jpg" width="708" height="400" loading="lazy" alt="ช่องรายละเอียดเหตุการณ์และปุ่มพูดภาษาไทยในหน้ารายงานจริง">
-            <h3>พูด หรือพิมพ์เท่าที่จำได้</h3><p>กดพูดเพื่อถอดเสียงภาษาไทย หยุดพูดแล้วระบบจะเตรียมร่างให้ตรวจ หากเครื่องไม่รองรับ คุณยังพิมพ์รายละเอียดเองได้</p>
-          </div>
-          <div id="panel-draft" role="tabpanel" aria-labelledby="tab-draft" tabindex="0" hidden>
-            <img src="./assets/previews/draft.jpg" width="708" height="282" loading="lazy" alt="ส่วนตรวจร่างสำนวนและคำบอกเล่าต้นฉบับในพร้อมยื่น">
-            <h3>ตรวจสำนวน เทียบกับเรื่องจริง</h3><p>โมเดลช่วยเรียบเรียงถ้อยคำในเครื่อง คุณแก้ไขและยืนยันก่อนใช้ ระบบไม่รับรองความถูกต้องหรือเติมข้อเท็จจริงแทนคุณ</p>
-          </div>
-          <div id="panel-ocr" role="tabpanel" aria-labelledby="tab-ocr" tabindex="0" hidden>
-            <img src="./assets/previews/ocr.jpg" width="480" height="650" loading="lazy" alt="หน้าตรวจข้อมูลบัตรประชาชนหลังนำเข้าเอกสารในพร้อมยื่น">
-            <h3>อ่านจากภาพ แล้วตรวจทุกช่อง</h3><p>นำเข้าภาพบัตรเพื่ออ่านข้อความ ลดการกรอกซ้ำ ชื่อ เลขบัตร และที่อยู่ต้องตรวจเทียบกับต้นฉบับก่อนบันทึกเสมอ</p>
-          </div>
-          <div id="panel-station" role="tabpanel" aria-labelledby="tab-station" tabindex="0" hidden>
-            <img src="./assets/previews/station.jpg" width="708" height="566" loading="lazy" alt="ตัวเลือกสถานีตำรวจจริงและแผนที่สถานีในพร้อมยื่น">
-            <h3>เลือกจุดติดต่อที่คุณต้องการ</h3><p>ดูสถานีจากชุดข้อมูลกรุงเทพฯ 88 แห่ง พร้อมแผนที่สถานี เปลี่ยนหรือระบุชื่อเองได้ ระยะใกล้ที่สุดไม่ใช่การยืนยันเขตรับผิดชอบ</p>
-          </div>
+        <div class="py-feature-grid">
+          <article class="py-feature">
+            <div class="py-shot"><img src="./assets/previews/voice.jpg" width="708" height="400" loading="lazy" alt="ช่องรายละเอียดเหตุการณ์และปุ่มพูดภาษาไทยในหน้ารายงานจริง"></div>
+            <div class="py-feature-body"><span class="py-num">01</span><div><p class="py-kicker">เล่าเหตุการณ์ด้วยเสียง</p><h3>พูด หรือพิมพ์เท่าที่จำได้</h3><p>กดพูดเพื่อถอดเสียงภาษาไทย หยุดพูดแล้วระบบจะเตรียมร่างให้ตรวจ หากเครื่องไม่รองรับ คุณยังพิมพ์รายละเอียดเองได้</p></div></div>
+          </article>
+          <article class="py-feature">
+            <div class="py-shot py-shot-center"><img src="./assets/previews/draft.jpg" width="708" height="282" loading="lazy" alt="ส่วนตรวจร่างสำนวนและคำบอกเล่าต้นฉบับในพร้อมยื่น"></div>
+            <div class="py-feature-body"><span class="py-num">02</span><div><p class="py-kicker">ตรวจร่างเอกสาร</p><h3>ตรวจสำนวน เทียบกับเรื่องจริง</h3><p>โมเดลช่วยเรียบเรียงถ้อยคำในเครื่อง คุณแก้ไขและยืนยันก่อนใช้ ระบบไม่รับรองความถูกต้องหรือเติมข้อเท็จจริงแทนคุณ</p></div></div>
+          </article>
+          <article class="py-feature">
+            <div class="py-shot"><img src="./assets/previews/ocr.jpg" width="480" height="650" loading="lazy" alt="หน้าตรวจข้อมูลบัตรประชาชนหลังนำเข้าเอกสารในพร้อมยื่น"></div>
+            <div class="py-feature-body"><span class="py-num">03</span><div><p class="py-kicker">อ่านข้อมูลจากบัตร</p><h3>อ่านจากภาพ แล้วตรวจทุกช่อง</h3><p>นำเข้าภาพบัตรเพื่ออ่านข้อความ ลดการกรอกซ้ำ ชื่อ เลขบัตร และที่อยู่ต้องตรวจเทียบกับต้นฉบับก่อนบันทึกเสมอ</p></div></div>
+          </article>
+          <article class="py-feature">
+            <div class="py-shot"><img src="./assets/previews/station.jpg" width="708" height="566" loading="lazy" alt="ตัวเลือกสถานีตำรวจจริงและแผนที่สถานีในพร้อมยื่น"></div>
+            <div class="py-feature-body"><span class="py-num">04</span><div><p class="py-kicker">เลือกสถานีตำรวจ</p><h3>เลือกจุดติดต่อที่คุณต้องการ</h3><p>ดูสถานีจากชุดข้อมูลกรุงเทพฯ 88 แห่ง พร้อมแผนที่สถานี เปลี่ยนหรือระบุชื่อเองได้ ระยะใกล้ที่สุดไม่ใช่การยืนยันเขตรับผิดชอบ</p></div></div>
+          </article>
         </div>
       </section>
       <section class="py-how" id="how-to" aria-labelledby="how-title">
-        <div class="py-wrap py-how-grid">
-          <div><h2 id="how-title">ค่อย ๆ เตรียม<br>ทีละขั้น</h2><p>ใช้ข้อมูลสมมติในการทดลอง<br>ไม่จำเป็นต้องเล่าทุกอย่างได้ครบตั้งแต่แรก</p></div>
+        <div class="py-wrap">
+          <div class="py-section-head">
+            <h2 id="how-title">ค่อย ๆ เตรียม ทีละขั้น</h2>
+            <p>ใช้ข้อมูลสมมติในการทดลอง<br>ไม่จำเป็นต้องเล่าทุกอย่างได้ครบตั้งแต่แรก</p>
+          </div>
           <ol>
-            <li><h3>เตรียมข้อมูลติดต่อและเอกสาร</h3><p>เข้าสู่พื้นที่ในเครื่อง เพิ่มบัตรประชาชน และตรวจข้อมูลที่อ่านได้ สำหรับอุบัติเหตุให้เพิ่มใบขับขี่และทะเบียนรถด้วย</p></li>
-            <li><h3>เล่าเหตุการณ์ตามที่ทราบ</h3><p>เลือกเรื่อง ระบุวันเวลาและสถานที่ พูดหรือพิมพ์สิ่งที่เกิดขึ้น แล้วตรวจร่างสำนวนเทียบกับคำบอกเล่าของคุณ</p></li>
-            <li><h3>เลือกสถานีและแนบหลักฐาน</h3><p>เลือกสถานีที่จะไปติดต่อ แนบภาพหรือวิดีโอที่เกี่ยวข้อง และตรวจว่าเลือกเอกสารที่ต้องการใช้ครบแล้ว</p></li>
-            <li><h3>ตรวจยืนยันและเก็บใบสรุป</h3><p>ส่งแบบจำลองเพื่อบันทึกเรื่อง เปิดใบสรุปเพื่อพิมพ์หรือบันทึกเป็นพีดีเอฟ แล้วนำข้อมูลไปติดต่อเจ้าหน้าที่ด้วยตนเอง</p></li>
+            <li><span class="py-step-num" aria-hidden="true">1</span><h3>เตรียมข้อมูลติดต่อและเอกสาร</h3><p>เข้าสู่พื้นที่ในเครื่อง เพิ่มบัตรประชาชน และตรวจข้อมูลที่อ่านได้ สำหรับอุบัติเหตุให้เพิ่มใบขับขี่และทะเบียนรถด้วย</p></li>
+            <li><span class="py-step-num" aria-hidden="true">2</span><h3>เล่าเหตุการณ์ตามที่ทราบ</h3><p>เลือกเรื่อง ระบุวันเวลาและสถานที่ พูดหรือพิมพ์สิ่งที่เกิดขึ้น แล้วตรวจร่างสำนวนเทียบกับคำบอกเล่าของคุณ</p></li>
+            <li><span class="py-step-num" aria-hidden="true">3</span><h3>เลือกสถานีและแนบหลักฐาน</h3><p>เลือกสถานีที่จะไปติดต่อ แนบภาพหรือวิดีโอที่เกี่ยวข้อง และตรวจว่าเลือกเอกสารที่ต้องการใช้ครบแล้ว</p></li>
+            <li><span class="py-step-num py-step-final" aria-hidden="true">4</span><h3>ตรวจยืนยันและเก็บใบสรุป</h3><p>ส่งแบบจำลองเพื่อบันทึกเรื่อง เปิดใบสรุปเพื่อพิมพ์หรือบันทึกเป็นพีดีเอฟ แล้วนำข้อมูลไปติดต่อเจ้าหน้าที่ด้วยตนเอง</p></li>
           </ol>
         </div>
       </section>
       <section class="py-limits py-wrap" id="limitations" aria-labelledby="limits-title">
-        <h2 id="limits-title">ก่อนใช้งาน โปรดเข้าใจ</h2>
+        <div class="py-limits-head">
+          <span class="py-warn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20Z"/><path d="M12 10v4m0 3v.01"/></svg></span>
+          <h2 id="limits-title">ก่อนใช้งาน<br>โปรดเข้าใจ</h2>
+          <p>กรณีฉุกเฉินให้ใช้ช่องทางทางการ</p>
+        </div>
         <dl>
           <div><dt>ยังไม่ใช่การแจ้งความ</dt><dd>เดโมนี้ไม่ส่งเรื่องถึงตำรวจ ไม่ออกเลขรับแจ้งจริง และไม่ใช่แบบฟอร์มที่หน่วยงานใดรับรอง กรณีฉุกเฉินให้ใช้ช่องทางทางการ</dd></div>
           <div><dt>ร่างอาจคลาดเคลื่อน</dt><dd>คุณต้องตรวจทุกข้อความ โมเดลต้องดาวน์โหลดครั้งแรกขนาดหลายกิกะไบต์และใช้เครื่องที่รองรับ หากใช้งานไม่ได้ ระบบจะเก็บคำบอกเล่าเดิมไว้</dd></div>
@@ -105,9 +122,14 @@
           <div><dt>บางฟังก์ชันเชื่อมต่อภายนอก</dt><dd>การถอดเสียงอาจใช้บริการของเบราว์เซอร์ แผนที่โหลดจากผู้ให้บริการภายนอก โหมดสาธิตเก็บเอกสารในเครื่อง หากเปิดระบบเจ้าหน้าที่ การส่งข้อมูลจะต้องผ่านการยืนยันของคุณ</dd></div>
         </dl>
       </section>
-      <section class="py-close" aria-labelledby="close-title"><div class="py-wrap"><h2 id="close-title">เริ่มจากเรื่องที่คุณจำได้</h2><p>เตรียมข้อมูลให้ตรวจง่าย ก่อนนำไปติดต่อเจ้าหน้าที่</p><a class="py-button" href="#workspace">เริ่มเตรียมข้อมูล</a></div></section>
+      <section class="py-close py-wrap" aria-labelledby="close-title">
+        <div class="py-close-panel">
+          <div><h2 id="close-title">เริ่มจากเรื่องที่คุณจำได้</h2><p>เตรียมข้อมูลให้ตรวจง่าย ก่อนนำไปติดต่อเจ้าหน้าที่</p></div>
+          <a class="py-button py-button-highlight" href="#workspace">เริ่มเตรียมข้อมูล <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+        </div>
+      </section>
     </main>
-    <footer class="py-footer py-wrap"><a class="py-brand" href="#main-content">พร้อมยื่น</a><p>เครื่องมือสาธิตสำหรับเตรียมข้อมูล<br>ไม่ใช่บริการของตำรวจหรือหน่วยงานรัฐ</p><nav aria-label="ข้อมูลท้ายหน้า"><a href="#limitations">ข้อจำกัดและข้อมูลส่วนบุคคล</a><a class="insurance-entry" href="./insurance/">พื้นที่สาธิตประกันภัยรถยนต์</a><a href="https://github.com/ICEMONSER/promptyuen-demo" target="_blank" rel="noreferrer">โค้ดโครงการ</a></nav></footer>
+    <footer class="py-footer"><div class="py-wrap"><div><a class="py-brand" href="#main-content">พร้อมยื่น</a><p>เครื่องมือสาธิตสำหรับเตรียมข้อมูล<br>ไม่ใช่บริการของตำรวจหรือหน่วยงานรัฐ</p></div><nav aria-label="ข้อมูลท้ายหน้า"><a href="#limitations">ข้อจำกัดและข้อมูลส่วนบุคคล</a><a class="insurance-entry" href="./insurance/">พื้นที่สาธิตประกันภัยรถยนต์</a><a href="https://github.com/ICEMONSER/promptyuen-demo" target="_blank" rel="noreferrer">โค้ดโครงการ</a></nav></div></footer>
   </div>
   <section id="workspace" hidden aria-label="พื้นที่เตรียมเอกสาร"><div class="py-workspace-bar"><a href="#main-content">กลับหน้าหลักพร้อมยื่น</a><span>ระบบสาธิต · ไม่ส่งถึงตำรวจ</span></div><div id="root"></div></section>
   <noscript><p class="py-noscript">เปิดใช้งานจาวาสคริปต์เพื่อเริ่มเตรียมข้อมูล คุณยังอ่านวิธีใช้และข้อจำกัดด้านบนได้</p></noscript>
