@@ -1,6 +1,5 @@
 import {D as React} from './shared-ui.js';
-import {nearestPoliceStation} from './nearest-station.js?v=20261002-real-stations';
-import {STATION_SOURCE,BANGKOK_STATIONS} from './bangkok-stations.js';
+import {nearestPoliceStation} from './nearest-station.js?v=20261017-rangsit';
 import {validPoint} from './station-core.js';
 const h=React.createElement;
 export function NearestStationSearch({point,onSelect,disabled=false,enabled=true,onBusyChange,lookup=nearestPoliceStation}){

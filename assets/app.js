@@ -8,8 +8,8 @@ import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js?v=20261017-samples";
 import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261017-samples";
-import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261017-samples";
+import { StationPicker } from "./stations.js?v=20261017-rangsit";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261017-rangsit";
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261017-samples";
 import {
   readWorkspace,
