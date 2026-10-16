@@ -436,32 +436,43 @@ async function kg(e, t, n) {
       return { ok: true };
     }
     if (t?.action !== `demo`) throw Error(`รายการไม่ถูกต้อง`);
-    let e = `identity`;
-    return (
-      i.documents.some((t) => t.id === e) ||
-        (i.documents.unshift({
-          id: e,
-          name: `ข้อมูลตัวอย่าง · ไม่ใช่บุคคลจริง`,
-          kind: `identity`,
-          mime: `text/plain`,
-          size: 0,
-          fields: {
-            fullName: `นาย Prakan ตัวอย่าง`,
-            nationalId: `DEMO-0001`,
-            birthDate: `1 มกราคม 2549`,
-            address: `99 ถนนตัวอย่าง กรุงเทพมหานคร`,
-            phone: `000-000-0000`,
-          },
-          rawText: `ข้อมูลสมมติ ไม่ใช่เอกสารราชการ`,
-          verified: !0,
-          demo: !0,
-          createdAt: new Date().toISOString(),
-          method: `sample`,
-        }),
-        Eg(i, `เพิ่มข้อมูลจำลอง`, e),
-        await Tg(i)),
-      { id: e }
-    );
+    // Simulates the policyholder data Prakan already has on file from the insurance
+    // company (per the landing page: "no need to re-enter"). Still clearly marked
+    // demo: true / simulated, never presented as a real government document.
+    const demoProfile = {
+      fullName: `นาย Prakan ตัวอย่าง`,
+      nationalId: `DEMO-0001`,
+      birthDate: `1 มกราคม 2549`,
+      address: `99 ถนนตัวอย่าง กรุงเทพมหานคร`,
+      phone: `0800000000`,
+      email: `demo@gmail.com`,
+    };
+    const demoDocs = [
+      { id: `identity`, kind: `identity`, fields: { ...demoProfile } },
+      { id: `license`, kind: `license`, fields: {
+        fullName: demoProfile.fullName, nationalId: demoProfile.nationalId,
+        birthDate: demoProfile.birthDate, licenseNumber: `DEMO-LC-0001`, expiryDate: `1 มกราคม 2572` } },
+      { id: `vehicle`, kind: `vehicle`, fields: { fullName: demoProfile.fullName, plate: `กก 0001 กรุงเทพมหานคร` } },
+    ];
+    for (const doc of demoDocs) {
+      if (i.documents.some((d) => d.id === doc.id)) continue;
+      i.documents.unshift({
+        id: doc.id,
+        name: `ข้อมูลจากบริษัทประกัน (จำลอง) · ไม่ใช่บุคคลจริง`,
+        kind: doc.kind,
+        mime: `text/plain`,
+        size: 0,
+        fields: doc.fields,
+        rawText: `ข้อมูลสมมติจากบริษัทประกัน ไม่ใช่เอกสารราชการ`,
+        verified: !0,
+        demo: !0,
+        createdAt: new Date().toISOString(),
+        method: `sample`,
+      });
+      Eg(i, `ดึงข้อมูลจากบริษัทประกัน (จำลอง)`, doc.id);
+    }
+    await Tg(i);
+    return { ids: demoDocs.map((d) => d.id) };
   }
   if (r.pathname === `/api/documents`) {
     if (n === `POST`) {
@@ -1030,9 +1041,9 @@ function Vg() {
     await Ie(`demo`, async () => {
       let e = await zg(`/api/workspace`, { action: `demo` });
       (await Fe(),
-        g([e.id]),
+        g(e.ids),
         Zh.success(
-          `เพิ่มข้อมูลสมมติแล้ว เลือกเรื่องที่ต้องการเพื่อเริ่มใช้งานได้เลย`,
+          `ดึงข้อมูลจากบริษัทประกันแล้ว (จำลอง) เลือกเรื่องที่ต้องการเพื่อเริ่มใช้งานได้เลย`,
         ));
     });
   }
@@ -1428,7 +1439,7 @@ function Vg() {
                   (0, B.jsx)(M, { size: 17 }),
                   (0, B.jsx)(`span`, {
                     children:
-                      c === `demo` ? `กำลังเตรียม...` : `ลองด้วยข้อมูลตัวอย่าง`,
+                      c === `demo` ? `กำลังดึงข้อมูล...` : `ดึงข้อมูลจากบริษัทประกัน (จำลอง)`,
                   }),
                 ],
               }),
