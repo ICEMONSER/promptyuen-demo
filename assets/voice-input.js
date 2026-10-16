@@ -35,7 +35,7 @@ export function VoiceInput({value, disabled, onComplete, onBusyChange}) {
   }
   return h('section', {'aria-label': 'เล่าเหตุการณ์ด้วยเสียงภาษาไทย'},
     h('p', {className: 'small-note'}, 'พูดภาษาไทยได้ตามธรรมชาติ เมื่อหยุดพูด ระบบจะเติมข้อความและสร้างร่างภาษาทางการให้ตรวจแก้ การถอดเสียงอาจส่งเสียงไปยังผู้ให้บริการเบราว์เซอร์ เว็บนี้ไม่บันทึกไฟล์เสียง'),
-    h('button', {type: 'button', className: 'voice-record-button', 'aria-pressed': listening, disabled: !Recognition || (!listening && disabled), onClick: () => listening ? session.current?.stop() : start()}, listening ? '■ หยุดและเรียบเรียง' : '🎙 กดพูดเล่าเหตุการณ์'),
+    h('button', {type: 'button', className: 'voice-record-button', 'aria-pressed': listening, disabled: !Recognition || (!listening && disabled), onClick: () => listening ? session.current?.stop() : start()}, h('svg', {viewBox:'0 0 24 24',width:20,height:20,'aria-hidden':true,fill:'none',stroke:'currentColor',strokeWidth:1.7,strokeLinecap:'round',strokeLinejoin:'round'}, listening ? h('rect',{x:6,y:6,width:12,height:12}) : h(React.Fragment,null,h('rect',{x:9,y:3,width:6,height:12,rx:3}),h('path',{d:'M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8'}))), listening ? 'หยุดและเรียบเรียง' : 'กดพูดเล่าเหตุการณ์'),
     h('p', {className: 'small-note'}, 'พูด → หยุด → ระบบเรียบเรียงข้อความสำหรับเอกสารให้อัตโนมัติ'),
     !Recognition && h('p', null, 'เบราว์เซอร์นี้ไม่รองรับการถอดเสียง ใช้ไมโครโฟนบนแป้นพิมพ์เพื่อกรอกข้อความ หรือพิมพ์แล้วกดสร้างร่างภาษาทางการ'),
     listening && h('p', {role: 'status'}, 'กำลังฟังภาษาไทย… กดหยุดเมื่อเล่าจบ'),

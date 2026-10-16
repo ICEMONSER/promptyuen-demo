@@ -1,0 +1,283 @@
+/* Live-reference tokens. Keep all palette decisions here. */
+:root {
+  --py-primary: #1434a2;
+  --py-secondary: #fcaf17;
+  --py-white: #ffffff;
+  --py-surface: #eaedf2;
+  --py-border: #cbcbcb;
+  --py-ink: #103c4d;
+  --py-muted: #535353;
+  --py-on-primary: var(--py-white);
+  --py-link: var(--py-primary);
+  --py-error: #9e251f;
+  --py-success: #225b3d;
+  --py-radius: 6px;
+  --py-space-scale: 1;
+  --py-font-size: 16px;
+  --py-page-width: 1200px;
+  --py-section-space: calc(88px * var(--py-space-scale));
+  --py-font: 'Noto Sans Thai', Tahoma, sans-serif;
+  --background: var(--py-white);
+  --foreground: var(--py-ink);
+  --primary: var(--py-primary);
+  --primary-foreground: var(--py-on-primary);
+  --muted-foreground: var(--py-muted);
+  --border: var(--py-border);
+  --ring: var(--py-primary);
+}
+html { font-size: var(--py-font-size); scroll-behavior: smooth; scroll-padding-top: 24px; scrollbar-color: var(--py-muted) var(--py-surface); }
+body { margin: 0; background: var(--py-white); color: var(--py-ink); font-family: var(--py-font); font-size: 1rem; line-height: 1.8; }
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+button, input, textarea, select { font: inherit; }
+button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+a { color: var(--py-link); text-underline-offset: .24em; }
+button, input[type='radio'], input[type='checkbox'] { accent-color: var(--py-primary); }
+input, textarea { caret-color: var(--py-link); }
+:focus-visible { outline: 3px solid var(--py-link); outline-offset: 4px; }
+::selection { background: var(--py-secondary); color: var(--py-ink); }
+#landing h1, #landing h2, #landing h3 { font-weight: 600; color: var(--py-ink); text-wrap: balance; letter-spacing: 0; margin: 0; }
+#landing p { margin: 0; text-wrap: pretty; }
+#landing h2 { font-size: 2.25rem; line-height: 1.5; }
+#landing h3 { font-size: 1.25rem; line-height: 1.6; }
+.py-wrap { width: min(var(--py-page-width), calc(100% - 48px)); margin-inline: auto; }
+.py-skip { position: fixed; top: 12px; left: 12px; z-index: 50; padding: 12px 20px; background: var(--py-white); transform: translateY(-180%); }
+.py-skip:focus { transform: none; }
+.py-announcement { padding: 9px 20px; background: var(--py-surface); color: var(--py-ink); text-align: center; font-size: .875rem; }
+.py-announcement a { margin-left: 16px; text-decoration: underline; display: inline-block; }
+.py-header { display: flex; align-items: center; justify-content: space-between; gap: 32px; min-height: 100px; }
+.py-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.625rem; font-weight: 600; text-decoration: none; color: var(--py-ink); flex-shrink: 0; }
+.py-brand svg { width: 34px; height: 34px; fill: none; stroke: var(--py-link); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.py-header nav { display: flex; gap: 32px; margin-left: auto; }
+.py-header nav a { color: var(--py-ink); text-decoration: none; padding-block: 12px; }
+.py-header nav a:hover, .py-footer a:hover { text-decoration: underline; }
+.py-button { display: inline-flex; align-items: center; justify-content: center; gap: 24px; min-height: 58px; padding: 14px 30px; background: var(--py-primary); color: var(--py-on-primary); border: 0; border-radius: 100px; text-decoration: none; font-weight: 600; line-height: 1.7; transition: transform 160ms ease-out, opacity 180ms ease; }
+.py-button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.py-button:hover { opacity: .9; }
+.py-button:active { transform: scale(.98); }
+.py-nav-cta { min-height: 46px; padding: 9px 22px; }
+.py-hero { display: grid; grid-template-columns: 1fr 1fr; column-gap: 64px; row-gap: 36px; align-items: start; padding-block: calc(64px * var(--py-space-scale)) var(--py-section-space); }
+.py-hero-copy { grid-column: 1; }
+#landing .py-hero h1 { font-size: 3.25rem; line-height: 1.45; margin-bottom: 24px; }
+#landing .py-lead { font-size: 1.125rem; max-width: 48ch; margin-bottom: 28px; }
+#landing .py-hero-note { color: var(--py-muted); font-size: .875rem; margin-top: 20px; }
+.py-trust { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 16px; }
+.py-trust p { display: flex; align-items: flex-start; gap: 14px; }
+.py-trust svg { width: 24px; height: 24px; margin-top: 3px; flex: 0 0 24px; fill: none; stroke: var(--py-ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.py-trust small { display: block; font-size: .8125rem; color: var(--py-muted); margin-top: 4px; }
+.py-hero-media { grid-column: 2; grid-row: 1; margin: 0; padding: 24px; background: var(--py-surface); align-self: center; }
+.py-hero-media img { display: block; width: 100%; height: auto; object-fit: contain; border-radius: var(--py-radius); }
+.py-hero-media figcaption { font-size: .8125rem; margin-top: 14px; color: var(--py-muted); }
+.py-stats { background: var(--py-surface); padding-block: calc(64px * var(--py-space-scale)); }
+.py-stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; margin-top: 32px; }
+.py-stat-row strong { display: block; font-size: 4rem; line-height: 1.4; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--py-link); }
+.py-stat-row span { display: block; font-size: 1.125rem; font-weight: 600; }
+.py-stat-row small { display: block; font-size: .875rem; margin-top: 8px; color: var(--py-muted); }
+.py-features { padding-block: var(--py-section-space); display: grid; grid-template-columns: 5fr 6fr; gap: 88px; align-items: start; scroll-margin-top: 24px; }
+.py-feature-copy > p { margin-top: 22px !important; max-width: 43ch; }
+.py-tabs { display: grid; gap: 6px; margin-top: 32px; }
+.py-tabs button { display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; min-height: 62px; padding: 15px 20px; border: 0; border-radius: var(--py-radius); background: transparent; color: var(--py-ink); font-weight: 400; text-align: left; cursor: pointer; transition: background-color 180ms ease; }
+.py-tabs button[aria-selected='true'] { background: var(--py-surface); font-weight: 600; }
+.py-tabs button:hover { background: var(--py-surface); }
+.py-tabs button span { font-size: 1.25rem; }
+.py-feature-panels img { display: block; width: 100%; height: auto; aspect-ratio: 10 / 7; object-fit: contain; background: var(--py-surface); border-radius: var(--py-radius); }
+.py-feature-panels h3 { margin-top: 24px !important; }
+.py-feature-panels p { margin-top: 12px !important; max-width: 54ch; }
+.py-how { background: var(--py-surface); padding-block: var(--py-section-space); }
+.py-how-grid { display: grid; grid-template-columns: 4fr 6fr; gap: 120px; }
+.py-how-grid > div > p { margin-top: 24px !important; }
+.py-how ol { margin: 0; padding-left: 26px; list-style: decimal; }
+.py-how li { padding-left: 14px; margin-bottom: 30px; }
+.py-how li:last-child { margin-bottom: 0; }
+.py-how li::marker { font-size: 1.125rem; font-weight: 600; }
+.py-how li p { margin-top: 8px !important; max-width: 58ch; }
+.py-limits { padding-block: var(--py-section-space); }
+.py-limits dl { display: grid; grid-template-columns: 1fr 1fr; gap: 32px 80px; margin: 36px 0 0; }
+.py-limits dt { font-size: 1.125rem; font-weight: 600; margin-bottom: 10px; }
+.py-limits dd { margin: 0; max-width: 56ch; }
+.py-close { background: var(--py-surface); padding-block: calc(72px * var(--py-space-scale)); }
+.py-close .py-wrap { display: grid; grid-template-columns: 1fr auto; gap: 12px 40px; align-items: center; }
+.py-close p { grid-column: 1; }
+.py-close a { grid-column: 2; grid-row: 1 / 3; }
+.py-footer { padding-block: 48px 80px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; align-items: start; font-size: .875rem; }
+.py-footer nav { display: grid; gap: 12px; }
+.py-footer .insurance-entry { position: static; padding: 0; background: none; color: var(--py-link); font: inherit; box-shadow: none; border-radius: 0; }
+.py-tweaks { position: fixed; right: 16px; bottom: 16px; z-index: 30; max-width: calc(100vw - 32px); }
+.py-tweaks button { cursor: pointer; padding: 10px 16px; min-height: 44px; border: 0; background: var(--py-ink); color: var(--py-white); border-radius: var(--py-radius); }
+#tweaks-toggle { display: flex; gap: 10px; align-items: center; margin-left: auto; }
+#tweaks-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+#tweaks-panel { position: absolute; right: 0; bottom: 58px; width: 300px; max-width: calc(100vw - 32px); padding: 22px; background: var(--py-white); box-shadow: 0 8px 32px #103c4d24; max-height: calc(100dvh - 100px); overflow: auto; }
+#tweaks-panel h2 { font-size: 1.125rem; font-weight: 600; margin: 0 0 20px; }
+#tweaks-panel label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px; margin-block: 16px; }
+#tweaks-panel input[type='range'] { width: 100%; grid-column: 1; min-height: 30px; }
+#tweaks-panel input[type='color'] { width: 54px; height: 44px; padding: 4px; background: var(--py-surface); border: 0; }
+#tweaks-panel output { grid-column: 2; font-variant-numeric: tabular-nums; }
+#tweaks-panel p { font-size: .8125rem; margin-bottom: 16px; }
+.py-workspace-bar { display: flex; justify-content: space-between; gap: 16px; padding: 12px 24px; background: var(--py-surface); font-size: .875rem; }
+.py-noscript { padding: 24px; background: var(--py-surface); }
+/* Existing application: preserve every selector, JS hook and behavior. */
+#root { font-family: var(--py-font); color: var(--py-ink); }
+#root h1, #root h2, #root h3, #root strong, #root b { font-weight: 600; }
+#root h1, #root h2, #root h3 { text-wrap: balance; }
+#root button { font-family: inherit; min-height: 44px; font-weight: 600; box-shadow: none; transition: background-color 180ms ease, transform 140ms ease-out; }
+#root button:active:not(:disabled) { transform: scale(.99); }
+#root button:disabled { cursor: not-allowed; }
+#root input, #root select, #root textarea { color: var(--py-ink); font: inherit; border-color: var(--py-border); background: var(--py-white); border-radius: var(--py-radius); }
+#root input::placeholder, #root textarea::placeholder { color: var(--py-muted); opacity: 1; }
+#root .assistant-login { max-width: 780px; margin: 40px auto; padding: 32px !important; background: var(--py-white); border: 0; border-radius: 0; box-shadow: none; }
+#root .assistant-login h1 { font-size: 2.25rem; font-weight: 600; letter-spacing: 0; margin: 28px 0 16px; line-height: 1.5; color: var(--py-ink); }
+#root .assistant-login > p, #root .small-note, #root .field-source, #root .login-brand span, #root .engine-label { color: var(--py-muted); }
+#root .login-brand { color: var(--py-ink); font-weight: 600; }
+#root .login-brand span { font-size: .875rem; }
+#root .login-step { display: none; }
+#root .assistant-panel, #root .signature-studio { background: var(--py-surface) !important; padding: 24px !important; border: 0 !important; border-radius: var(--py-radius) !important; box-shadow: none; }
+#root .assistant-panel .assistant-panel { background: var(--py-white) !important; }
+#root .signature-pad { background: var(--py-white) !important; border: 1px dashed var(--py-muted) !important; border-radius: var(--py-radius); }
+#root .assistant-panel button { background: var(--py-white); color: var(--py-ink); border-color: var(--py-border); border-radius: var(--py-radius); }
+#root .assistant-login .login-primary, #root .quick-submit, #root .voice-record-button, #root .full-button:not([data-variant='outline']) { background: var(--py-primary); color: var(--py-on-primary); border-color: var(--py-primary); border-radius: var(--py-radius); }
+#root .text-action { color: var(--py-link) !important; font-size: .875rem !important; }
+#root .assistant-login .assistant-panel:last-child { background: transparent !important; padding: 16px 0 !important; }
+#root .field-label { font-size: 1rem; line-height: 1.8; gap: 8px; margin-top: 12px; }
+#root .small-note, #root .quick-notice, #root .location-note, #root .map-consent, #root .legal-draft small { font-size: .875rem; line-height: 1.8; }
+#root .quick-flow { max-width: 900px; padding: 36px; }
+#root .quick-flow h1 { font-size: 2.25rem; color: var(--py-ink); }
+#root .quick-flow form { gap: 24px; }
+#root .quick-flow form > label, #root .when-picker legend { font-size: 1rem; font-weight: 600; }
+#root .quick-flow > p { color: var(--py-muted); }
+#root .quick-notice, #root .location-note, #root .info-strip { background: var(--py-surface); color: var(--py-ink) !important; border: 0; border-radius: var(--py-radius); }
+#root .quick-error, #root .missing, #root .required-star { color: var(--py-error); }
+#root .available { color: var(--py-success); }
+#root .when-picker label { border-color: var(--py-border); border-radius: var(--py-radius); }
+#root .when-picker label.selected { background: var(--py-surface); border-color: var(--py-primary); }
+#root .tracking-card { border-radius: var(--py-radius); box-shadow: none; }
+#root .tracking-card h2 { font-size: 1.75rem; }
+#root .portal-message-box { background: var(--py-surface); border: 0; }
+#root .topbar, #root .app-sidebar, #root .app-main, #root .main-panel { background: var(--py-white); }
+#root .brand, #root .page-heading h1, #root .page-heading h1 span { color: var(--py-ink); }
+#root .brand small, #root .page-heading .eyebrow { display: none; }
+#root .brand-icon, #root .ai-avatar { background: var(--py-surface); color: var(--py-link); box-shadow: none; }
+#root .brand { font-weight: 600; }
+#root .sidebar-note, #root .service-card, #root .stat-card, #root .doc-placeholder { background: var(--py-surface); border: 0; box-shadow: none; border-radius: var(--py-radius); }
+#root .service-card { min-height: 64px; }
+#root .service-card:hover { color: var(--py-link); }
+#root .demo-button, #root .prototype-pill { background: var(--py-surface); color: var(--py-ink); border: 0; }
+#root .service-grid { gap: 12px; }
+#root .account-action { font-size: .875rem; }
+#root .info-strip { font-size: .875rem; }
+#root .profile, #root .nav-label { color: var(--py-muted); }
+#root .assistant-message > div, #root .chat-panel, #root .composer { background: var(--py-white); }
+#root .page-heading h1 { font-size: 2.25rem; line-height: 1.5; letter-spacing: 0; }
+#root .review-sheet, #root .document-sheet { background: var(--py-white); color: var(--py-ink); }
+#root .legal-draft summary, #root .tracking-steps p, #root .tracking-steps strong { font-size: .875rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .py-hero-copy { animation: py-arrive 650ms cubic-bezier(.22,1,.36,1) both; }
+  .py-hero-media { animation: py-settle 850ms cubic-bezier(.22,1,.36,1) both; }
+  @keyframes py-arrive { from { opacity: .6; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes py-settle { from { opacity: .65; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+}
+@media (max-width: 1000px) {
+  .py-hero { column-gap: 32px; }
+  #landing .py-hero h1 { font-size: 2.5rem; }
+  .py-header nav { gap: 18px; }
+  .py-features { gap: 40px; }
+  .py-how-grid { gap: 64px; }
+  .py-footer { grid-template-columns: 1fr 1fr; }
+  .py-footer nav { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 24px; }
+}
+@media (max-width: 760px) {
+  :root { --py-section-space: calc(60px * var(--py-space-scale)); }
+  .py-wrap { width: calc(100% - 40px); }
+  .py-announcement { font-size: .8125rem; line-height: 1.8; padding: 10px 20px; }
+  .py-announcement a { margin-left: 4px; }
+  .py-header { min-height: 88px; gap: 16px; }
+  .py-brand { font-size: 1.375rem; gap: 6px; }
+  .py-brand svg { width: 27px; height: 27px; }
+  .py-header nav { display: none; }
+  .py-nav-cta { font-size: .875rem; padding: 10px 16px; }
+  .py-hero { grid-template-columns: 1fr; gap: 28px; padding-top: 30px; }
+  .py-hero-copy, .py-trust, .py-hero-media { grid-column: 1; grid-row: auto; }
+  #landing .py-hero h1 { font-size: 2.125rem; line-height: 1.5; margin-bottom: 18px; }
+  #landing .py-lead { font-size: 1rem; margin-bottom: 24px; }
+  .py-button { min-height: 52px; }
+  .py-trust { grid-template-columns: 1fr; gap: 18px; padding-top: 4px; }
+  .py-trust p { gap: 14px; font-size: .9375rem; }
+  .py-trust small { font-size: .8125rem; margin-top: 0; }
+  .py-hero-media { padding: 18px; }
+  #landing h2 { font-size: 1.75rem; }
+  #landing h3 { font-size: 1.125rem; }
+  .py-stats { padding-block: 48px; }
+  .py-stat-row { grid-template-columns: 1fr; gap: 28px; margin-top: 28px; }
+  .py-stat-row p { display: grid; grid-template-columns: 76px 1fr; column-gap: 20px; }
+  .py-stat-row strong { grid-row: 1 / 3; font-size: 3rem; }
+  .py-stat-row span { font-size: 1rem; align-self: end; }
+  .py-stat-row small { margin-top: 2px; }
+  .py-features { grid-template-columns: 1fr; gap: 28px; }
+  .py-tabs { margin-top: 24px; }
+  .py-tabs button { min-height: 56px; }
+  .py-feature-panels h3 { margin-top: 20px !important; }
+  .py-how-grid { grid-template-columns: 1fr; gap: 32px; }
+  .py-how-grid > div > p { margin-top: 18px !important; }
+  .py-how li { padding-left: 6px; }
+  .py-limits dl { grid-template-columns: 1fr; gap: 28px; margin-top: 28px; }
+  .py-close .py-wrap { grid-template-columns: 1fr; gap: 18px; }
+  .py-close a { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
+  .py-footer { grid-template-columns: 1fr; gap: 20px; padding-block: 36px 90px; }
+  .py-footer nav { grid-column: 1; display: grid; gap: 14px; }
+  .py-workspace-bar { padding: 12px 16px; }
+  .py-workspace-bar span { display: none; }
+  #root .assistant-login { margin: 16px 0; padding: 20px !important; }
+  #root .assistant-login h1, #root .quick-flow h1 { font-size: 1.75rem; }
+  #root .assistant-panel, #root .signature-studio { padding: 18px !important; }
+  #root .quick-flow { padding: 24px 20px; }
+  #root .evidence-grid { gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+.py-tabs svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+#root .voice-record-button { display: inline-flex; align-items: center; gap: 10px; }
+:root { --sidebar: var(--py-white); --sidebar-foreground: var(--py-ink); --sidebar-accent: var(--py-surface); --sidebar-accent-foreground: var(--py-ink); --sidebar-border: var(--py-border); --sidebar-ring: var(--py-primary); --sidebar-primary: var(--py-primary); --sidebar-primary-foreground: var(--py-on-primary); --secondary: var(--py-surface); --secondary-foreground: var(--py-ink); --accent: var(--py-surface); --accent-foreground: var(--py-ink); --card: var(--py-white); --card-foreground: var(--py-ink); --muted: var(--py-surface); --popover: var(--py-white); --popover-foreground: var(--py-ink); }
+#root .app-sidebar [data-slot='sidebar-inner'] { background: var(--py-surface); color: var(--py-ink); }
+#root .sidebar-note { color: var(--py-muted); padding: 20px 12px; margin-inline: 0; }
+#root .sidebar-note strong { color: var(--py-ink); }
+#root .sidebar-note svg, #root .service-card > svg { color: var(--py-link); }
+#root .profile small, #root .profile > span { color: var(--py-ink); }
+#root .profile > span { background: var(--py-white); }
+#root .app-sidebar [data-slot='sidebar-menu-button'][data-active='true'] { background: var(--py-white); color: var(--py-link); box-shadow: none; }
+#root .chat-panel, #root .empty-doc { box-shadow: none; border: 0; border-radius: var(--py-radius); }
+#root .composer { border-color: var(--py-border); border-radius: var(--py-radius); }
+#root .composer button, #root button[data-slot='button']:not([class*='outline']):not([class*='ghost']) { background: var(--py-primary); color: var(--py-on-primary); }
+#root .assistant-message p, #root .empty-doc p, #root .trust-note { color: var(--py-muted); }
+#root .steps-card { background: var(--py-surface); border-radius: var(--py-radius); }
+#root .context-panel { border: 0; }
+#root .service-card:hover { transform: none; }
+#root .field-label, .document-sheet .field-label, .review-sheet .field-label { display: grid; gap: 8px; margin-block: 14px; font-size: 1rem; line-height: 1.8; }
+#root .field-label input, #root .field-label textarea, .document-sheet .field-label input, .document-sheet .field-label textarea, .review-sheet .field-label input, .review-sheet .field-label textarea { width: 100%; min-width: 0; min-height: 46px; padding: 10px 12px; border: 1px solid var(--py-border); border-radius: var(--py-radius); background: var(--py-white); color: var(--py-ink); }
+.document-sheet, .review-sheet { font-family: var(--py-font); color: var(--py-ink); background: var(--py-white); }
+.document-sheet button, .review-sheet button { min-height: 44px; box-shadow: none; }
+.document-sheet .small-note, .review-sheet .small-note { color: var(--py-muted); font-size: .875rem; line-height: 1.8; }
+/* Keep the display control in the navigation flow, clear of reading content. */
+.py-tweaks { position: relative; right: auto; bottom: auto; max-width: none; flex-shrink: 0; }
+#tweaks-panel { top: 60px; bottom: auto; }
+.py-feature-panels img { aspect-ratio: auto; height: 370px; padding: 20px; }
+#root .assistant-login > p { max-width: 62ch; }
+@media (max-width: 760px) {
+  .py-header { gap: 12px; }
+  #tweaks-toggle { width: 44px; justify-content: center; padding: 10px; }
+  #tweaks-toggle span { display: none; }
+  #tweaks-panel { top: 58px; }
+  .py-feature-panels img { height: auto; max-height: 420px; padding: 14px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .py-in { animation: py-arrive 650ms cubic-bezier(.22,1,.36,1); }
+  .py-stat-row .py-in { animation-name: py-figure; }
+  .py-how .py-in { animation-name: py-step; }
+  .py-limits .py-in { animation-name: py-read; }
+  @keyframes py-figure { from { opacity: .7; transform: scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes py-step { from { opacity: .7; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+  @keyframes py-read { from { opacity: .6; } to { opacity: 1; } }
+}
+#root .more-services { grid-column: 1 / -1; }
+#root .more-services summary { min-height: 44px; padding: 10px 0; cursor: pointer; color: var(--py-link); font-size: .9375rem; }
+#root .more-services > .service-grid { margin-top: 12px; }

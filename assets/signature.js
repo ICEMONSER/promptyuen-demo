@@ -134,9 +134,9 @@ export function LocalLogin({ signature, contact, onSaveContact, onSave, onEnter,
   return h(
     "main",
     { className: "assistant-login" },
-    h("div", {className:"login-brand"}, "พร้อมยื่น", h("span", null, "เอกสารน้อยลง · ชีวิตง่ายขึ้น")),
-    h("span", {className:"login-step"}, ready ? "02 / ลายมือชื่อของคุณ" : "01 / เริ่มต้นอย่างปลอดภัย"),
-    h("h1", null, ready ? "ลายเซ็นเดียว\nพร้อมใช้กับเอกสารของคุณ" : "เรื่องเอกสาร\nให้เราช่วยดูแล"),
+    h("div", {className:"login-brand"}, "พร้อมยื่น", h("span", null, "พื้นที่เตรียมข้อมูลในเบราว์เซอร์นี้")),
+    h("span", {className:"login-step"}, ready ? "ลายมือชื่อของคุณ" : "เริ่มต้นอย่างปลอดภัย"),
+    h("h1", null, ready ? "เพิ่มลายมือชื่อ\nหรือข้ามขั้นตอนนี้" : "เตรียมข้อมูลติดต่อ\nก่อนเริ่มเรื่อง"),
     h(
       "p",
       null,
@@ -152,7 +152,7 @@ export function LocalLogin({ signature, contact, onSaveContact, onSave, onEnter,
     h(
       "section",
       { className: "assistant-panel" },
-      h("button", { type: "button", className:"login-primary", disabled:saving, onClick:proceed }, ready ? "เข้าสู่พื้นที่ของฉัน →" : "ทดลองเข้าสู่ระบบด้วย ThaiD →"),
+      h("button", { type: "button", className:"login-primary", disabled:saving, onClick:proceed }, ready ? "เข้าสู่พื้นที่ของฉัน →" : "บันทึกข้อมูลและดำเนินการต่อ"),
       h(
         "p",
         { className: "small-note" },

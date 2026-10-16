@@ -7,9 +7,9 @@ import { EvidencePanel } from "./evidence.js";
 import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
 import { DocumentChecklist } from "./document-checklist.js?v=20261002-login-contact";
-import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261002-report-no-questions-v2";
+import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261017-design";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261002-portal-2";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261017-design";
 import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-login-contact";
 import {
   readWorkspace,
@@ -1333,6 +1333,9 @@ function Vg() {
       : 0,
     nt = !!c,
     V = Ig.find((t) => t.id === e).label;
+  const renderService = ({id, icon:Icon, label}) => D.createElement('button', {
+    key:id, disabled:!n || nt, className:'service-card', onClick:()=>Be(id)
+  }, D.createElement(Icon,{size:22}), D.createElement('span',null,label), D.createElement(ge,{size:16}));
   if (!entered && n)
     return D.createElement(LocalLogin, {
       signature: n.signature,
@@ -1565,22 +1568,12 @@ function Vg() {
                       : (0, B.jsx)(B.Fragment, {
                           children: (0, B.jsx)(`div`, {
                             className: `service-grid`,
-                            children: Lg.map(({ id: e, icon: t, label: r }) =>
-                              (0, B.jsxs)(
-                                `button`,
-                                {
-                                  disabled: !n || nt,
-                                  className: `service-card`,
-                                  onClick: () => Be(e),
-                                  children: [
-                                    (0, B.jsx)(t, { size: 22 }),
-                                    (0, B.jsx)(`span`, { children: r }),
-                                    (0, B.jsx)(ge, { size: 16 }),
-                                  ],
-                                },
-                                e,
-                              ),
-                            ),
+                            children: [
+                              ...Lg.slice(0,2).map(renderService),
+                              D.createElement('details', {className:'more-services', key:'other-services'},
+                                D.createElement('summary',null,'งานเอกสารอื่น'),
+                                D.createElement('div',{className:'service-grid'},...Lg.slice(2).map(renderService)))
+                            ],
                           }),
                         }),
                     (0, B.jsxs)(`div`, {
