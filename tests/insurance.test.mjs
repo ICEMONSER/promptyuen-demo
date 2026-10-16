@@ -4,6 +4,7 @@ import { InsuranceService } from '../insurance/service.mjs';
 import { HttpVision, OllamaVision } from '../insurance/adapters.mjs';
 import { premium, validatePhotos } from '../insurance/domain.mjs';
 import { createApp } from '../insurance/server.mjs';
+import { sampleTimestamps, MAX_FRAMES, isVideoFile } from '../insurance/video-frames.js';
 
 const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a0xkAAAAASUVORK5CYII=';
 const photo = { mimeType: 'image/png', data };
@@ -166,6 +167,12 @@ test('HTTP contract: auth, JSON errors, idempotency, complete flow and static UI
       'Content-Type': 'application/json', 'Idempotency-Key': key }, body: body === undefined ? undefined : JSON.stringify(body) });
   assert.equal((await fetch(`${base}/api/company`)).status, 401);
   assert.equal((await fetch(`${base}/insurance/`)).status, 200);
+  assert.equal((await fetch(`${base}/insurance/ui.js`)).status, 200);
+  assert.equal((await fetch(`${base}/insurance/ui.css`)).status, 200);
+  const videoModule = await fetch(`${base}/insurance/video-frames.js`);
+  assert.equal(videoModule.status, 200);
+  assert.equal(videoModule.headers.get('content-type'), 'text/javascript');
+  assert.equal((await fetch(`${base}/insurance/missing.js`)).status, 401);  // unknown path falls through to the auth gate, same as any other unlisted route
   assert.equal((await call('company')).status, 200);
   assert.equal((await call('quotes', null)).status, 400);
   const qResponse = await call('quotes', input); assert.equal(qResponse.status, 201); const q = await qResponse.json();
@@ -175,4 +182,23 @@ test('HTTP contract: auth, JSON errors, idempotency, complete flow and static UI
   assert.equal((await (await call(`claims/${c.id}/settle`, {})).json()).payment.simulated, true);
   const output = await (await call(`claims/${c.id}`)).json(); assert.equal(output.photos[0].data, undefined);
   assert.equal((await call('claims/missing')).status, 404);
+});
+
+test('video frame sampling spans the clip, skips blank ends, and caps at MAX_FRAMES', () => {
+  assert.deepEqual(sampleTimestamps(-1, 6), []);
+  assert.deepEqual(sampleTimestamps(NaN, 6), []);
+  assert.deepEqual(sampleTimestamps(10, 1), [5]);
+  const six = sampleTimestamps(30, 6);
+  assert.equal(six.length, 6);
+  assert.ok(six[0] > 0 && six.at(-1) < 30, 'first/last frame stay inside the clip');
+  assert.deepEqual(six, [...six].sort((a, b) => a - b), 'timestamps are increasing');
+  assert.equal(sampleTimestamps(30, 20).length, MAX_FRAMES, 'never exceeds MAX_FRAMES');
+  const short = sampleTimestamps(0.3, 6);
+  assert.ok(short.every(t => t >= 0 && t <= 0.3), 'short clips stay within bounds');
+});
+
+test('isVideoFile detects by MIME type or extension', () => {
+  assert.equal(isVideoFile({ type: 'video/mp4', name: 'clip.mp4' }), true);
+  assert.equal(isVideoFile({ type: '', name: 'clip.MOV' }), true);
+  assert.equal(isVideoFile({ type: 'image/jpeg', name: 'photo.jpg' }), false);
 });

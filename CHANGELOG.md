@@ -1,3 +1,6 @@
+## 2026-10-17 — Video walkaround capture for insurance claims
+- Added `insurance/video-frames.js`: claim form now accepts one walkaround video in place of manual photos, extracting 6 evenly spaced frames client-side (`<video>`/`<canvas>`) and feeding them through the existing photo → vision → pricing pipeline unchanged; raw video never leaves the browser. Fixed `insurance/server.mjs` static routing, which previously mapped every `.js` path to `ui.js` and would have 404'd the new module; added `media-src 'self' blob:` to its CSP for the off-screen video element. Manual test: run `node insurance/server.mjs`, issue a demo policy, upload a short MP4 to the claims form, confirm 6 preview frames appear and submit assesses and settles normally. `node --test tests/*.test.mjs`: 76 pass, 0 fail.
+
 ## 2026-10-02 — Refresh the entire report module chain
 - Versioned the entry script, report renderer and letter template together to bypass cached modules; removed the obsolete question/AI-note markup from the fallback renderer. Manual test: reopen the site and generate a report from an existing reviewed case; neither the AI note nor follow-up heading/list appears.
 

@@ -1,3 +1,4 @@
+import { extractFrames, isVideoFile, MAX_FRAMES } from './video-frames.js';
 const $ = id => document.getElementById(id);
 const money = amount => new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(amount / 100);
 const labels = {
@@ -16,6 +17,7 @@ const errors = {
   'Vehicle does not belong to customer': 'รถยนต์นี้ไม่ใช่รถของลูกค้าที่เลือก',
   'Quote expired': 'ใบเสนอราคาหมดอายุแล้ว กรุณาคำนวณเบี้ยใหม่',
   'Upload 1–6 photos': 'กรุณาแนบภาพ 1–6 ภาพ',
+  'video-too-many': 'กรุณาเลือกวิดีโอเพียงไฟล์เดียว หรือเลือกเฉพาะภาพถ่าย',
   'Use JPEG, PNG or WebP': 'กรุณาใช้ไฟล์ภาพ JPEG, PNG หรือ WebP',
   'Invalid base64 photo': 'ข้อมูลภาพไม่ถูกต้อง กรุณาเลือกไฟล์ใหม่',
   'Photo must be at most 2 MiB': 'ภาพแต่ละไฟล์ต้องมีขนาดไม่เกิน 2 MiB',
@@ -38,7 +40,7 @@ const errors = {
 };
 const localError = message => errors[message] || (message?.includes('record not found') ? 'ไม่พบข้อมูลที่ระบุ กรุณาตรวจสอบหมายเลขรายการ'
   : /[ก-๙]/.test(message || '') ? message : 'ดำเนินการไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อแล้วลองใหม่');
-let catalog, quote, claim, previewUrls = [];
+let catalog, quote, claim, previewUrls = [], resolvedPhotos = [], extracting = false;
 // Keep the same key across retries of an identical operation; never persist credentials/photos.
 const pending = new Map();
 async function api(path, body) {
@@ -96,13 +98,33 @@ $('issue').onclick = () => perform($('issue'), async () => {
   const local = new Date(Date.now() - new Date().getTimezoneOffset() * 60000 + 1000);
   $('occurred-at').value = local.toISOString().slice(0, 19);
 });
-$('photos').onchange = () => {
+function renderPreviews() {
   previewUrls.forEach(URL.revokeObjectURL); previewUrls = [];
   $('previews').replaceChildren();
-  for (const file of [...$('photos').files].slice(0, 6)) {
-    const img = document.createElement('img'); img.alt = 'ภาพอุบัติเหตุที่เลือก';
+  for (const file of resolvedPhotos) {
+    const img = document.createElement('img'); img.alt = 'ภาพที่ใช้ประเมินความเสียหาย';
     img.src = URL.createObjectURL(file); previewUrls.push(img.src); $('previews').append(img);
   }
+}
+$('photos').onchange = async () => {
+  const files = [...$('photos').files];
+  $('video-progress').textContent = ''; $('message').textContent = '';
+  if (files.length > 1 && files.some(isVideoFile)) {
+    $('message').textContent = localError('video-too-many'); $('photos').value = '';
+    resolvedPhotos = []; renderPreviews(); return;
+  }
+  if (files.length === 1 && isVideoFile(files[0])) {
+    extracting = true; resolvedPhotos = []; renderPreviews();
+    try {
+      resolvedPhotos = await extractFrames(files[0], { onProgress: (done, total) =>
+        { $('video-progress').textContent = `กำลังแยกภาพจากวิดีโอ… (${done}/${total})`; } });
+      $('video-progress').textContent = `แยกภาพจากวิดีโอรอบคันได้ ${resolvedPhotos.length} ภาพ`;
+    } catch (error) {
+      $('message').textContent = localError(error.message); $('photos').value = ''; resolvedPhotos = [];
+    } finally { extracting = false; renderPreviews(); }
+    return;
+  }
+  resolvedPhotos = files.slice(0, MAX_FRAMES); renderPreviews();
 };
 const encode = file => new Promise((resolve, reject) => {
   const reader = new FileReader(); reader.onerror = () => reject(new Error('อ่านภาพไม่ได้ กรุณาเลือกไฟล์ใหม่'));
@@ -127,11 +149,12 @@ async function assess() { claim = await api(`claims/${claim.id}/assess`, {}); re
 $('claim-form').onsubmit = event => {
   event.preventDefault();
   perform(event.submitter, async () => {
-    const files = [...$('photos').files];
-    if (!files.length || files.length > 6 || files.some(f => f.size > 2 * 1024 * 1024)) throw new Error('กรุณาเลือกภาพ 1–6 ภาพ ขนาดภาพละไม่เกิน 2 MiB');
+    if (extracting) throw new Error('กำลังแยกภาพจากวิดีโอ กรุณารอสักครู่แล้วลองใหม่');
+    if (!resolvedPhotos.length || resolvedPhotos.length > MAX_FRAMES || resolvedPhotos.some(f => f.size > 2 * 1024 * 1024))
+      throw new Error('กรุณาเลือกภาพ 1–6 ภาพ หรือวิดีโอรอบคัน 1 ไฟล์ ขนาดภาพละไม่เกิน 2 MiB');
     $('settle').disabled = true; $('retry-assess').disabled = true;
     claim = await api('claims', { policyId: $('policy-id').value, cause: $('cause').value,
-      occurredAt: new Date($('occurred-at').value).toISOString(), photos: await Promise.all(files.map(encode)) });
+      occurredAt: new Date($('occurred-at').value).toISOString(), photos: await Promise.all(resolvedPhotos.map(encode)) });
     renderClaim(); await assess();
   });
 };
