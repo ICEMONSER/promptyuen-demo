@@ -1,6 +1,6 @@
 # Insurance Company · Auto platform core
 
-Two modules: underwriting (mock company records → rated quote → instant demo policy) and photo-assisted claims (upload → vision adapter → repair estimate → coverage/payout rules → simulated settlement). No npm dependencies or build step. Node 22+.
+Two modules: underwriting (mock company records → rated quote → instant demo policy) and photo- or video-assisted claims (upload → vision adapter → repair estimate → coverage/payout rules → simulated settlement). No npm dependencies or build step. Node 22+.
 
 ## Run
 
@@ -41,6 +41,10 @@ Example quote body:
 This yields net 1,296,000 + tax 90,720 = 1,386,720 satang. Quote generation uses sum insured × coverage basis points × vehicle age factor × deductible factor, subject to a minimum. Quote terms are copied into the issued policy; callers cannot supply premium or payout amounts.
 
 Claims accept ISO timestamps with timezone, cause `collision` or `other`, and 1–6 `{mimeType, data}` photos. `data` is raw base64 without a data-URL prefix. JPEG/PNG/WebP only, at most 2 MiB each, at most 18 MiB total JSON body. Signatures and duplicate hashes are checked; full image decoding belongs in the vision gateway. Reusing a photo on the same policy or submitting the same incident timestamp returns 409. These are demo duplicate checks, not fraud detection.
+
+### Video walkaround capture
+
+The claim form also accepts a single walkaround video instead of manual photos (`insurance/video-frames.js`). The browser decodes it locally with `<video>`/`<canvas>` and samples up to 6 evenly spaced frames — skipping a margin at the start and end to avoid blank or motion-blurred shots — then runs them through the exact same `/api/claims` photo path above, unchanged. This is a deliberate choice over literal per-frame inference: consecutive video frames are near-duplicates, so analyzing every one wastes time and risks the vision model double-counting the same dent across frames, while 6 representative angles already cover a full exterior walkaround. The raw video file is never uploaded; only the extracted JPEGs leave the browser, same trust boundary as manual photos. Limits (client-side, before any upload): ≤60 s, ≤100 MB, frames downscaled to ≤1280 px and re-encoded until each is ≤2 MiB to satisfy `validatePhotos`. Mixing a video with other files in the same selection is rejected. Requires `media-src 'self' blob:` in the CSP (already set in `server.mjs`) for the off-screen `<video>` element to read the local blob.
 
 ## Data flow
 
@@ -93,6 +97,7 @@ All policies and payments remain simulated even when a real vision gateway is co
 - `service.mjs`: lifecycle, snapshots, idempotency and serialized reservations.
 - `server.mjs`: bounded JSON API, localhost-only binding, static workspace.
 - `ui.js` / `ui.css`: dependency-free responsive workbench.
+- `video-frames.js`: client-side walkaround-video → representative-frame extraction; pure timestamp sampling is unit-tested, DOM/canvas capture is exercised manually in a browser.
 
 Before an external deployment, replace in-memory collections with a transactional repository: unique quote→policy and incident keys; persisted idempotency and claim→payment IDs; row locks for aggregate reservations; outbox/reconciliation for payment retries. This demo's locks are process-local and its payment adapter explicitly accepts simulated receipts only. Add authenticated users, ownership/role checks, upload/object-storage policies, quotas, retention and audit events. `API_AUTH_TOKEN` is a shared demo gate, not multi-user authorization. Store images privately rather than in a public static directory. Real settlement needs a separately implemented payment adapter and a verified payment state machine.
 

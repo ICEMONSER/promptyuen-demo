@@ -35,12 +35,15 @@ export function createApp({ service = new InsuranceService(), token = process.en
       if (request.method === 'GET' && path === '/') {
         response.writeHead(302, { Location: '/insurance/' }); return response.end();
       }
-      if (request.method === 'GET' && ['/insurance/', '/insurance/index.html', '/insurance/ui.js', '/insurance/ui.css'].includes(path)) {
-        const file = path.endsWith('.js') ? 'ui.js' : path.endsWith('.css') ? 'ui.css' : 'index.html';
+      const staticFiles = { '/insurance/': 'index.html', '/insurance/index.html': 'index.html',
+        '/insurance/ui.js': 'ui.js', '/insurance/ui.css': 'ui.css', '/insurance/video-frames.js': 'video-frames.js' };
+      const contentTypes = { 'index.html': 'text/html', 'ui.js': 'text/javascript', 'ui.css': 'text/css', 'video-frames.js': 'text/javascript' };
+      if (request.method === 'GET' && staticFiles[path]) {
+        const file = staticFiles[path];
         const body = await readFile(resolve(root, file));
-        response.writeHead(200, { 'Content-Type': ({ 'ui.js': 'text/javascript', 'ui.css': 'text/css', 'index.html': 'text/html' })[file],
+        response.writeHead(200, { 'Content-Type': contentTypes[file],
           'X-Content-Type-Options': 'nosniff', 'Cache-Control': 'no-store',
-          'Content-Security-Policy': "default-src 'self'; img-src 'self' blob:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'" });
+          'Content-Security-Policy': "default-src 'self'; img-src 'self' blob:; media-src 'self' blob:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'" });
         return response.end(body);
       }
       if (path === '/api/health' && request.method === 'GET') return send(200, { status: 'ok', simulatedPayments: true });
