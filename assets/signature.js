@@ -140,7 +140,7 @@ export function LocalLogin({ signature, contact, onSaveContact, onSave, onEnter,
     h(
       "p",
       null,
-      "พื้นที่ส่วนตัวบนอุปกรณ์นี้ เอกสารไม่ถูกส่งขึ้นเซิร์ฟเวอร์ ใช้ข้อมูลจำลองในการทดลอง",
+      "พื้นที่ส่วนตัวบนอุปกรณ์นี้ เอกสารไม่ถูกส่งขึ้นเซิร์ฟเวอร์ ใช้ข้อมูลจำลองในการสาธิต",
     ),
     h('section',{className:'assistant-panel'},
       h('h3',null,'ข้อมูลติดต่อสำหรับเอกสาร'),
