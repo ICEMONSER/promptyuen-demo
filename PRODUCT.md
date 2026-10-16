@@ -1,4 +1,4 @@
-# พร้อมยื่น
+# Prakan
 
 <!-- impeccable:product-schema 1 -->
 
@@ -15,7 +15,7 @@ Help people describe an incident, review a draft statement, gather evidence and 
 Preserve voice incident capture, WebLLM statement drafting, ID OCR, the 88-station Leaflet picker, evidence attachments, simulated submission, and Supabase case tracking. Static index.html + assets/, no build step, GitHub Pages on main at root. Thai UI only. No paid API or API-key requirement for local drafting. This is a demonstration, not a real police report or an authority-certified form.
 
 ## Brand Commitments
-พร้อมยื่น. Trustworthy, calm and clear. Viriyah's live color tone and aiinsurance.io's live structure are binding references. Never copy reference logos, images or text. Anti-references: fake police authority and generic AI styling.
+Prakan. Trustworthy, calm and clear. Viriyah's live color tone and aiinsurance.io's live structure are binding references. Never copy reference logos, images or text. Anti-references: fake police authority and generic AI styling.
 
 ## Product Principles
 - Make preparation understandable under stress.

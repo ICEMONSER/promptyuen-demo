@@ -134,7 +134,7 @@ export function LocalLogin({ signature, contact, onSaveContact, onSave, onEnter,
   return h(
     "main",
     { className: "assistant-login" },
-    h("div", {className:"login-brand"}, "พร้อมยื่น", h("span", null, "พื้นที่เตรียมข้อมูลในเบราว์เซอร์นี้")),
+    h("div", {className:"login-brand"}, "Prakan", h("span", null, "พื้นที่เตรียมข้อมูลในเบราว์เซอร์นี้")),
     h("span", {className:"login-step"}, ready ? "ลายมือชื่อของคุณ" : "เริ่มต้นอย่างปลอดภัย"),
     h("h1", null, ready ? "เพิ่มลายมือชื่อ\nหรือข้ามขั้นตอนนี้" : "เตรียมข้อมูลติดต่อ\nก่อนเริ่มเรื่อง"),
     h(

@@ -1,4 +1,4 @@
-# พร้อมยื่น design record
+# Prakan design record
 
 The user pins Viriyah's live palette and aiinsurance.io's live section structure. Reference inspection is pending; no colors or geometry are inferred from memory.
 
@@ -25,7 +25,7 @@ At 1280px live measured hero text width 552px, x=56px, heading 48px/1.2, paragra
 
 ## Direction contract
 User-pinned references supersede random directions. Impeccable seed 79dc09905356cb91dfc197af71cb3a5a ran; its magazine/livery challengers conflict with calm incident preparation and the specified references. Taste's product-performs direction is the compatible evidence principle; its default compositions/palette do not replace the reference layout. No decision/interview page: user explicitly requested no questions.
-Landing mode: Persuade, focused on informed preparation; workspace: Operate. Idea: พร้อมยื่น's actual incident form becomes the product evidence, with selectable previews of speaking, reviewing, OCR and station selection. Live thing: accessible feature tabs. No stock photographs, footage or generated images; screenshots are of this app with synthetic demonstration data.
+Landing mode: Persuade, focused on informed preparation; workspace: Operate. Idea: Prakan's actual incident form becomes the product evidence, with selectable previews of speaking, reviewing, OCR and station selection. Live thing: accessible feature tabs. No stock photographs, footage or generated images; screenshots are of this app with synthetic demonstration data.
 
 ## System
 Noto Sans Thai, 400 and 600 only. Body 16px/1.8, hero 52px/1.4 desktop and 34px/1.5 phone; section headings 36px/1.5 and 28px/1.5. Thai tone marks take precedence over Latin tight-leading recipes. Max-width 1200px; 24px desktop and 20px mobile gutters; 80–96px section spacing, 56–64px on mobile. Flat white/light-gray surfaces; primary reserved for actions and key numbers. Pill CTAs echo the reference; form fields use 6px corners. No decorative gradients/shadows or badge eyebrows. Visible focus, 44px targets, reduced-motion support. Field borders are functional, not decorative section rules.

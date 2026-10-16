@@ -5,7 +5,7 @@ async function rpc(name,args){if(!portalEnabled())throw Error('ระบบห�
 export function prepareRemote(record){record.remote||={requestKey:crypto.randomUUID(),token:Array.from(crypto.getRandomValues(new Uint8Array(32)),v=>v.toString(16).padStart(2,'0')).join(''),uploaded:[]};return record;}
 export async function submitRemote(record,documents){
  if(!portalEnabled())return record;
- prepareRemote(record);if(!record.remote.consent){if(!window.confirm('ส่งชื่อ ข้อมูลติดต่อ รายละเอียด และเอกสารที่เลือกไปยังระบบเจ้าหน้าที่ต้นแบบของพร้อมยื่น? การส่งนี้ยังไม่ใช่การแจ้งความอย่างเป็นทางการ'))throw Error('ยกเลิกการส่ง ข้อมูลยังเก็บในเครื่อง');record.remote.consent=true;}const v=k=>String(record.fields?.[k]?.value||'');
+ prepareRemote(record);if(!record.remote.consent){if(!window.confirm('ส่งชื่อ ข้อมูลติดต่อ รายละเอียด และเอกสารที่เลือกไปยังระบบเจ้าหน้าที่ต้นแบบของ Prakan? การส่งนี้ยังไม่ใช่การแจ้งความอย่างเป็นทางการ'))throw Error('ยกเลิกการส่ง ข้อมูลยังเก็บในเครื่อง');record.remote.consent=true;}const v=k=>String(record.fields?.[k]?.value||'');
  if(!record.remote.id){record.remote.id=await rpc('submit_case',{p_request_key:record.remote.requestKey,p_token:record.remote.token,p_unit:record.station?.manual?'other':record.station?.id||'other',p_name:v('fullName'),p_phone:v('phone'),p_email:v('email'),p_details:[v('details'),'วันเวลาเกิดเหตุ: '+v('eventDate'),'สถานที่: '+v('eventPlace'),'หน่วยงานที่ระบุ: '+(record.station?.name||''),record.legalDraft?.narrative||record.legalDraft?.text||''].filter(Boolean).join('\n\n')});}
  record.reference=record.remote.id;record.remote.submitted=true;
  const files=[...(record.evidence||[]),...documents.filter(d=>record.documentIds?.includes(d.id))];

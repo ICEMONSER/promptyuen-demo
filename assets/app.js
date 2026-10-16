@@ -446,7 +446,7 @@ async function kg(e, t, n) {
           mime: `text/plain`,
           size: 0,
           fields: {
-            fullName: `นาย พร้อมยื่น ตัวอย่าง`,
+            fullName: `นาย Prakan ตัวอย่าง`,
             nationalId: `DEMO-0001`,
             birthDate: `1 มกราคม 2549`,
             address: `99 ถนนตัวอย่าง กรุงเทพมหานคร`,
@@ -864,7 +864,7 @@ var Mg = `modulepreload`,
     });
   },
   Ig = [
-    { id: `chat`, icon: pe, label: `ผู้ช่วยพร้อมยื่น` },
+    { id: `chat`, icon: pe, label: `ผู้ช่วย Prakan` },
     { id: `cases`, icon: re, label: `คำขอของฉัน` },
     { id: `documents`, icon: se, label: `คลังเอกสาร` },
   ],
@@ -1359,7 +1359,7 @@ function Vg() {
             children: (0, B.jsxs)(`button`, {
               className: `brand`,
               onClick: () => t(`chat`),
-              "aria-label": `กลับผู้ช่วยพร้อมยื่น`,
+              "aria-label": `กลับผู้ช่วย Prakan`,
               children: [
                 (0, B.jsx)(`span`, {
                   className: `brand-icon`,
@@ -1367,8 +1367,8 @@ function Vg() {
                 }),
                 (0, B.jsxs)(`span`, {
                   children: [
-                    `พร้อมยื่น`,
-                    (0, B.jsx)(`small`, { children: `พร้อมยื่น` }),
+                    `Prakan`,
+                    (0, B.jsx)(`small`, { children: `Prakan` }),
                   ],
                 }),
               ],
@@ -1607,7 +1607,7 @@ function Vg() {
                                             e.role === `assistant` &&
                                               (0, B.jsxs)(`strong`, {
                                                 children: [
-                                                  `พร้อมยื่น `,
+                                                  `Prakan `,
                                                   (0, B.jsx)(`small`, {
                                                     children:
                                                       e.mode === `ai`
@@ -1636,7 +1636,7 @@ function Vg() {
                                     (0, B.jsxs)(`div`, {
                                       children: [
                                         (0, B.jsx)(`strong`, {
-                                          children: `พร้อมยื่น`,
+                                          children: `Prakan`,
                                         }),
                                         (0, B.jsxs)(`p`, {
                                           children: [
