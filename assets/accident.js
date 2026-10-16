@@ -1,5 +1,6 @@
-import {portalEnabled} from './portal-client.js';
-import {PortalTracking} from './portal-tracking.js';
+import {SampleAttachments} from './sample-attachments.js';
+import {portalEnabled} from './portal-client.js?v=20261017-samples';
+import {PortalTracking} from './portal-tracking.js?v=20261017-samples';
 import {documentContact} from './contact-core.js';
 import {StationDestination} from './station-destination.js?v=20261002-auto';
 import {NearestStationSearch} from './nearest-station-ui.js?v=20261002-auto';
@@ -11,10 +12,9 @@ import {parseIncidentPoint, parseCoordinateText, policeSearchUrl, incidentMapUrl
 import {LegalDraftPanel} from './legal-draft.js?v=20261002-contact';
 import {VoiceInput} from './voice-input.js?v=20261017-design';
 import {reviewedLegalDraft} from './legal-review.js';
-import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261002-contact';
+import {EVIDENCE_LIMIT, trackingSteps, bangkokDateTime} from './accident-core.js?v=20261017-samples';
 import {thaiDate} from './report.js?v=20261002-contact';
 import {checklist, selectDocuments, DOCUMENT_LABELS} from './case-config.js';
-import {DocumentChecklist} from './document-checklist.js?v=20261002-contact';
 const h=React.createElement;
 export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPoliceStation}) {
  const [when,setWhen]=React.useState('now'),[details,setDetails]=React.useState(''),[eventDate,setDate]=React.useState(''),[eventPlace,setPlace]=React.useState(''),[evidence,setEvidence]=React.useState([]),[point,setPoint]=React.useState(null),[busy,setBusy]=React.useState(''),[error,setError]=React.useState('');
@@ -30,8 +30,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
  const parsedDate=new Date(eventDate);
  const effectivePlace=eventPlace.trim()||(currentPoint?`พิกัด ${currentPoint.lat}, ${currentPoint.lon}`:'');
  const draftInput={details,eventDate:when==='now'?bangkokDateTime(incidentNow):(Number.isFinite(parsedDate.getTime())?bangkokDateTime(parsedDate):''),eventPlace:effectivePlace};
- const [documentIds,setDocumentIds]=React.useState(()=>selectDocuments('accident',documents));
- const requiredMissing=checklist('accident',documents,documentIds).some(d=>d.required&&!d.selected);
+ const documentIds=selectDocuments('accident',documents);
  const guard=React.useRef(false);
  const fileInput=React.useRef(null);
  React.useEffect(()=>{
@@ -68,7 +67,6 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    await onSubmit({when,details,eventDate,eventPlace:effectivePlace,evidence,point:location,station,documentIds,legalDraft:reviewed,incidentAt:incidentNow.toISOString()});
   }catch(e){setError(e.message);}finally{guard.current=false;setBusy('');}
  }
- const missing=!documents.some(d=>d.kind==='identity'&&d.verified);
  return h('section',{className:'quick-flow',role:'region','aria-label':'แจ้งอุบัติเหตุทางรถ'},
   h('button',{className:'text-action',onClick:onClose,disabled:locked},'← กลับหน้าหลัก'),
   h('span',{className:'login-step'},'แจ้งเหตุให้น้อยขั้นตอนที่สุด'),h('h1',null,'อุบัติเหตุทางรถ'),h('p',null,'เล่าเหตุการณ์ แนบหลักฐาน แล้วรับเอกสารสรุปได้ทันที'),
@@ -84,9 +82,7 @@ export function AccidentFlow({documents,onSubmit,onClose,stationLookup=nearestPo
    h(LegalDraftPanel,{input:draftInput,value:legalDraft,onChange:setLegalDraft,disabled:!!busy||voiceBusy,onBusyChange:setAIBusy,autoGenerate:voiceRevision}),
    h('label',{className:'evidence-upload'},'2. ภาพหรือวิดีโอหลักฐาน',h('input',{ref:fileInput,type:'file',accept:'image/jpeg,image/png,video/mp4,video/webm',multiple:true,disabled:locked,onChange:files}),h('small',null,portalEnabled()?'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · แนบส่งให้เจ้าหน้าที่เมื่อยืนยัน':'ไม่เกิน 5 ไฟล์ · 16 MB ต่อไฟล์ · เก็บเฉพาะในเครื่อง')),
    h('div',{className:'evidence-grid'},...evidence.map(item=>h('figure',{key:item.id},item.mime.startsWith('video/')?h('video',{src:item.image,controls:true,preload:'metadata'}):h('img',{src:item.image,alt:'หลักฐานที่แนบ'}),h('figcaption',null,item.name),h('button',{type:'button',disabled:locked,onClick:()=>setEvidence(all=>all.filter(e=>e.id!==item.id))},'นำไฟล์นี้ออก')))),
-   h(DocumentChecklist,{topic:'accident',documents,selected:documentIds,labels:DOCUMENT_LABELS,onChange:setDocumentIds}),
-   requiredMissing&&h('p',{className:'quick-notice'},'เพิ่มเอกสารจำเป็นทั้ง 3 รายการในคลังเอกสารและตรวจยืนยันก่อนส่งคำขอ กรมธรรม์ประกันภัยไม่บังคับ'),
-   h('p',{className:'small-note'},missing?'ยังไม่มีข้อมูลบัตรที่ยืนยันแล้ว ระบบจะไม่แต่งข้อมูลผู้แจ้ง กรุณาเพิ่มบัตรในคลังและตรวจยืนยันก่อนส่ง':'ใช้ข้อมูลบัตรที่คุณยืนยันแล้วโดยอัตโนมัติ ไม่ต้องกรอกซ้ำ'),
+
    h('p',{className:'small-note'},portalEnabled()?'เมื่อกดส่ง ชื่อ ข้อมูลติดต่อ รายละเอียด และไฟล์ที่เลือกจะถูกส่งไปยังระบบเจ้าหน้าที่ต้นแบบ กรุณาตรวจสอบก่อนยืนยัน':'ตรวจข้อความสำนวนด้านบนก่อนบันทึก ใบสรุปจะใช้ร่างที่คุณยืนยัน พร้อมคำบอกเล่าเดิมและข้อมูลที่ยังขาด บันทึกในเครื่อง ยังไม่ส่งให้หน่วยงานจริง'),
    !evidence.length&&h('p',{className:'small-note'},'ก่อนส่ง: แนบภาพหรือวิดีโอหลักฐานอย่างน้อย 1 ไฟล์'),
    error&&h('p',{role:'alert',className:'quick-error',tabIndex:-1,ref:node=>node?.focus()},error),
@@ -106,5 +102,6 @@ function LocalCaseTracking({record,onPrint,onClose,onStationChange,onRetry}) {
   record.legalDraft&&h('p',{className:'small-note'},'ใบสรุปมีร่างสำนวนที่คุณตรวจแล้ว พร้อมคำบอกเล่าต้นฉบับ'),
   record.identityMissing&&h('p',{className:'quick-notice'},'เอกสารสรุปยังไม่มีข้อมูลผู้แจ้ง เนื่องจากยังไม่มีบัตรที่ตรวจแล้ว'),
   h('p',null,'วันที่บันทึก '+thaiDate(record.updatedAt)),h('p',{className:'quick-notice'},'ตำรวจยังไม่ได้รับเรื่อง ระบบจะไม่สร้างสถานะว่าเจ้าหน้าที่รับหรือดำเนินการเสร็จเอง'),
+  h(SampleAttachments,{record}),
   h('button',{className:'quick-submit',onClick:onPrint},'เปิดเอกสารสรุป / พิมพ์ PDF')));
 }

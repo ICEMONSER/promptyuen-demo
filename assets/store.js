@@ -1,3 +1,4 @@
+import {loadSampleDocuments,SAMPLE_CONTACT,SAMPLE_VERSION} from './sample-documents.js';
 // One versioned JSON record; document binaries are data URLs, never server uploads.
 const DB = "promptyuen-free-v1";
 export const pendingDocs = new Map();
@@ -100,6 +101,12 @@ export async function readWorkspace() {
     state = { ...empty(), docs, cases: state.cases || [] };
     await writeWorkspace({ ...state, documents: Object.values(docs) });
   }
+  if(state.sampleVersion !== SAMPLE_VERSION) {
+    const samples=await loadSampleDocuments();
+    const previousDocs=state.previousDocs || state.docs;
+    await writeWorkspace({...state,previousDocs,sampleVersion:SAMPLE_VERSION,contact:{...SAMPLE_CONTACT},documents:[...Object.values(state.docs).filter(d=>!samples.some(s=>s.kind===d.kind)),...samples]});
+    state=await record('readonly');
+  }
   const documents = await Promise.all(
     Object.values(state.docs).map(async (doc) => ({
       ...doc,
@@ -141,6 +148,8 @@ export async function writeWorkspace(workspace) {
       JSON.stringify({
         version: STORE_VERSION,
         docs,
+        previousDocs: workspace.previousDocs || {},
+        sampleVersion: workspace.sampleVersion || null,
         signature: workspace.signature || null,
         contact: workspace.contact || null,
         cases,

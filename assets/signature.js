@@ -117,8 +117,8 @@ export function SignaturePad({ value, onSave }) {
     h("p", { role: "status" }, message),
   );
 }
-export function LocalLogin({ signature, contact, onSaveContact, onSave, onEnter, onClear }) {
-  const [ready, setReady] = React.useState(false);
+export function LocalLogin({ sampleMode=false, signature, contact, onSaveContact, onSave, onEnter, onClear }) {
+  const [ready, setReady] = React.useState(sampleMode);
   const [phone,setPhone]=React.useState(contact?.phone||'');
   const [email,setEmail]=React.useState(contact?.email||'');
   const [saving,setSaving]=React.useState(false);
@@ -142,7 +142,7 @@ export function LocalLogin({ signature, contact, onSaveContact, onSave, onEnter,
       null,
       "พื้นที่ส่วนตัวบนอุปกรณ์นี้ เอกสารไม่ถูกส่งขึ้นเซิร์ฟเวอร์ ใช้ข้อมูลจำลองในการสาธิต",
     ),
-    h('section',{className:'assistant-panel'},
+    !sampleMode && h('section',{className:'assistant-panel'},
       h('h3',null,'ข้อมูลติดต่อสำหรับเอกสาร'),
       h('label',{className:'field-label'},'เบอร์โทรศัพท์ (จำเป็น)',h('input',{type:'tel',autoComplete:'tel',required:true,maxLength:20,value:phone,disabled:saving,onChange:e=>setPhone(e.target.value)})),
       h('label',{className:'field-label'},'Gmail (จำเป็น)',h('input',{type:'email',autoComplete:'email',required:true,maxLength:254,placeholder:'name@gmail.com',value:email,disabled:saving,onChange:e=>setEmail(e.target.value)})),
@@ -175,7 +175,7 @@ export async function certifiedCopy(doc, signature) {
   ctx.fillStyle = "#14263e";
   ctx.textAlign = "center";
   ctx.font = "32px Tahoma, sans-serif";
-  ctx.fillText("สำเนาถูกต้อง", canvas.width / 2, original.height + 45);
+  ctx.fillText(doc.demo ? "สำเนาตัวอย่างสำหรับการสาธิต" : "สำเนาถูกต้อง", canvas.width / 2, original.height + 45);
   ctx.font = "24px Tahoma, sans-serif";
   ctx.fillText(`วันที่ ${thaiDate()}`, canvas.width / 2, original.height + 220);
   if (signature) {

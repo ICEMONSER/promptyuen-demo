@@ -1,4 +1,4 @@
-import {portalEnabled,prepareRemote,submitRemote} from './portal-client.js';
+import {portalEnabled,prepareRemote,submitRemote} from './portal-client.js?v=20261017-samples';
 import {validateContact} from './contact-core.js';
 import { LegalDraftPanel } from './legal-draft.js?v=20261002-login-contact';
 import { legalInputFromRecord, reviewedLegalDraft } from './legal-review.js';
@@ -6,17 +6,17 @@ import { legalDraftSource } from './reasoning.js';
 import { EvidencePanel } from "./evidence.js";
 import { AI_LABEL, validateAnalysis } from "./vision.js";
 import { selectDocuments } from "./case-config.js";
-import { DocumentChecklist } from "./document-checklist.js?v=20261002-login-contact";
-import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261017-design";
+import { DocumentChecklist } from "./document-checklist.js?v=20261017-samples";
+import { SignaturePad, LocalLogin, certifiedCopy } from "./signature.js?v=20261017-samples";
 import { StationPicker } from "./stations.js?v=20261002-auto";
-import { AccidentFlow, CaseTracking } from "./accident.js?v=20261017-design";
-import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261002-login-contact";
+import { AccidentFlow, CaseTracking } from "./accident.js?v=20261017-samples";
+import { makeAccident, changeAccidentStation } from "./accident-core.js?v=20261017-samples";
 import {
   readWorkspace,
   writeWorkspace,
   clearWorkspace,
   pendingDocs,
-} from "./store.js?v=20261002-login-contact";
+} from "./store.js?v=20261017-samples";
 import {
   readIdPhoto,
   readLicenseQR,
@@ -1351,6 +1351,7 @@ function Vg() {
     return D.createElement(LocalLogin, {
       signature: n.signature,
       contact:n.contact,
+      sampleMode:true,
       onSaveContact:async(contact)=>{await zg('/api/workspace',{action:'contact',contact});await Fe();},
       onSave: async (signature) => {
         await zg("/api/workspace", { action: "signature", signature });
@@ -1392,7 +1393,7 @@ function Vg() {
                 children: `พื้นที่ของคุณ`,
               }),
               (0, B.jsx)(th, {
-                children: Ig.map(({ id: n, icon: r, label: i }) =>
+                children: Ig.filter(item => item.id !== 'documents').map(({ id: n, icon: r, label: i }) =>
                   (0, B.jsx)(
                     nh,
                     {
@@ -1414,34 +1415,6 @@ function Vg() {
                     n,
                   ),
                 ),
-              }),
-              (0, B.jsxs)(`div`, {
-                className: `sidebar-note`,
-                children: [
-                  (0, B.jsx)(be, { size: 22 }),
-                  (0, B.jsxs)(`strong`, {
-                    children: [
-                      `เอกสารของคุณ`,
-                      (0, B.jsx)(`br`, {}),
-                      `คุณเป็นคนตัดสินใจ`,
-                    ],
-                  }),
-                  (0, B.jsx)(`p`, {
-                    children: `ตรวจข้อมูลและอนุญาตทุกครั้ง ก่อนนำไปใช้ในคำขอ`,
-                  }),
-                ],
-              }),
-              (0, B.jsxs)(`button`, {
-                className: `demo-button`,
-                disabled: nt || !n,
-                onClick: Ve,
-                children: [
-                  (0, B.jsx)(M, { size: 17 }),
-                  (0, B.jsx)(`span`, {
-                    children:
-                      c === `demo` ? `กำลังดึงข้อมูล...` : `ดึงข้อมูลจากบริษัทประกัน (จำลอง)`,
-                  }),
-                ],
               }),
             ],
           }),
@@ -1530,7 +1503,7 @@ function Vg() {
           e === `chat` && quickAccident && D.createElement(AccidentFlow,{documents:Ze,onClose:()=>setQuickAccident(false),onSubmit:async(input)=>{const result=await zg('/api/accident',input);await Fe();setQuickAccident(false);t('cases');setTracking(result.case);}}),
           e === `chat` && !quickAccident &&
             (0, B.jsxs)(`div`, {
-              className: `workspace`,
+              className: `workspace sample-workspace`,
               children: [
                 (0, B.jsxs)(`section`, {
                   className: `main-panel`,
@@ -1656,12 +1629,7 @@ function Vg() {
                                             `พิมพ์เล่าได้เลย หรือเลือกเรื่องด้านบนเพื่อเริ่มต้น`,
                                           ],
                                         }),
-                                        (0, B.jsx)(`button`, {
-                                          className: `text-button`,
-                                          onClick: Ve,
-                                          disabled: !n || nt,
-                                          children: `ยังไม่มีเอกสาร? เริ่มด้วยข้อมูลสมมติ`,
-                                        }),
+
                                       ],
                                     }),
                                   ],
@@ -1754,7 +1722,7 @@ function Vg() {
                       }),
                   ],
                 }),
-                (0, B.jsxs)(`aside`, {
+                false && (0, B.jsxs)(`aside`, {
                   className: `context-panel`,
                   children: [
                     (0, B.jsxs)(`div`, {
@@ -2348,6 +2316,7 @@ function Vg() {
             }),
             (0, B.jsxs)(`div`, {
               className: `selection-docs`,
+              hidden: true,
               children: [
                 (0, B.jsx)(`strong`, {
                   children: `ใช้ข้อมูลจากเอกสารที่ตรวจแล้ว`,
