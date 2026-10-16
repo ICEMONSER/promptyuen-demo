@@ -118,3 +118,6 @@
     max-width: 100%;
   }
 }
+
+
+.insurance-entry{position:fixed;right:12px;bottom:12px;z-index:1000;padding:10px 15px;border-radius:8px;background:#175e43;color:#fff;font:600 12px/1.4 system-ui;text-decoration:none;box-shadow:0 2px 10px #0002}.insurance-entry:focus-visible{outline:3px solid #b5e18d;outline-offset:2px}
