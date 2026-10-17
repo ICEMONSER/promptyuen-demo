@@ -3,117 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Prakan ผู้ช่วยดูแลลูกค้าประกันภัยรถยนต์ เมื่อเกิดเหตุ เล่าเหตุการณ์ ถ่ายภาพความเสียหาย และเตรียมเคลมพร้อมเอกสาร เฉพาะลูกค้าของบริษัทประกันที่ร่วมโครงการ ระบบสาธิต">
-  <meta name="theme-color" content="#12261F">
-  <title>Prakan · ดูแลลูกค้าประกันภัยรถยนต์</title>
+  <meta name="description" content="Prakan ผู้ช่วยดูแลลูกค้าประกันภัย รถยนต์ อัคคีภัย ขนส่ง สุขภาพ และการเดินทาง เล่าเหตุการณ์ แนบหลักฐาน และเตรียมเคลมในที่เดียว เฉพาะลูกค้าของบริษัทประกันที่ร่วมโครงการ">
+  <meta name="theme-color" content="#2340D8">
+  <title>Prakan · ดูแลลูกค้าประกันภัยทุกประเภท</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500&family=Fraunces:opsz,wght@9..144,500&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" crossorigin href="./assets/index-BnpGzY8H.css">
   <link rel="stylesheet" href="./assets/assistant.css?v=20261017-prakan">
   <link rel="stylesheet" href="./assets/round2.css?v=20261017-samples">
-  <link rel="stylesheet" href="./assets/theme.css?v=20261017-prakan">
+  <link rel="stylesheet" href="./assets/theme.css?v=20261017-cobalt">
   <script type="module" crossorigin src="./assets/app.js?v=20261017-rangsit"></script>
-  <script type="module" src="./assets/landing.js?v=20261017-prakan"></script>
+  <script type="module" src="./assets/landing.js?v=20261017-cobalt"></script>
 </head>
 <body>
   <a class="py-skip" href="#main-content">ข้ามไปเนื้อหาหลัก</a>
   <div id="landing">
-    <div class="pk-notice">สำหรับลูกค้าของบริษัทประกันภัยที่ร่วมโครงการเท่านั้น · ระบบสาธิต ไม่มีความคุ้มครองหรือการเคลมจริง</div>
+    <div class="pk-notice">สำหรับลูกค้าของบริษัทประกันภัยที่ร่วมโครงการเท่านั้น · ต้นแบบใช้งานได้จริง ไม่มีความคุ้มครองหรือการเคลมจริง</div>
     <div class="pk-topbar"><header class="py-header pk-wrap">
         <a class="pk-brand" href="#main-content" aria-label="Prakan หน้าหลัก"><span class="pk-mono">P</span><span>Prakan</span></a>
-        <nav aria-label="เมนูหลัก"><a href="#care">เมื่อเกิดเหตุ</a><a href="#benefits">สิ่งที่ได้รับ</a><a href="#privacy">ข้อมูลของคุณ</a></nav>
+        <nav aria-label="เมนูหลัก"><a href="#types">ประเภทประกัน</a><a href="#benefits">สิ่งที่ได้รับ</a><a href="#privacy">ข้อมูลของคุณ</a></nav>
         <a class="pk-btn pk-btn-light pk-nav-cta" href="#workspace">เข้าสู่ระบบ</a>
-        <aside class="py-tweaks" id="display-tweaks" aria-label="ปรับการแสดงผล"><button type="button" id="tweaks-toggle" aria-label="ปรับการแสดงผล" aria-expanded="false" aria-controls="tweaks-panel"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg><span>ปรับหน้าจอ</span></button><div id="tweaks-panel" hidden><h2>ปรับการแสดงผล</h2><label>สีหลัก <input id="tweak-primary" type="color" value="#12261f"></label><label>ระยะห่าง <input id="tweak-spacing" type="range" min="80" max="125" value="100"><output for="tweak-spacing">100%</output></label><label>ขนาดตัวอักษร <input id="tweak-font" type="range" min="16" max="20" value="16"><output for="tweak-font">16</output></label><label>ความโค้งมุม <input id="tweak-radius" type="range" min="0" max="28" value="12"><output for="tweak-radius">12</output></label><p id="tweak-contrast" role="status">สีตัวอักษรบนปุ่มปรับให้อ่านชัดอัตโนมัติ</p><button type="button" id="tweaks-reset">คืนค่าเริ่มต้น</button></div></aside>
+        <aside class="py-tweaks" id="display-tweaks" aria-label="ปรับการแสดงผล"><button type="button" id="tweaks-toggle" aria-label="ปรับการแสดงผล" aria-expanded="false" aria-controls="tweaks-panel"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg><span>ปรับหน้าจอ</span></button><div id="tweaks-panel" hidden><h2>ปรับการแสดงผล</h2><label>สีหลัก <input id="tweak-primary" type="color" value="#2340d8"></label><label>ระยะห่าง <input id="tweak-spacing" type="range" min="80" max="125" value="100"><output for="tweak-spacing">100%</output></label><label>ขนาดตัวอักษร <input id="tweak-font" type="range" min="16" max="20" value="16"><output for="tweak-font">16</output></label><label>ความโค้งมุม <input id="tweak-radius" type="range" min="0" max="28" value="16"><output for="tweak-radius">16</output></label><p id="tweak-contrast" role="status">สีตัวอักษรบนปุ่มปรับให้อ่านชัดอัตโนมัติ</p><button type="button" id="tweaks-reset">คืนค่าเริ่มต้น</button></div></aside>
       </header></div>
     <main id="main-content">
       <section class="pk-hero-wrap" aria-labelledby="hero-title">
-      <svg class="pk-hero-lines" aria-hidden="true" viewBox="0 0 1440 760" preserveAspectRatio="xMidYMid slice"><circle cx="1180" cy="40" r="380"/><circle cx="1180" cy="40" r="250"/><path class="pk-draw" d="M -20 640 C 300 560 520 720 820 610 S 1300 520 1460 590"/></svg>
-      <div class="pk-hero pk-wrap">
-        <div class="pk-hero-copy">
-          <p class="pk-eyebrow pk-rise">บริการเฉพาะลูกค้าประกันภัยรถยนต์</p>
-          <h1 id="hero-title" class="pk-rise">เมื่อเกิดเหตุกับรถของคุณ<br>เราดูแลให้<em>ตั้งแต่นาทีแรก</em></h1>
-          <p class="pk-lead pk-rise">ข้อมูลกรมธรรม์ รถ และเอกสารของคุณมาจากบริษัทประกันโดยตรง ไม่ต้องกรอกซ้ำ เพียงเล่าว่าเกิดอะไรขึ้น Prakan จะเตรียมเคลมและเอกสารที่ต้องใช้ให้คุณตรวจ</p>
-          <div class="pk-actions pk-rise">
-            <a class="pk-btn pk-btn-brass" href="#workspace">เข้าสู่ระบบผ่านบริษัทประกัน <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
-            <a class="pk-btn pk-btn-outline" href="#access">ใครใช้ได้บ้าง</a>
+        <span class="pk-orb pk-orb-coral" aria-hidden="true"></span>
+        <span class="pk-orb pk-orb-sun" aria-hidden="true"></span>
+        <div class="pk-hero pk-wrap">
+          <div class="pk-hero-copy">
+            <p class="pk-eyebrow pk-rise">เฉพาะลูกค้าบริษัทประกันที่ร่วมโครงการ</p>
+            <h1 id="hero-title" class="pk-rise">มีเรื่องเมื่อไหร่<br>เปิด Prakan ก่อน</h1>
+            <p class="pk-lead pk-rise">กรมธรรม์ทุกฉบับ ทั้งรถยนต์ บ้าน สุขภาพ และการเดินทาง พร้อมจากบริษัทประกันของคุณ เล่าว่าเกิดอะไรขึ้น แนบหลักฐาน และส่งเคลมได้จากโทรศัพท์</p>
+            <div class="pk-actions pk-rise">
+              <a class="pk-btn pk-btn-coral" href="#workspace">เข้าสู่ระบบผ่านบริษัทประกัน <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+              <a class="pk-btn pk-btn-soft" href="#access">ใครใช้ได้บ้าง</a>
+            </div>
           </div>
-          <p class="pk-hero-note pk-rise">ใช้บัญชีเดียวกับบริษัทประกันของคุณ · ไม่ต้องสมัครใหม่</p>
+          <figure class="pk-hero-media pk-rise" aria-label="ตัวอย่างกรมธรรม์และผลประเมินเคลม">
+            <div class="pk-float pk-policy">
+              <span class="pk-policy-label">กรมธรรม์ของคุณ</span>
+              <span class="pk-policy-title">กรมธรรม์ 3 ฉบับ</span>
+              <span class="pk-pills"><span>รถยนต์</span><span>อัคคีภัย · บ้าน</span><span>อุบัติเหตุส่วนบุคคล</span></span>
+            </div>
+            <div class="pk-float pk-float-late pk-estimate-card">
+              <span>ประเมินเคลมรถยนต์ล่าสุด</span>
+              <strong>2,875 บาท</strong>
+            </div>
+            <figcaption>ข้อมูลตัวอย่างจากระบบต้นแบบ</figcaption>
+          </figure>
         </div>
-        <figure class="pk-hero-media pk-rise" aria-label="ตัวอย่างบัตรสมาชิกและสถานะกรมธรรม์">
-          <div class="pk-card">
-            <span class="pk-sheen" aria-hidden="true"></span>
-            <div class="pk-card-top"><span class="pk-card-brand">Prakan</span><span class="pk-card-tag">MEMBER</span></div>
-            <div><p class="pk-card-name">ลูกค้าตัวอย่าง</p><p class="pk-card-car">Toyota Corolla · DEMO-01</p></div>
-            <div class="pk-card-meta"><span><small>ความคุ้มครอง</small>ครอบคลุม</span><span><small>ทุนประกัน</small>600,000 บาท</span></div>
-          </div>
-          <div class="pk-status">
-            <span class="pk-status-icon"><span class="pk-breath" aria-hidden="true"></span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>
-            <div><p><strong>กรมธรรม์คุ้มครองอยู่</strong></p><p>ดึงข้อมูลจากบริษัทประกันของคุณแล้ว พร้อมใช้เมื่อเกิดเหตุ</p></div>
-          </div>
-          <figcaption>ข้อมูลตัวอย่างจากระบบสาธิต</figcaption>
-        </figure>
-      </div>
       </section>
       <section class="pk-principles" aria-label="หลักการของ Prakan">
         <div class="pk-wrap">
-          <div><span>๑</span><p><strong>ไม่ต้องกรอกข้อมูลซ้ำ</strong>ชื่อ กรมธรรม์ และรถของคุณมาจากบริษัทประกันโดยตรง</p></div>
-          <div><span>๒</span><p><strong>ฟังคำของคุณ ไม่แต่งเติม</strong>ทุกข้อเท็จจริงในร่างต้องอ้างจากคำเล่าของคุณ</p></div>
-          <div><span>๓</span><p><strong>คุณยืนยันก่อนส่งทุกครั้ง</strong>ไม่มีอะไรถึงบริษัทประกันหรือสถานีโดยที่คุณไม่เห็น</p></div>
+          <div><span>1</span><p><strong>ไม่ต้องกรอกข้อมูลซ้ำ</strong>ชื่อ กรมธรรม์ และทรัพย์สินที่เอาประกันมาจากบริษัทประกันโดยตรง</p></div>
+          <div><span>2</span><p><strong>ฟังคำของคุณ ไม่แต่งเติม</strong>ทุกข้อเท็จจริงในร่างต้องอ้างจากคำเล่าของคุณ</p></div>
+          <div><span>3</span><p><strong>คุณยืนยันก่อนส่งทุกครั้ง</strong>ไม่มีอะไรถึงบริษัทประกันหรือสถานีโดยที่คุณไม่เห็น</p></div>
         </div>
       </section>
-      <section class="pk-care pk-wrap pk-section" id="care" aria-labelledby="care-title">
+      <section class="pk-types pk-wrap pk-section" id="types" aria-labelledby="types-title">
         <div class="pk-head">
-          <div><p class="pk-eyebrow pk-eyebrow-dark">เมื่อเกิดเหตุ</p><h2 id="care-title">สี่ขั้น จากที่เกิดเหตุ<br>ถึงเคลมที่พร้อมส่ง</h2></div>
-          <p>ทำได้จากโทรศัพท์ตรงจุดเกิดเหตุ หรือกลับมาทำต่อที่บ้านก็ได้</p>
+          <div><p class="pk-eyebrow pk-eyebrow-dark">ประเภทประกัน</p><h2 id="types-title">ครบทุกกรมธรรม์<br>ในที่เดียว</h2></div>
+          <p>ดูความคุ้มครองและเริ่มเคลมได้จากที่เดียวกัน ไม่ว่าจะเป็นประกันประเภทไหน</p>
         </div>
-        <ol class="pk-steps">
-          <li><span>01</span><h3>เข้าสู่ระบบ</h3><p>ยืนยันตัวตนผ่านบริษัทประกันของคุณ แล้วอนุญาตให้ใช้ข้อมูลกรมธรรม์และรถ</p></li>
-          <li><span>02</span><h3>เล่าเหตุการณ์</h3><p>พูดหรือพิมพ์เท่าที่จำได้ ผู้ช่วยเรียบเรียงจากคำของคุณให้ตรวจ</p></li>
-          <li><span>03</span><h3>ถ่ายภาพความเสียหาย</h3><p>แนบภาพ 1–6 ภาพ ระบบช่วยประมาณค่าซ่อมและตรวจความคุ้มครอง</p></li>
-          <li><span>04</span><h3>ยืนยันและติดตาม</h3><p>ส่งเคลมเมื่อคุณพร้อม ติดตามสถานะ และเก็บเอกสารสำหรับสถานีตำรวจหากต้องใช้</p></li>
-        </ol>
+        <div class="pk-type-grid">
+          <article class="pk-type pk-type-main">
+            <span class="pk-type-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5M5 16h14M7 16v2M17 16v2"/></svg></span>
+            <h3>ประกันภัยรถยนต์</h3><p>ภาคบังคับ (พ.ร.บ.) และภาคสมัครใจ ประเภท 1 ถึง 3 เคลมจากภาพถ่ายหรือวิดีโอรอบคัน พร้อมเอกสารสำหรับสถานี</p>
+            <span class="pk-tag">ใช้งานได้ในต้นแบบ</span>
+          </article>
+          <article class="pk-type">
+            <span class="pk-type-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/><path d="M12 13c1.5 1.2 2 2.3 2 3.2a2 2 0 0 1-4 0c0-.9.5-2 2-3.2Z"/></svg></span>
+            <h3>ประกันอัคคีภัย</h3><p>บ้านเรือน อาคาร และทรัพย์สินภายใน จากไฟไหม้ ฟ้าผ่า และภัยธรรมชาติ</p>
+          </article>
+          <article class="pk-type">
+            <span class="pk-type-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 15h18l-2 4H5zM6 15V9h9v6M15 11h3l2 4"/></svg></span>
+            <h3>ประกันภัยทางทะเลและขนส่ง</h3><p>สินค้า เรือ และยานพาหนะระหว่างขนส่ง ทั้งทางน้ำ ทางบก และทางอากาศ</p>
+          </article>
+          <article class="pk-type">
+            <span class="pk-type-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/></svg></span>
+            <h3>ประกันภัยเบ็ดเตล็ด</h3><p>อุบัติเหตุส่วนบุคคล (PA) สุขภาพ การเดินทาง โจรกรรม และความรับผิดต่อบุคคลภายนอก</p>
+          </article>
+        </div>
       </section>
-      <section class="pk-benefits" id="benefits" aria-labelledby="benefits-title">
+      <section class="pk-care" aria-labelledby="care-title">
         <div class="pk-wrap pk-section">
-          <div class="pk-head pk-head-stack"><p class="pk-eyebrow pk-eyebrow-dark">สิ่งที่ได้รับ</p><h2 id="benefits-title">ทุกอย่างของคุณ<br>อยู่ในที่เดียว</h2></div>
-          <div class="pk-bento">
-            <article class="pk-tile pk-tile-dark pk-tile-wide">
-              <div><h3>เคลมจากภาพถ่าย</h3><p>เห็นค่าซ่อมโดยประมาณ ค่าเสียหายส่วนแรก และยอดที่กรมธรรม์ดูแล ก่อนตัดสินใจส่งเคลม กรณีที่ไม่ชัดเจนส่งให้เจ้าหน้าที่ตรวจทาน</p></div>
-              <dl class="pk-estimate">
-                <div><dt>กันชน · เสียหายปานกลาง</dt><dd>7,875 บาท</dd></div>
-                <div><dt>ค่าเสียหายส่วนแรก</dt><dd>−5,000 บาท</dd></div>
-                <div class="pk-estimate-total"><dt>กรมธรรม์ดูแล</dt><dd>2,875 บาท</dd></div>
-                <p>ตัวอย่างจากผลประเมินจำลอง</p>
-              </dl>
-            </article>
-            <article class="pk-tile">
-              <span class="pk-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
-              <h3>กรมธรรม์ของคุณ</h3><p>ความคุ้มครอง ทุนประกัน ค่าเสียหายส่วนแรก และวงเงินที่เหลือ ดูได้ทุกเวลา</p>
-            </article>
-            <article class="pk-tile">
-              <span class="pk-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6v3l-2 4h16l-2-4V9a6 6 0 0 0-6-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span>
-              <h3>ติดตามทุกความเคลื่อนไหว</h3><p>เห็นสถานะเคลม ข้อความจากเจ้าหน้าที่ และส่งเอกสารเพิ่มเมื่อมีการร้องขอ</p>
-            </article>
-            <article class="pk-tile pk-tile-wide pk-tile-row">
-              <div><h3>เอกสารสำหรับสถานี เมื่อต้องแจ้งความ</h3><p>หากบริษัทประกันต้องการใบแจ้งความ Prakan เตรียมร่างจากเรื่องเดียวกัน พร้อมเลือกสถานีจากชุดข้อมูลกรุงเทพมหานคร</p></div>
-              <p class="pk-figure"><strong>88</strong>สถานีตำรวจในกรุงเทพฯ</p>
-            </article>
+          <div class="pk-head">
+            <div><p class="pk-eyebrow pk-eyebrow-dark">เมื่อเกิดเหตุ</p><h2 id="care-title">สี่ขั้น จากเรื่องไม่คาดคิด<br>ถึงเคลมที่พร้อมส่ง</h2></div>
+            <p>ทำได้จากโทรศัพท์ตรงจุดเกิดเหตุ หรือกลับมาทำต่อที่บ้านก็ได้</p>
           </div>
+          <ol class="pk-steps">
+            <li><span>01</span><h3>เข้าสู่ระบบ</h3><p>ยืนยันตัวตนผ่านบริษัทประกันของคุณ แล้วอนุญาตให้ใช้ข้อมูลกรมธรรม์</p></li>
+            <li><span>02</span><h3>เล่าเหตุการณ์</h3><p>พูดหรือพิมพ์เท่าที่จำได้ ผู้ช่วยเรียบเรียงจากคำของคุณให้ตรวจ</p></li>
+            <li><span>03</span><h3>แนบหลักฐาน</h3><p>ภาพถ่าย วิดีโอ หรือใบเสร็จ ระบบช่วยตรวจความคุ้มครองและประมาณยอดเบื้องต้น</p></li>
+            <li><span>04</span><h3>ยืนยันและติดตาม</h3><p>ส่งเคลมเมื่อคุณพร้อม ติดตามสถานะ และเก็บเอกสารที่ต้องใช้ไว้ในที่เดียว</p></li>
+          </ol>
         </div>
       </section>
-      <section class="pk-privacy pk-wrap pk-section" id="privacy" aria-labelledby="privacy-title">
-        <div class="pk-privacy-head"><p class="pk-eyebrow pk-eyebrow-dark">ข้อมูลของคุณ</p><h2 id="privacy-title">เห็นก่อน<br>อนุญาตก่อน</h2><p>Prakan ขอข้อมูลจากบริษัทประกันเฉพาะที่จำเป็นต่อการดูแลเคลม และจะแสดงรายการให้คุณอนุญาตทุกครั้งที่เข้าสู่ระบบครั้งแรก</p></div>
-        <div class="pk-privacy-lists">
-          <div><h3>ข้อมูลที่ได้รับ</h3><ul><li>ชื่อ เลขประจำตัว และช่องทางติดต่อ</li><li>กรมธรรม์ ความคุ้มครอง และวงเงิน</li><li>รถที่เอาประกันและทะเบียนรถ</li><li>ประวัติเคลมที่เกี่ยวข้อง</li></ul></div>
-          <div id="limitations"><h3>สิ่งที่เราไม่ทำ</h3><ul><li>ไม่ส่งเคลมหรือเอกสารโดยไม่ได้รับการยืนยัน</li><li>ไม่ใส่ข้อเท็จจริงที่คุณไม่ได้เล่า</li><li>ไม่ใช่การแจ้งความกับตำรวจโดยตรง</li><li>ผลประเมินไม่ใช่การอนุมัติเคลม</li></ul></div>
+      <section class="pk-benefits pk-wrap pk-section" id="benefits" aria-labelledby="benefits-title">
+        <div class="pk-head pk-head-stack"><p class="pk-eyebrow pk-eyebrow-dark">สิ่งที่ได้รับ</p><h2 id="benefits-title">ดูแลคุณ<br>ตั้งแต่เกิดเรื่องจนจบเคลม</h2></div>
+        <div class="pk-bento">
+          <article class="pk-tile pk-tile-dark pk-tile-wide">
+            <div><h3>เห็นยอดก่อนตัดสินใจส่งเคลม</h3><p>ระบบช่วยประมาณค่าเสียหาย หักค่าเสียหายส่วนแรก และบอกยอดที่กรมธรรม์ดูแล กรณีที่ไม่ชัดเจนส่งให้เจ้าหน้าที่ตรวจทาน</p></div>
+            <dl class="pk-estimate">
+              <div><dt>กันชน · เสียหายปานกลาง</dt><dd>7,875 บาท</dd></div>
+              <div><dt>ค่าเสียหายส่วนแรก</dt><dd>−5,000 บาท</dd></div>
+              <div class="pk-estimate-total"><dt>กรมธรรม์ดูแล</dt><dd>2,875 บาท</dd></div>
+              <p>ตัวอย่างจากผลประเมินเคลมรถยนต์</p>
+            </dl>
+          </article>
+          <article class="pk-tile">
+            <span class="pk-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <h3>กรมธรรม์ทุกฉบับของคุณ</h3><p>ความคุ้มครอง ทุนประกัน ค่าเสียหายส่วนแรก และวงเงินที่เหลือ ดูได้ทุกเวลา</p>
+          </article>
+          <article class="pk-tile">
+            <span class="pk-icon pk-icon-coral"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6v3l-2 4h16l-2-4V9a6 6 0 0 0-6-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span>
+            <h3>ติดตามทุกความเคลื่อนไหว</h3><p>เห็นสถานะเคลม ข้อความจากเจ้าหน้าที่ และส่งเอกสารเพิ่มเมื่อมีการร้องขอ</p>
+          </article>
+          <article class="pk-tile pk-tile-wide pk-tile-row">
+            <div><h3>เอกสารสำหรับสถานี เมื่อต้องแจ้งความ</h3><p>หากบริษัทประกันต้องการใบแจ้งความ Prakan เตรียมร่างจากเรื่องเดียวกัน พร้อมเลือกสถานีจากชุดข้อมูลกรุงเทพมหานคร</p></div>
+            <p class="pk-figure"><strong>88</strong>สถานีตำรวจในกรุงเทพฯ</p>
+          </article>
+        </div>
+      </section>
+      <section class="pk-privacy-band" aria-labelledby="privacy-title">
+        <div class="pk-privacy pk-wrap pk-section" id="privacy">
+          <div class="pk-privacy-head"><p class="pk-eyebrow pk-eyebrow-dark">ข้อมูลของคุณ</p><h2 id="privacy-title">เห็นก่อน<br>อนุญาตก่อน</h2><p>Prakan ขอข้อมูลจากบริษัทประกันเฉพาะที่จำเป็นต่อการดูแลเคลม และแสดงรายการให้คุณอนุญาตเมื่อเข้าสู่ระบบครั้งแรก</p></div>
+          <div class="pk-privacy-lists">
+            <div><h3>ข้อมูลที่ได้รับ</h3><ul><li>ชื่อ เลขประจำตัว และช่องทางติดต่อ</li><li>กรมธรรม์ ความคุ้มครอง และวงเงิน</li><li>ทรัพย์สินที่เอาประกัน เช่น รถหรือบ้าน</li><li>ประวัติเคลมที่เกี่ยวข้อง</li></ul></div>
+            <div id="limitations"><h3>สิ่งที่เราไม่ทำ</h3><ul><li>ไม่ส่งเคลมหรือเอกสารโดยไม่ได้รับการยืนยัน</li><li>ไม่ใส่ข้อเท็จจริงที่คุณไม่ได้เล่า</li><li>ไม่ใช่การแจ้งความกับตำรวจโดยตรง</li><li>ผลประเมินไม่ใช่การอนุมัติเคลม</li></ul></div>
+          </div>
         </div>
       </section>
       <section class="pk-access" id="access" aria-labelledby="access-title">
         <div class="pk-access-panel">
           <div><h2 id="access-title">สงวนสิทธิ์<br>สำหรับลูกค้าของเรา</h2><p>เข้าใช้ได้เมื่อบริษัทประกันของคุณร่วมโครงการ ยังเข้าสู่ระบบไม่ได้? สอบถามตัวแทนหรือศูนย์บริการลูกค้าของบริษัทประกัน</p></div>
-          <a class="pk-btn pk-btn-brass" href="#workspace">เข้าสู่ระบบผ่านบริษัทประกัน <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+          <a class="pk-btn pk-btn-coral" href="#workspace">เข้าสู่ระบบผ่านบริษัทประกัน <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
         </div>
       </section>
     </main>
